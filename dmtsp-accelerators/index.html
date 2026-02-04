@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMTSP Fabric Migration Accelerators</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-logo">DMTSP</span>
+                <span class="brand-text">Fabric Migration Accelerators</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#accelerators">Accelerators</a></li>
+                <li><a href="#calculator">ROI Calculator</a></li>
+                <li><a href="#summary">Summary</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">Microsoft Fabric Migration</div>
+            <h1>Reduce Migration Delivery by <span class="highlight">25-40%</span></h1>
+            <p class="hero-subtitle">Standardized accelerators for Synapse-to-Fabric migrations across the Consumer Industry portfolio</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-value">7</span>
+                    <span class="stat-label">Accelerators</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">$500K+</span>
+                    <span class="stat-label">Potential Savings</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">40%</span>
+                    <span class="stat-label">Max Efficiency Gain</span>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <a href="#calculator" class="btn btn-primary">Calculate Your Savings</a>
+                <a href="#accelerators" class="btn btn-secondary">Explore Accelerators</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Overview Section -->
+    <section id="overview" class="section overview-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Executive Summary</h2>
+                <p>Why DMTSP needs standardized Fabric migration accelerators</p>
+            </div>
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                    </div>
+                    <h3>Market Urgency</h3>
+                    <p>Microsoft is accelerating deprecation of Azure Synapse Analytics dedicated SQL pools and Power BI Premium P-SKUs. Fabric migrations are becoming high-volume engagements.</p>
+                </div>
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <h3>Repeatable Patterns</h3>
+                    <p>These accelerators combine Microsoft GA tooling with Deloitte-built assets to create standardized, reusable migration packages that work across accounts.</p>
+                </div>
+                <div class="overview-card">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </div>
+                    <h3>Competitive Pricing</h3>
+                    <p>Enables fee proposals in the $1.2M-$1.5M range vs. $2M+ base estimates, making Deloitte competitive against boutique specialists.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Accelerators Section -->
+    <section id="accelerators" class="section accelerators-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>The 7 Accelerators</h2>
+                <p>Click each accelerator to explore capabilities, productivity impact, and buildout recommendations</p>
+            </div>
+
+            <!-- Accelerator 1 -->
+            <div class="accelerator-card" id="acc-1">
+                <div class="accelerator-header" onclick="toggleAccelerator(1)">
+                    <div class="accelerator-number">01</div>
+                    <div class="accelerator-title">
+                        <h3>Fabric Migration Assistant for Data Warehouse</h3>
+                        <span class="accelerator-target">Synapse DW Schema/Tables</span>
+                    </div>
+                    <div class="accelerator-impact">
+                        <span class="impact-badge high">40-55%</span>
+                        <span class="impact-label">Productivity Gain</span>
+                    </div>
+                    <div class="accelerator-toggle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="accelerator-content">
+                    <div class="content-grid">
+                        <div class="content-block">
+                            <h4>What It Is</h4>
+                            <p>Native GA tool built into the Fabric portal providing a guided, four-step migration experience for moving Synapse dedicated SQL pools into Fabric Data Warehouse. Microsoft offers personalized migration support through their Migration Factory at no cost.</p>
+                        </div>
+                        <div class="content-block">
+                            <h4>How It Works</h4>
+                            <ol class="steps-list">
+                                <li><strong>Metadata Migration via DACPAC:</strong> Extract schema definitions using Visual Studio, VS Code, or SqlPackage CLI</li>
+                                <li><strong>AI-Assisted Problem Resolution:</strong> Copilot analyzes broken scripts and suggests fixes with inline comments</li>
+                                <li><strong>Data Copy via Fabric Data Factory:</strong> Integrated copy jobs for one-time full or continuous incremental copying</li>
+                                <li><strong>Connection Rerouting:</strong> REST API identifies and reroutes connections to new Fabric warehouse</li>
+                            </ol>
+                        </div>
+                        <div class="content-block">
+                            <h4>Impact by Object Type</h4>
+                            <table class="impact-table">
+                                <tr><th>Object</th><th>Count</th><th>Base Hours</th><th>Impact</th></tr>
+                                <tr><td>Tables</td><td>1,538</td><td>6,152</td><td>Primary target</td></tr>
+                                <tr><td>Views</td><td>362</td><td>543</td><td>Automated find/replace</td></tr>
+                                <tr><td>Functions</td><td>4</td><td>4</td><td>Near-complete automation</td></tr>
+                                <tr><td>Schema</td><td>16</td><td>5</td><td>Fully automated</td></tr>
+                                <tr><td>Security</td><td>40</td><td>10</td><td>Partial automation</td></tr>
+                            </table>
+                        </div>
+                        <div class="content-block buildout">
+                            <h4>DMTSP Buildout</h4>
+                            <div class="buildout-effort low">Build Effort: Low</div>
+                            <p>Create standardized <strong>DACPAC Extraction and Migration Runbook</strong> with:</p>
+                            <ul>
+                                <li>Pre-flight validation checklists</li>
+                                <li>Known T-SQL incompatibility patterns with pre-built fix scripts</li>
+                                <li>Copilot prompt library optimized for migration fix scenarios</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accelerator 2 -->
+            <div class="accelerator-card" id="acc-2">
+                <div class="accelerator-header" onclick="toggleAccelerator(2)">
+                    <div class="accelerator-number">02</div>
+                    <div class="accelerator-title">
+                        <h3>ADF-to-Fabric PowerShell Pipeline Upgrade Module</h3>
+                        <span class="accelerator-target">ADF Pipelines/Datasets</span>
+                    </div>
+                    <div class="accelerator-impact">
+                        <span class="impact-badge high">30-45%</span>
+                        <span class="impact-label">Productivity Gain</span>
+                    </div>
+                    <div class="accelerator-toggle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="accelerator-content">
+                    <div class="content-grid">
+                        <div class="content-block">
+                            <h4>What It Is</h4>
+                            <p>Microsoft's <code>Microsoft.FabricPipelineUpgrade</code> PowerShell module automates migration of ADF pipelines, datasets, linked services, and triggers into Fabric Data Factory. Complemented by a built-in Migration Assessment Tool.</p>
+                        </div>
+                        <div class="content-block">
+                            <h4>How It Works</h4>
+                            <ol class="steps-list">
+                                <li><strong>Assessment:</strong> Run upgrade assessment to categorize pipelines as Compatible, Needs Review, or Not Compatible</li>
+                                <li><strong>Import:</strong> <code>Import-AdfFactory</code> cmdlet imports pipeline definitions as JSON</li>
+                                <li><strong>Convert:</strong> <code>ConvertTo-FabricResources</code> translates to Fabric-native formats</li>
+                                <li><strong>Resolve:</strong> JSON resolution file maps linked services to Fabric connections</li>
+                                <li><strong>Export:</strong> <code>Export-FabricResources</code> deploys to target workspace</li>
+                            </ol>
+                        </div>
+                        <div class="content-block">
+                            <h4>Impact by Object Type</h4>
+                            <table class="impact-table">
+                                <tr><th>Object</th><th>Count</th><th>Base Hours</th><th>Reduction</th></tr>
+                                <tr><td>Datasets</td><td>450</td><td>900</td><td>40-60%</td></tr>
+                                <tr><td>Pipelines (Standard)</td><td>609</td><td>1,218</td><td>30-50%</td></tr>
+                                <tr><td>Triggers</td><td>142</td><td>284</td><td>40-60%</td></tr>
+                                <tr><td>Linked Services</td><td>19</td><td>Included</td><td>Automated</td></tr>
+                            </table>
+                        </div>
+                        <div class="content-block buildout">
+                            <h4>DMTSP Buildout</h4>
+                            <div class="buildout-effort medium">Build Effort: Low-Medium</div>
+                            <p>Create <strong>Fabric Pipeline Migration Toolkit</strong> with:</p>
+                            <ul>
+                                <li>Pre-built resolution file templates for common linked service patterns</li>
+                                <li>Manual conversion library for "Needs Review" activities</li>
+                                <li>Validation test suite for converted pipelines</li>
+                                <li>ADF-in-Fabric mounting approach as Phase 0 standard</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accelerator 3 -->
+            <div class="accelerator-card" id="acc-3">
+                <div class="accelerator-header" onclick="toggleAccelerator(3)">
+                    <div class="accelerator-number">03</div>
+                    <div class="accelerator-title">
+                        <h3>T-SQL to Spark/PySpark Code Conversion Framework</h3>
+                        <span class="accelerator-target">Stored Procedure Conversion</span>
+                    </div>
+                    <div class="accelerator-impact">
+                        <span class="impact-badge medium">20-30%</span>
+                        <span class="impact-label">Productivity Gain</span>
+                    </div>
+                    <div class="accelerator-toggle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="accelerator-content">
+                    <div class="content-grid">
+                        <div class="content-block">
+                            <h4>What It Is</h4>
+                            <p>The highest-impact Deloitte-built accelerator. Microsoft doesn't provide turnkey T-SQL-to-PySpark conversion, but Fabric notebooks with T-SQL magic commands and the Spark Data Warehouse Connector enable hybrid approaches.</p>
+                        </div>
+                        <div class="content-block">
+                            <h4>Complexity Tiers</h4>
+                            <div class="complexity-tiers">
+                                <div class="tier">
+                                    <span class="tier-label simple">Simple</span>
+                                    <p>Spark SQL passthrough - straightforward SELECT, INSERT, UPDATE, DELETE, MERGE</p>
+                                </div>
+                                <div class="tier">
+                                    <span class="tier-label medium">Medium</span>
+                                    <p>PySpark DataFrames - dynamic SQL, cursor logic, conditional branching</p>
+                                </div>
+                                <div class="tier">
+                                    <span class="tier-label complex">High</span>
+                                    <p>Full refactoring - cross-DB references, complex error handling, Synapse-specific features</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-block">
+                            <h4>Impact by Complexity</h4>
+                            <table class="impact-table">
+                                <tr><th>Type</th><th>Count</th><th>Hours Each</th><th>Reduction</th></tr>
+                                <tr><td>Standard SPs</td><td>540</td><td>2 hrs</td><td>25-35%</td></tr>
+                                <tr><td>Spark-Low</td><td>25</td><td>8 hrs</td><td>20-25%</td></tr>
+                                <tr><td>Spark-Med</td><td>25</td><td>16 hrs</td><td>15-20%</td></tr>
+                                <tr><td>Spark-High</td><td>25</td><td>24 hrs</td><td>10-15%</td></tr>
+                            </table>
+                        </div>
+                        <div class="content-block buildout">
+                            <h4>DMTSP Buildout</h4>
+                            <div class="buildout-effort high">Build Effort: High</div>
+                            <p>Create <strong>Fabric Code Conversion Accelerator Library</strong> with:</p>
+                            <ul>
+                                <li>Pattern Catalog: 20-30 pre-built conversion templates (MERGE/upsert, SCD Type 2, incremental load)</li>
+                                <li>Conversion Decision Matrix for Low/Medium/High categorization</li>
+                                <li>PySpark Starter Notebooks with standardized configurations</li>
+                                <li>T-SQL Compatibility Cheat Sheet</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accelerator 4 -->
+            <div class="accelerator-card" id="acc-4">
+                <div class="accelerator-header" onclick="toggleAccelerator(4)">
+                    <div class="accelerator-number">04</div>
+                    <div class="accelerator-title">
+                        <h3>CI/CD and Environment Deployment Automation</h3>
+                        <span class="accelerator-target">SIT/UAT/Prod Environments</span>
+                    </div>
+                    <div class="accelerator-impact">
+                        <span class="impact-badge medium">15-25%</span>
+                        <span class="impact-label">Productivity Gain</span>
+                    </div>
+                    <div class="accelerator-toggle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="accelerator-content">
+                    <div class="content-grid">
+                        <div class="content-block">
+                            <h4>What It Is</h4>
+                            <p>Fabric deployment pipelines, Git integration, REST APIs, and ARM/Bicep templates for automating artifact promotion across environments. This impacts ~25% of total estimated hours.</p>
+                        </div>
+                        <div class="content-block">
+                            <h4>CI/CD Patterns</h4>
+                            <ol class="steps-list">
+                                <li><strong>Fabric Deployment Pipelines:</strong> Native Dev → Test → Production with auto-adjustment rules</li>
+                                <li><strong>Git Integration:</strong> Azure DevOps or GitHub repos for version control</li>
+                                <li><strong>Fabric REST APIs:</strong> Custom automation wrapped in CI/CD workflows</li>
+                                <li><strong>ARM/Bicep Templates:</strong> Repeatable infrastructure provisioning</li>
+                            </ol>
+                        </div>
+                        <div class="content-block">
+                            <h4>Impact by Environment</h4>
+                            <table class="impact-table">
+                                <tr><th>Environment</th><th>% of Dev</th><th>Base Hours</th><th>Reduction</th></tr>
+                                <tr><td>SIT</td><td>20%</td><td>2,534</td><td>20-30%</td></tr>
+                                <tr><td>UAT</td><td>10%</td><td>1,287</td><td>15-25%</td></tr>
+                                <tr><td>Production</td><td>3%</td><td>380</td><td>10-20%</td></tr>
+                            </table>
+                        </div>
+                        <div class="content-block buildout">
+                            <h4>DMTSP Buildout</h4>
+                            <div class="buildout-effort medium">Build Effort: Medium</div>
+                            <p>Create <strong>Fabric CI/CD Accelerator Package</strong> with:</p>
+                            <ul>
+                                <li>Pre-configured deployment pipeline templates</li>
+                                <li>Azure DevOps / GitHub Actions workflow definitions</li>
+                                <li>ARM/Bicep templates for capacity and workspace provisioning</li>
+                                <li>Automated post-deployment validation scripts</li>
+                                <li>Production cutover runbook with rollback procedures</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accelerator 5 -->
+            <div class="accelerator-card" id="acc-5">
+                <div class="accelerator-header" onclick="toggleAccelerator(5)">
+                    <div class="accelerator-number">05</div>
+                    <div class="accelerator-title">
+                        <h3>Automated Data Validation and Testing Framework</h3>
+                        <span class="accelerator-target">Cross-Cutting Quality</span>
+                    </div>
+                    <div class="accelerator-impact">
+                        <span class="impact-badge quality">Quality</span>
+                        <span class="impact-label">Risk Reduction</span>
+                    </div>
+                    <div class="accelerator-toggle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="accelerator-content">
+                    <div class="content-grid">
+                        <div class="content-block">
+                            <h4>What It Is</h4>
+                            <p>A critical gap filler - the base estimate doesn't include dedicated data validation budget. This framework systematically validates data integrity, completeness, and accuracy between source and target environments.</p>
+                        </div>
+                        <div class="content-block">
+                            <h4>Validation Levels</h4>
+                            <div class="validation-levels">
+                                <div class="level">
+                                    <span class="level-icon">1</span>
+                                    <div>
+                                        <strong>Schema Validation</strong>
+                                        <p>Automated comparison of column names, data types, nullability, constraints</p>
+                                    </div>
+                                </div>
+                                <div class="level">
+                                    <span class="level-icon">2</span>
+                                    <div>
+                                        <strong>Row-Level Validation</strong>
+                                        <p>Automated row counts, checksum/hash validation, sample record comparison</p>
+                                    </div>
+                                </div>
+                                <div class="level">
+                                    <span class="level-icon">3</span>
+                                    <div>
+                                        <strong>Business Rule Validation</strong>
+                                        <p>Pre-defined test cases for critical calculations, aggregations, derived values</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-block">
+                            <h4>Net Impact</h4>
+                            <div class="impact-note">
+                                <p><strong>Paradox:</strong> This accelerator <em>adds</em> scope (5-8% = 800-1,350 hours) while <em>enabling</em> 10-15% reduction in SIT/UAT rework. Net result is quality improvement and reduced production incidents.</p>
+                            </div>
+                        </div>
+                        <div class="content-block buildout">
+                            <h4>DMTSP Buildout</h4>
+                            <div class="buildout-effort medium">Build Effort: Medium</div>
+                            <p>Create <strong>Fabric Data Validation Toolkit</strong> with:</p>
+                            <ul>
+                                <li>Parameterized PySpark notebooks for schema comparison</li>
+                                <li>Row count and checksum validation with configurable thresholds</li>
+                                <li>Sample record comparison with fuzzy matching</li>
+                                <li>Business rule test case templates</li>
+                                <li>HTML/Power BI validation report generator</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accelerator 6 -->
+            <div class="accelerator-card" id="acc-6">
+                <div class="accelerator-header" onclick="toggleAccelerator(6)">
+                    <div class="accelerator-number">06</div>
+                    <div class="accelerator-title">
+                        <h3>Fabric Copilot Integration for Migration Workflows</h3>
+                        <span class="accelerator-target">All Workstreams</span>
+                    </div>
+                    <div class="accelerator-impact">
+                        <span class="impact-badge compound">5-10%</span>
+                        <span class="impact-label">Compounding</span>
+                    </div>
+                    <div class="accelerator-toggle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="accelerator-content">
+                    <div class="content-grid">
+                        <div class="content-block">
+                            <h4>What It Is</h4>
+                            <p>Microsoft Copilot is integrated across Fabric workloads - Data Warehouse, Data Factory, Notebooks, and Power BI. Not a standalone accelerator, but creates compounding productivity effects across all other accelerators.</p>
+                        </div>
+                        <div class="content-block">
+                            <h4>Copilot Capabilities</h4>
+                            <ul class="feature-list">
+                                <li><strong>Migration Fix Resolution:</strong> Analyzes failed T-SQL and suggests fixes</li>
+                                <li><strong>Query Assistance:</strong> Natural language to SQL, code completion</li>
+                                <li><strong>Pipeline Creation:</strong> Assists creating/modifying Fabric pipelines</li>
+                                <li><strong>Notebook Code Gen:</strong> PySpark generation, debugging, optimization</li>
+                            </ul>
+                        </div>
+                        <div class="content-block">
+                            <h4>Impact Distribution</h4>
+                            <table class="impact-table">
+                                <tr><th>Capability</th><th>Reduction</th></tr>
+                                <tr><td>Migration Fix Resolution</td><td>40-60%</td></tr>
+                                <tr><td>Notebook Development</td><td>20-30%</td></tr>
+                                <tr><td>Pipeline Rebuild</td><td>15-25%</td></tr>
+                                <tr><td>Post-Migration Optimization</td><td>10-20%</td></tr>
+                            </table>
+                        </div>
+                        <div class="content-block buildout">
+                            <h4>DMTSP Buildout</h4>
+                            <div class="buildout-effort low">Build Effort: Low</div>
+                            <p>Create <strong>Copilot Prompt Engineering Library</strong> with optimized prompts for:</p>
+                            <ul>
+                                <li>Fix scripts for known T-SQL incompatibilities</li>
+                                <li>PySpark conversion with medallion architecture context</li>
+                                <li>Pipeline creation referencing ADF JSON definitions</li>
+                                <li>Performance optimization for post-migration tuning</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accelerator 7 -->
+            <div class="accelerator-card" id="acc-7">
+                <div class="accelerator-header" onclick="toggleAccelerator(7)">
+                    <div class="accelerator-number">07</div>
+                    <div class="accelerator-title">
+                        <h3>Logic App and ADLS Migration Automation</h3>
+                        <span class="accelerator-target">Logic Apps + Storage</span>
+                    </div>
+                    <div class="accelerator-impact">
+                        <span class="impact-badge medium">15-30%</span>
+                        <span class="impact-label">Productivity Gain</span>
+                    </div>
+                    <div class="accelerator-toggle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="accelerator-content">
+                    <div class="content-grid">
+                        <div class="content-block">
+                            <h4>What It Is</h4>
+                            <p>Standardized automation for Logic Apps and ADLS Storage Accounts - smaller scope but predictable, pattern-driven work that benefits from reusable scripts.</p>
+                        </div>
+                        <div class="content-block">
+                            <h4>Migration Approaches</h4>
+                            <div class="approach-cards">
+                                <div class="approach">
+                                    <h5>Logic Apps</h5>
+                                    <p>Repoint connections from Synapse/ADF to Fabric. Standard connectors = config change. Custom connectors = manual review.</p>
+                                </div>
+                                <div class="approach">
+                                    <h5>ADLS Storage</h5>
+                                    <p>Configure OneLake shortcuts (virtual reference, no data movement) or copy data to OneLake if required.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="content-block">
+                            <h4>Impact by Object Type</h4>
+                            <table class="impact-table">
+                                <tr><th>Object</th><th>Count</th><th>Base Hours</th><th>Reduction</th></tr>
+                                <tr><td>Logic Apps</td><td>147</td><td>294</td><td>15-25%</td></tr>
+                                <tr><td>ADLS Storage</td><td>53</td><td>212</td><td>20-40%</td></tr>
+                            </table>
+                        </div>
+                        <div class="content-block buildout">
+                            <h4>DMTSP Buildout</h4>
+                            <div class="buildout-effort low">Build Effort: Low</div>
+                            <p>Build reusable automation including:</p>
+                            <ul>
+                                <li>PowerShell/CLI scripts for batch Logic App connection repointing</li>
+                                <li>Decision framework for OneLake shortcuts vs. physical data migration</li>
+                                <li>Access pattern analysis templates</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI Calculator Section -->
+    <section id="calculator" class="section calculator-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>ROI Calculator</h2>
+                <p>Estimate your engagement savings using DMTSP accelerators</p>
+            </div>
+            <div class="calculator-container">
+                <div class="calc-inputs">
+                    <h3>Engagement Parameters</h3>
+                    <div class="input-group">
+                        <label for="tables">Synapse Tables</label>
+                        <input type="number" id="tables" value="1538" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="views">Views</label>
+                        <input type="number" id="views" value="362" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="storedProcs">Stored Procedures (Standard)</label>
+                        <input type="number" id="storedProcs" value="540" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="sparkProcs">Stored Procedures (Spark Conversion)</label>
+                        <input type="number" id="sparkProcs" value="75" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="pipelines">ADF Pipelines</label>
+                        <input type="number" id="pipelines" value="609" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="datasets">ADF Datasets</label>
+                        <input type="number" id="datasets" value="450" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="logicApps">Logic Apps</label>
+                        <input type="number" id="logicApps" value="147" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="adlsAccounts">ADLS Storage Accounts</label>
+                        <input type="number" id="adlsAccounts" value="53" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="hourlyRate">Blended Hourly Rate ($)</label>
+                        <input type="number" id="hourlyRate" value="175" min="0">
+                    </div>
+                    <button class="btn btn-primary" onclick="calculateROI()">Calculate Savings</button>
+                </div>
+                <div class="calc-results">
+                    <h3>Projected Savings</h3>
+                    <div class="results-grid">
+                        <div class="result-card">
+                            <span class="result-label">Base Estimate</span>
+                            <span class="result-value" id="baseHours">0</span>
+                            <span class="result-unit">hours</span>
+                        </div>
+                        <div class="result-card">
+                            <span class="result-label">With Accelerators</span>
+                            <span class="result-value highlight" id="acceleratedHours">0</span>
+                            <span class="result-unit">hours</span>
+                        </div>
+                        <div class="result-card">
+                            <span class="result-label">Hours Saved</span>
+                            <span class="result-value saved" id="savedHours">0</span>
+                            <span class="result-unit">hours</span>
+                        </div>
+                        <div class="result-card">
+                            <span class="result-label">Cost Savings</span>
+                            <span class="result-value saved" id="costSavings">$0</span>
+                            <span class="result-unit">USD</span>
+                        </div>
+                    </div>
+                    <div class="savings-breakdown">
+                        <h4>Savings by Workstream</h4>
+                        <div class="breakdown-bars" id="breakdownBars">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="efficiency-meter">
+                        <h4>Overall Efficiency Gain</h4>
+                        <div class="meter-container">
+                            <div class="meter-bar" id="efficiencyBar"></div>
+                            <span class="meter-value" id="efficiencyValue">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Summary Section -->
+    <section id="summary" class="section summary-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Portfolio Impact Summary</h2>
+                <p>Aggregate benefits across the DMTSP Consumer Industry account portfolio</p>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-card highlight-card">
+                    <h3>Per-Engagement Savings</h3>
+                    <div class="big-number">25-40%</div>
+                    <p>Reduction in total migration hours depending on environment complexity and SP conversion mix</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Pricing Competitiveness</h3>
+                    <div class="pricing-compare">
+                        <div class="price old">
+                            <span class="label">Base Estimate</span>
+                            <span class="amount">$2M+</span>
+                        </div>
+                        <div class="arrow">→</div>
+                        <div class="price new">
+                            <span class="label">With Accelerators</span>
+                            <span class="amount">$1.2-1.5M</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <h3>Investment Required</h3>
+                    <div class="investment-box">
+                        <span class="invest-hours">400-600</span>
+                        <span class="invest-label">hours of senior practitioner time</span>
+                    </div>
+                    <p>Amortized across first 2-3 engagements</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Payback Timeline</h3>
+                    <div class="payback-visual">
+                        <div class="engagement" data-number="1">
+                            <span class="eng-label">1st</span>
+                            <span class="eng-status">Investment</span>
+                        </div>
+                        <div class="engagement" data-number="2">
+                            <span class="eng-label">2nd</span>
+                            <span class="eng-status">Breakeven</span>
+                        </div>
+                        <div class="engagement positive" data-number="3">
+                            <span class="eng-label">3rd+</span>
+                            <span class="eng-status">1,500-3,000 hrs saved</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accelerator-summary-table">
+                <h3>Accelerator Quick Reference</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Accelerator</th>
+                            <th>Workstream</th>
+                            <th>Productivity Gain</th>
+                            <th>Build Effort</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1. Migration Assistant + Copilot</td>
+                            <td>Synapse DW schema/tables</td>
+                            <td><span class="badge high">40-55%</span></td>
+                            <td><span class="effort low">Low</span></td>
+                        </tr>
+                        <tr>
+                            <td>2. ADF PowerShell Module</td>
+                            <td>ADF pipelines/datasets</td>
+                            <td><span class="badge high">30-45%</span></td>
+                            <td><span class="effort medium">Low-Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td>3. T-SQL to Spark Framework</td>
+                            <td>Stored procedure conversion</td>
+                            <td><span class="badge medium">20-30%</span></td>
+                            <td><span class="effort high">High</span></td>
+                        </tr>
+                        <tr>
+                            <td>4. CI/CD Automation</td>
+                            <td>SIT/UAT/Prod environments</td>
+                            <td><span class="badge medium">15-25%</span></td>
+                            <td><span class="effort medium">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td>5. Data Validation Framework</td>
+                            <td>Cross-cutting quality</td>
+                            <td><span class="badge quality">Quality</span></td>
+                            <td><span class="effort medium">Medium</span></td>
+                        </tr>
+                        <tr>
+                            <td>6. Copilot Prompt Library</td>
+                            <td>All workstreams</td>
+                            <td><span class="badge compound">5-10% compound</span></td>
+                            <td><span class="effort low">Low</span></td>
+                        </tr>
+                        <tr>
+                            <td>7. Logic App/ADLS Automation</td>
+                            <td>Logic Apps + Storage</td>
+                            <td><span class="badge medium">15-30%</span></td>
+                            <td><span class="effort low">Low</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Accelerate Your Fabric Migrations?</h2>
+            <p>Contact DMTSP leadership to discuss accelerator buildout and engagement planning</p>
+            <div class="cta-contact">
+                <div class="contact-item">
+                    <strong>Prepared by:</strong> Keven Markham, VP Enterprise Transformation
+                </div>
+                <div class="contact-item">
+                    <strong>Date:</strong> February 4, 2026
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="disclaimer">This document is intended for internal DMTSP use. Accelerator efficiency percentages are estimates based on Microsoft documentation, field experience, and industry benchmarks. Actual results will vary based on client environment complexity, data volumes, and team proficiency.</p>
+            <p class="copyright">&copy; 2026 Deloitte Consulting LLP. For internal use only.</p>
+        </div>
+    </footer>
+
+    <script src="calculator.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
