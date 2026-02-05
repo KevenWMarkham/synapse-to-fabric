@@ -1162,6 +1162,346 @@ a:hover {
 }
 
 /* ========================================
+   Sprint Plan Section
+   ======================================== */
+.sprintplan-section {
+    background: var(--gray-100);
+}
+
+/* Comparison Banner */
+.comparison-banner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+    margin-bottom: var(--space-2xl);
+}
+
+.comparison-card {
+    background: var(--white);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+}
+
+.comparison-card.highlight {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--dark-secondary) 100%);
+    color: var(--white);
+}
+
+.comparison-label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-600);
+    margin-bottom: var(--space-md);
+    font-weight: 600;
+}
+
+.comparison-card.highlight .comparison-label {
+    color: var(--gray-400);
+}
+
+.comparison-values {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.comparison-base {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gray-600);
+}
+
+.comparison-arrow {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    text-transform: uppercase;
+}
+
+.comparison-accelerated {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.comparison-big {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.comparison-delta {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--success);
+}
+
+.comparison-card.highlight .comparison-delta {
+    color: var(--primary-light);
+}
+
+/* Phase Toggle */
+.phase-toggle {
+    display: flex;
+    gap: 0;
+    margin-bottom: var(--space-2xl);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 2px solid var(--gray-300);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.phase-btn {
+    padding: var(--space-md) var(--space-xl);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: var(--white);
+    color: var(--gray-600);
+    font-family: var(--font-primary);
+}
+
+.phase-btn.active {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.phase-btn:not(.active):hover {
+    background: var(--gray-200);
+}
+
+/* Sprint Cards */
+.sprint-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.sprint-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: box-shadow var(--transition-normal);
+}
+
+.sprint-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.sprint-header {
+    display: flex;
+    align-items: center;
+    padding: var(--space-lg) var(--space-xl);
+    cursor: pointer;
+    gap: var(--space-lg);
+    background: var(--white);
+    transition: background var(--transition-fast);
+}
+
+.sprint-header:hover {
+    background: var(--gray-100);
+}
+
+.sprint-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 40px;
+}
+
+.sprint-info {
+    flex: 1;
+}
+
+.sprint-info h4 {
+    font-size: 1rem;
+    margin-bottom: 0;
+    color: var(--dark);
+}
+
+.sprint-hours {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--dark);
+    min-width: 80px;
+    text-align: right;
+}
+
+.sprint-hours span {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sprint-toggle {
+    width: 20px;
+    height: 20px;
+    transition: transform var(--transition-fast);
+    color: var(--gray-500);
+}
+
+.sprint-card.open .sprint-toggle {
+    transform: rotate(180deg);
+}
+
+.sprint-content {
+    display: none;
+    padding: 0 var(--space-xl) var(--space-xl);
+    border-top: 1px solid var(--gray-200);
+}
+
+.sprint-card.open .sprint-content {
+    display: block;
+}
+
+/* Sprint Task Table */
+.sprint-task-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin-top: var(--space-lg);
+}
+
+.sprint-task-table th,
+.sprint-task-table td {
+    padding: var(--space-sm) var(--space-md);
+    text-align: left;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.sprint-task-table th {
+    background: var(--gray-100);
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sprint-task-table td {
+    color: var(--gray-700);
+    vertical-align: top;
+}
+
+.sprint-task-table td:nth-child(3),
+.sprint-task-table td:nth-child(4) {
+    white-space: nowrap;
+}
+
+.sprint-task-table .task-name {
+    font-weight: 500;
+    color: var(--dark);
+}
+
+.sprint-task-table .task-subtasks {
+    font-size: 0.8125rem;
+    color: var(--gray-600);
+}
+
+.sprint-task-table .task-accelerator {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--secondary);
+}
+
+/* Sprint Milestones */
+.sprint-milestones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--gray-200);
+}
+
+.milestone-badge {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-md);
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background: rgba(134, 188, 37, 0.12);
+    color: var(--primary-dark);
+    border: 1px solid rgba(134, 188, 37, 0.25);
+}
+
+/* Additional Work Callout */
+.additional-work-callout {
+    margin-top: var(--space-2xl);
+    background: var(--white);
+    border-left: 5px solid var(--secondary);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    padding: var(--space-2xl);
+    box-shadow: var(--shadow-md);
+}
+
+.callout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+
+.callout-header h3 {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.callout-big-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--secondary);
+}
+
+.additional-work-callout > p {
+    color: var(--gray-700);
+    font-size: 1rem;
+    margin-bottom: var(--space-lg);
+}
+
+.callout-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--space-md);
+}
+
+.callout-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+}
+
+.callout-item-label {
+    font-size: 0.875rem;
+    color: var(--gray-700);
+}
+
+.callout-item-value {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--secondary);
+}
+
+/* ========================================
    CTA Section
    ======================================== */
 .cta-section {
@@ -1233,6 +1573,20 @@ a:hover {
     .approach-cards {
         grid-template-columns: 1fr;
     }
+
+    .comparison-banner {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .phase-toggle {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .sprint-task-table {
+        display: block;
+        overflow-x: auto;
+    }
 }
 
 @media (max-width: 768px) {
@@ -1270,5 +1624,27 @@ a:hover {
     .cta-contact {
         flex-direction: column;
         gap: var(--space-md);
+    }
+
+    .comparison-banner {
+        grid-template-columns: 1fr;
+    }
+
+    .sprint-header {
+        flex-wrap: wrap;
+    }
+
+    .sprint-hours {
+        width: 100%;
+        text-align: left;
+        margin-top: var(--space-xs);
+    }
+
+    .callout-header {
+        flex-direction: column;
+    }
+
+    .callout-breakdown {
+        grid-template-columns: 1fr;
     }
 }

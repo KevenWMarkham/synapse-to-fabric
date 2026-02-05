@@ -21,6 +21,7 @@
                 <li><a href="#overview">Overview</a></li>
                 <li><a href="#accelerators">Accelerators</a></li>
                 <li><a href="#calculator">ROI Calculator</a></li>
+                <li><a href="#sprintplan">Sprint Plan</a></li>
                 <li><a href="#summary">Summary</a></li>
             </ul>
         </div>
@@ -623,6 +624,76 @@
         </div>
     </section>
 
+    <!-- Sprint Plan Section -->
+    <section id="sprintplan" class="section sprintplan-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Sprint Plan</h2>
+                <p>Sprint-by-sprint delivery breakdown comparing base and accelerated timelines</p>
+            </div>
+
+            <!-- Comparison Banner -->
+            <div class="comparison-banner">
+                <div class="comparison-card">
+                    <span class="comparison-label">Total Sprints</span>
+                    <div class="comparison-values">
+                        <span class="comparison-base">25</span>
+                        <span class="comparison-arrow">vs</span>
+                        <span class="comparison-accelerated">16</span>
+                    </div>
+                    <span class="comparison-delta">9 fewer</span>
+                </div>
+                <div class="comparison-card">
+                    <span class="comparison-label">Calendar Duration</span>
+                    <div class="comparison-values">
+                        <span class="comparison-base">~50 wks</span>
+                        <span class="comparison-arrow">vs</span>
+                        <span class="comparison-accelerated">~32 wks</span>
+                    </div>
+                    <span class="comparison-delta">18 weeks faster</span>
+                </div>
+                <div class="comparison-card">
+                    <span class="comparison-label">Total Hours</span>
+                    <div class="comparison-values">
+                        <span class="comparison-base">17,329</span>
+                        <span class="comparison-arrow">vs</span>
+                        <span class="comparison-accelerated">11,078</span>
+                    </div>
+                    <span class="comparison-delta">6,251 hrs saved</span>
+                </div>
+                <div class="comparison-card highlight">
+                    <span class="comparison-label">Hours Saved</span>
+                    <div class="comparison-values">
+                        <span class="comparison-big">~6,251</span>
+                    </div>
+                    <span class="comparison-delta">36% reduction</span>
+                </div>
+            </div>
+
+            <!-- Phase Toggle -->
+            <div class="phase-toggle">
+                <button class="phase-btn active" onclick="togglePhase('phase1')">Base Greenfield — 25 Sprints</button>
+                <button class="phase-btn" onclick="togglePhase('phase2')">With Accelerators — 16 Sprints</button>
+            </div>
+
+            <!-- Sprint Containers (populated by JS) -->
+            <div id="phase1-sprints" class="sprint-container"></div>
+            <div id="phase2-sprints" class="sprint-container" style="display:none;"></div>
+
+            <!-- Additional Work Callout -->
+            <div class="additional-work-callout">
+                <div class="callout-header">
+                    <h3>Additional Work Without Accelerators</h3>
+                    <div class="callout-big-number">~6,251 additional hours</div>
+                </div>
+                <p>Without DMTSP accelerators, the engagement requires <strong>9 additional sprints</strong> and <strong>18 additional calendar weeks</strong> of delivery.</p>
+                <div class="callout-breakdown" id="calloutBreakdown">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Summary Section -->
     <section id="summary" class="section summary-section">
         <div class="container">
@@ -761,6 +832,7 @@
         </div>
     </footer>
 
+    <script src="sprint-data.js"></script>
     <script src="calculator.js"></script>
     <script src="main.js"></script>
 </body>

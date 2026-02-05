@@ -124,6 +124,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize first accelerator as open
     toggleAccelerator(1);
+
+    // Render sprint plan cards
+    renderSprints();
+
+    // Observe sprint cards for animation
+    document.querySelectorAll('.sprint-card, .comparison-card').forEach(el => {
+        observer.observe(el);
+    });
 });
 
 /**
@@ -187,7 +195,136 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+/**
+ * Sprint Plan — Phase Toggle
+ */
+function togglePhase(phase) {
+    const phase1Container = document.getElementById('phase1-sprints');
+    const phase2Container = document.getElementById('phase2-sprints');
+    const buttons = document.querySelectorAll('.phase-btn');
+
+    if (phase === 'phase1') {
+        phase1Container.style.display = '';
+        phase2Container.style.display = 'none';
+        buttons[0].classList.add('active');
+        buttons[1].classList.remove('active');
+    } else {
+        phase1Container.style.display = 'none';
+        phase2Container.style.display = '';
+        buttons[0].classList.remove('active');
+        buttons[1].classList.add('active');
+    }
+}
+
+/**
+ * Sprint Plan — Toggle individual sprint card
+ */
+function toggleSprint(phase, sprintId) {
+    const container = document.getElementById(phase + '-sprints');
+    const card = container.querySelector('[data-sprint="' + sprintId + '"]');
+    const isOpen = card.classList.contains('open');
+
+    // Close all other sprint cards in this phase
+    container.querySelectorAll('.sprint-card').forEach(c => {
+        c.classList.remove('open');
+    });
+
+    // Toggle current card
+    if (!isOpen) {
+        card.classList.add('open');
+        setTimeout(() => {
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+    }
+}
+
+/**
+ * Sprint Plan — Render sprint cards from data
+ */
+function renderSprints() {
+    renderPhase('phase1', PHASE1_SPRINTS, false);
+    renderPhase('phase2', PHASE2_SPRINTS, true);
+    renderCalloutBreakdown();
+}
+
+function renderPhase(phaseId, sprints, showAccelerator) {
+    const container = document.getElementById(phaseId + '-sprints');
+    if (!container) return;
+
+    container.innerHTML = sprints.map(sprint => {
+        const taskRows = sprint.tasks.map(t => {
+            let cols = `
+                <td><span class="task-name">${escapeHtml(t.task)}</span><br><span class="task-subtasks">${escapeHtml(t.subtasks)}</span></td>
+                <td>${t.hours}</td>
+                <td>${escapeHtml(t.owners)}</td>`;
+            if (showAccelerator) {
+                cols += `<td class="task-accelerator">${escapeHtml(t.accelerator || '\u2014')}</td>`;
+            }
+            return '<tr>' + cols + '</tr>';
+        }).join('');
+
+        const accHeader = showAccelerator ? '<th>Accelerator</th>' : '';
+
+        const milestonesHtml = sprint.milestones.length > 0
+            ? `<div class="sprint-milestones">${sprint.milestones.map(m =>
+                `<span class="milestone-badge">${escapeHtml(m)}</span>`
+              ).join('')}</div>`
+            : '';
+
+        return `
+        <div class="sprint-card" data-sprint="${sprint.id}">
+            <div class="sprint-header" onclick="toggleSprint('${phaseId}', ${sprint.id})">
+                <div class="sprint-number">${sprint.id}</div>
+                <div class="sprint-info">
+                    <h4>${escapeHtml(sprint.name)}</h4>
+                </div>
+                <div class="sprint-hours">
+                    ${formatNumber(sprint.hours)}
+                    <span>hours</span>
+                </div>
+                <svg class="sprint-toggle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </div>
+            <div class="sprint-content">
+                <table class="sprint-task-table">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Hours</th>
+                            <th>Owner(s)</th>
+                            ${accHeader}
+                        </tr>
+                    </thead>
+                    <tbody>${taskRows}</tbody>
+                </table>
+                ${milestonesHtml}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderCalloutBreakdown() {
+    const container = document.getElementById('calloutBreakdown');
+    if (!container) return;
+
+    container.innerHTML = ADDITIONAL_WORK.breakdown.map(item =>
+        `<div class="callout-item">
+            <span class="callout-item-label">${escapeHtml(item.workstream)}</span>
+            <span class="callout-item-value">+${formatNumber(item.hoursSaved)} hrs</span>
+        </div>`
+    ).join('');
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
 // Make functions available globally
 window.toggleAccelerator = toggleAccelerator;
 window.exportToPDF = exportToPDF;
 window.copyResults = copyResults;
+window.togglePhase = togglePhase;
+window.toggleSprint = toggleSprint;
