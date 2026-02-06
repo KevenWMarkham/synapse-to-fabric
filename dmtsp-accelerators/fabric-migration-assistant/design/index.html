@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric Migration Assistant — One-Pager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* === Design Tokens (from parent styles.css) === */
+        :root {
+            --primary: #86BC25;
+            --primary-dark: #6ba31b;
+            --primary-light: #a8d84e;
+            --secondary: #0D8390;
+            --secondary-dark: #0a6b75;
+            --accent: #26890D;
+            --dark: #1a1a2e;
+            --dark-secondary: #2d2d44;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            --gray-100: #f1f3f5;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+        }
+
+        /* === Reset & Base === */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-primary); font-size: 16px; line-height: 1.6; color: var(--gray-800); background: var(--white); }
+        h1, h2, h3, h4, h5 { font-weight: 600; line-height: 1.3; color: var(--dark); }
+        p { margin-bottom: 1rem; }
+        a { color: var(--primary); text-decoration: none; }
+        a:hover { color: var(--primary-dark); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .section { padding: 4rem 0; }
+        .section-header { text-align: center; margin-bottom: 3rem; }
+        .section-header h2 { margin-bottom: 0.5rem; font-size: 2rem; }
+        .section-header p { color: var(--gray-600); font-size: 1.125rem; max-width: 600px; margin: 0 auto; }
+
+        /* === Hero === */
+        .hero {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-secondary) 100%);
+            color: var(--white);
+            padding: 5rem 0 4rem;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(134,188,37,0.2);
+            color: var(--primary-light);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(134,188,37,0.3);
+        }
+        .hero h1 { font-size: 2.75rem; font-weight: 700; color: var(--white); margin-bottom: 1rem; }
+        .hero h1 .highlight { color: var(--primary); }
+        .hero-subtitle { font-size: 1.2rem; color: var(--gray-400); max-width: 700px; margin: 0 auto 2.5rem; }
+        .hero-stats { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; }
+        .stat-item { text-align: center; }
+        .stat-value { display: block; font-size: 2.25rem; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 0.8rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* === Deliverables (What Was Designed) === */
+        .deliverables-section { background: var(--gray-100); }
+        .deliverables-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .deliverable-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: transform 250ms ease, box-shadow 250ms ease;
+            text-align: center;
+        }
+        .deliverable-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+        .deliverable-icon {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: var(--radius-md);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.25rem;
+        }
+        .deliverable-icon svg { width: 28px; height: 28px; color: var(--white); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .deliverable-card h3 { font-size: 1.125rem; margin-bottom: 0.75rem; }
+        .deliverable-card p { color: var(--gray-600); font-size: 0.9375rem; margin-bottom: 1rem; }
+        .deliverable-metric { display: inline-block; background: rgba(134,188,37,0.12); color: var(--primary-dark); padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.8125rem; font-weight: 600; }
+
+        /* === 4-Phase Process === */
+        .process-section { background: var(--white); }
+        .timeline { display: flex; align-items: flex-start; gap: 0; position: relative; justify-content: center; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 32px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: var(--gray-300);
+            z-index: 0;
+        }
+        .phase-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            max-width: 200px;
+        }
+        .phase-dot {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 3px solid var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .phase-dot.active { background: var(--primary); color: var(--white); }
+        .phase-step h4 { font-size: 0.9375rem; margin-bottom: 0.25rem; }
+        .phase-step .phase-detail { font-size: 0.8125rem; color: var(--gray-600); margin: 0; }
+        .phase-step .phase-hours { font-size: 0.75rem; font-weight: 600; color: var(--secondary); margin-top: 0.5rem; }
+
+        /* === Use Cases === */
+        .usecases-section { background: var(--gray-100); }
+        .usecases-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .usecase-card {
+            background: var(--white);
+            padding: 1.75rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--primary);
+        }
+        .usecase-card h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+        .usecase-card .uc-desc { font-size: 0.9375rem; color: var(--gray-600); margin-bottom: 0.75rem; }
+        .usecase-card .uc-criteria {
+            background: var(--gray-100);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8125rem;
+            color: var(--gray-700);
+        }
+        .usecase-card .uc-criteria strong { color: var(--secondary); }
+        .uc-number {
+            display: inline-block;
+            width: 28px; height: 28px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-size: 0.8125rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        /* === Personas === */
+        .personas-section { background: var(--white); }
+        .personas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .persona-card {
+            background: var(--white);
+            padding: 1.75rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            border: 1px solid var(--gray-200);
+            transition: transform 250ms ease, box-shadow 250ms ease;
+        }
+        .persona-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .persona-photo {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            margin-bottom: 1rem;
+        }
+        .persona-card h4 { font-size: 1rem; margin-bottom: 0.25rem; }
+        .persona-role { font-size: 0.8125rem; font-weight: 600; color: var(--secondary); margin-bottom: 0.75rem; }
+        .persona-card p { font-size: 0.875rem; color: var(--gray-600); margin: 0; }
+        .persona-sprints {
+            display: inline-block;
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            background: var(--gray-100);
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            color: var(--gray-700);
+        }
+
+        /* === Journey Map === */
+        .journey-section { background: var(--gray-100); overflow-x: auto; }
+        .journey-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .journey-table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.8125rem;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+        .journey-table th {
+            background: var(--dark);
+            color: var(--white);
+            padding: 1rem 0.75rem;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.8125rem;
+        }
+        .journey-table th:first-child { text-align: left; min-width: 170px; }
+        .journey-table th .phase-sub { display: block; font-weight: 400; font-size: 0.6875rem; color: var(--gray-400); margin-top: 0.15rem; }
+        .journey-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: top;
+            text-align: center;
+        }
+        .journey-table td:first-child { text-align: left; }
+        .journey-table tr:last-child td { border-bottom: none; }
+
+        .journey-persona {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .journey-persona img {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+            flex-shrink: 0;
+        }
+        .journey-persona-info { text-align: left; }
+        .journey-persona-info strong { font-size: 0.8125rem; display: block; }
+        .journey-persona-info span { font-size: 0.6875rem; color: var(--gray-600); }
+
+        .journey-cell { font-size: 0.75rem; line-height: 1.4; }
+        .journey-cell.primary-role { background: rgba(134,188,37,0.12); font-weight: 500; color: var(--dark); }
+        .journey-cell.support-role { background: rgba(13,131,144,0.08); color: var(--gray-700); }
+        .journey-cell.not-involved { background: var(--gray-100); color: var(--gray-500); font-style: italic; }
+        .handoff-indicator {
+            display: inline-block;
+            font-size: 0.625rem;
+            background: var(--warning);
+            color: var(--dark);
+            padding: 0.1rem 0.4rem;
+            border-radius: 3px;
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        /* === Acceptance Criteria === */
+        .criteria-section { background: var(--white); }
+        .criteria-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; }
+        .criteria-column h3 { font-size: 1.125rem; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--primary); }
+        .criteria-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+        }
+        .criteria-check {
+            width: 22px; height: 22px;
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 0.1rem;
+        }
+        .criteria-check svg { width: 14px; height: 14px; color: var(--primary); }
+        .criteria-text { font-size: 0.9375rem; color: var(--gray-700); }
+        .criteria-text strong { color: var(--dark); }
+        .criteria-target { display: block; font-size: 0.75rem; color: var(--secondary); font-weight: 600; margin-top: 0.25rem; }
+
+        /* === Footer === */
+        .footer {
+            background: var(--dark);
+            color: var(--gray-500);
+            padding: 2.5rem 0;
+        }
+        .footer-grid { display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+        .footer-links a { color: var(--gray-400); font-size: 0.875rem; transition: color 150ms; }
+        .footer-links a:hover { color: var(--primary); }
+        .footer-meta { text-align: right; font-size: 0.8125rem; }
+        .footer-meta p { margin-bottom: 0.25rem; }
+        .footer hr { border: none; border-top: 1px solid var(--dark-secondary); margin-bottom: 1rem; }
+        .copyright { text-align: center; font-size: 0.75rem; color: var(--gray-600); margin: 0; }
+
+        /* === Responsive === */
+        @media (max-width: 992px) {
+            .deliverables-grid { grid-template-columns: 1fr 1fr; }
+            .deliverables-grid .deliverable-card:last-child { grid-column: 1 / -1; max-width: 50%; margin: 0 auto; }
+            .personas-grid { grid-template-columns: repeat(2, 1fr); }
+            .usecases-grid { grid-template-columns: 1fr 1fr; }
+            .criteria-grid { grid-template-columns: 1fr 1fr; }
+            .timeline { flex-wrap: wrap; gap: 1rem; }
+            .timeline::before { display: none; }
+            .phase-step { max-width: none; flex-basis: 18%; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero-stats { flex-direction: column; gap: 1rem; }
+            .deliverables-grid { grid-template-columns: 1fr; }
+            .deliverables-grid .deliverable-card:last-child { max-width: 100%; }
+            .personas-grid { grid-template-columns: 1fr; }
+            .usecases-grid { grid-template-columns: 1fr; }
+            .criteria-grid { grid-template-columns: 1fr; }
+            .timeline { flex-direction: column; align-items: center; }
+            .phase-step { max-width: 280px; }
+            .footer-grid { flex-direction: column; }
+            .footer-meta { text-align: left; }
+            .footer-links { flex-direction: column; gap: 0.75rem; }
+        }
+
+        /* === Narrative Modal === */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 300ms ease, visibility 300ms ease;
+            padding: 1rem;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 300ms ease;
+            position: relative;
+        }
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            transition: background 150ms ease, color 150ms ease;
+            z-index: 1;
+        }
+        .modal-close:hover {
+            background: var(--gray-300);
+            color: var(--dark);
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem 1.5rem 0;
+        }
+        .modal-photo {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            flex-shrink: 0;
+        }
+        .modal-persona-info h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.125rem;
+        }
+        .modal-persona-role {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        .modal-phase-badge {
+            display: inline-block;
+            margin-top: 0.375rem;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            background: var(--dark);
+            color: var(--white);
+            padding: 0.2rem 0.625rem;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .modal-body {
+            padding: 1.25rem 1.5rem;
+        }
+        .modal-narrative {
+            font-size: 0.9375rem;
+            line-height: 1.7;
+            color: var(--gray-700);
+        }
+        .modal-footer {
+            padding: 0 1.5rem 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 0.5rem;
+            padding-top: 1.25rem;
+        }
+        .modal-footer-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.625rem;
+        }
+        .lang-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .lang-option {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.8125rem;
+            color: var(--gray-700);
+            cursor: pointer;
+            padding: 0.3rem 0.625rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-300);
+            transition: border-color 150ms ease, background 150ms ease;
+            user-select: none;
+        }
+        .lang-option:hover {
+            border-color: var(--primary);
+        }
+        .lang-option input[type="checkbox"] {
+            accent-color: var(--primary);
+        }
+        .lang-option.lang-playing {
+            border-color: var(--primary);
+            background: rgba(134,188,37,0.12);
+            font-weight: 600;
+        }
+        .audio-controls {
+            display: flex;
+            gap: 0.625rem;
+            align-items: center;
+        }
+        .audio-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.5rem 1.25rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 150ms ease, transform 100ms ease;
+        }
+        .audio-btn:active { transform: scale(0.97); }
+        .audio-btn-play {
+            background: var(--primary);
+            color: var(--white);
+        }
+        .audio-btn-play:hover { background: var(--primary-dark); }
+        .audio-btn-play:disabled {
+            background: var(--gray-300);
+            color: var(--gray-500);
+            cursor: not-allowed;
+        }
+        .audio-btn-stop {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+        .audio-btn-stop:hover { background: var(--gray-300); }
+        .audio-status {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-left: 0.5rem;
+            font-style: italic;
+        }
+
+        /* Clickable cell hover highlight */
+        .journey-cell[data-persona] {
+            transition: outline 150ms ease, box-shadow 150ms ease;
+        }
+        .journey-cell[data-persona]:hover {
+            outline: 2px solid var(--primary);
+            outline-offset: -2px;
+            box-shadow: inset 0 0 0 1px rgba(134,188,37,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .modal-card { max-width: 100%; border-radius: var(--radius-lg); }
+            .modal-header { flex-direction: column; text-align: center; }
+            .lang-selector { justify-content: center; }
+            .audio-controls { justify-content: center; flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-badge">Accelerator 01 &mdash; DMTSP</div>
+        <h1>Fabric <span class="highlight">Migration Assistant</span></h1>
+        <p class="hero-subtitle">Migrate 1,960 Synapse objects to Fabric with 47% less effort &mdash; guided four-step process with AI-assisted fix resolution</p>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <span class="stat-value">1,960</span>
+                <span class="stat-label">Objects</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">3,170</span>
+                <span class="stat-label">Hours Saved</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">47%</span>
+                <span class="stat-label">Reduction</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">4</span>
+                <span class="stat-label">Phase Process</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ WHAT WAS DESIGNED ============ -->
+<section class="section deliverables-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>What Was Designed</h2>
+            <p>Three integrated deliverables that turn the Migration Assistant into an execution-ready accelerator</p>
+        </div>
+        <div class="deliverables-grid">
+            <div class="deliverable-card">
+                <div class="deliverable-icon">
+                    <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z" fill="none"/><path d="M9 17V7l8 5-8 5z"/></svg>
+                </div>
+                <h3>Strategic Roadmap</h3>
+                <p>Phased migration plan covering prerequisites, scope, risk register, and success criteria for all 1,960 objects</p>
+                <span class="deliverable-metric">8 risks mitigated</span>
+            </div>
+            <div class="deliverable-card">
+                <div class="deliverable-icon">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" fill="none"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>
+                </div>
+                <h3>Product Backlog</h3>
+                <p>5 epics, 16 stories with task-level hours, acceptance criteria, and dependency graph for sprint planning</p>
+                <span class="deliverable-metric">16 stories</span>
+            </div>
+            <div class="deliverable-card">
+                <div class="deliverable-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none"/><path d="M12 7v5l3 3"/></svg>
+                </div>
+                <h3>Sprint Orchestrator</h3>
+                <p>Sprint-by-sprint execution plan with role assignments, entry/exit criteria, milestones, and escalation paths</p>
+                <span class="deliverable-metric">27 milestones</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ 4-PHASE PROCESS ============ -->
+<section class="section process-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>The 4-Phase Process</h2>
+            <p>From DACPAC extraction to connection rerouting &mdash; a structured migration journey</p>
+        </div>
+        <div class="timeline">
+            <div class="phase-step">
+                <div class="phase-dot active">0</div>
+                <h4>Discovery</h4>
+                <p class="phase-detail">Sprint 0<br>DACPAC extraction, assessment, batch planning</p>
+                <p class="phase-hours">~200 hrs</p>
+            </div>
+            <div class="phase-step">
+                <div class="phase-dot active">1</div>
+                <h4>Copy Metadata</h4>
+                <p class="phase-detail">Sprints 1&ndash;5<br>Schema, tables, views DDL translation</p>
+                <p class="phase-hours">~2,573 hrs</p>
+            </div>
+            <div class="phase-step">
+                <div class="phase-dot active">2</div>
+                <h4>Fix Problems</h4>
+                <p class="phase-detail">Sprints 2&ndash;5<br>Copilot-assisted incompatibility resolution</p>
+                <p class="phase-hours">~500 hrs</p>
+            </div>
+            <div class="phase-step">
+                <div class="phase-dot active">3</div>
+                <h4>Copy Data</h4>
+                <p class="phase-detail">Sprints 2&ndash;5<br>Data Factory copy jobs, validation</p>
+                <p class="phase-hours">Embedded</p>
+            </div>
+            <div class="phase-step">
+                <div class="phase-dot active">4</div>
+                <h4>Reroute</h4>
+                <p class="phase-detail">Sprint 15<br>REST API connection redirect</p>
+                <p class="phase-hours">~15 hrs</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ USE CASES ============ -->
+<section class="section usecases-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Use Cases</h2>
+            <p>Six core scenarios the Migration Assistant addresses, each with measurable acceptance criteria</p>
+        </div>
+        <div class="usecases-grid">
+            <div class="usecase-card">
+                <span class="uc-number">1</span>
+                <h4>Enterprise-Scale DW Migration</h4>
+                <p class="uc-desc">End-to-end migration of a full Synapse dedicated SQL pool into Fabric Data Warehouse, including schemas, security, tables, views, and functions.</p>
+                <div class="uc-criteria"><strong>Acceptance:</strong> 100% of 1,960 objects migrated; row count + checksum validation pass</div>
+            </div>
+            <div class="usecase-card">
+                <span class="uc-number">2</span>
+                <h4>Automated Schema Translation</h4>
+                <p class="uc-desc">DACPAC-based extraction and automatic T-SQL-to-Fabric DDL translation for tables, views, schemas, functions, and security objects.</p>
+                <div class="uc-criteria"><strong>Acceptance:</strong> DDL auto-translated via DACPAC upload; schema comparison matches source</div>
+            </div>
+            <div class="usecase-card">
+                <span class="uc-number">3</span>
+                <h4>AI-Assisted Fix Resolution</h4>
+                <p class="uc-desc">Copilot-powered analysis of incompatible T-SQL constructs with inline fix suggestions, pattern cataloging, and prompt library expansion.</p>
+                <div class="uc-criteria"><strong>Acceptance:</strong> 60% auto-resolve rate; 20+ documented fix patterns in catalog</div>
+            </div>
+            <div class="usecase-card">
+                <span class="uc-number">4</span>
+                <h4>Batch Processing at Scale</h4>
+                <p class="uc-desc">Dependency-ordered batch migration across 4 table batches (~380 each) and 2 view batches (~180 each) with per-batch validation gates.</p>
+                <div class="uc-criteria"><strong>Acceptance:</strong> 4 table batches + 2 view batches; each passes validation before next</div>
+            </div>
+            <div class="usecase-card">
+                <span class="uc-number">5</span>
+                <h4>Data Validation &amp; Integrity</h4>
+                <p class="uc-desc">Comprehensive validation framework with row count matching, checksum comparison, sample spot-checks, and null pattern analysis per batch.</p>
+                <div class="uc-criteria"><strong>Acceptance:</strong> 100% row count match + checksum match across all 1,538 tables</div>
+            </div>
+            <div class="usecase-card">
+                <span class="uc-number">6</span>
+                <h4>Connection Rerouting</h4>
+                <p class="uc-desc">REST API&ndash;driven inventory and batch PATCH of all downstream connections from Synapse to Fabric, including Power BI, pipelines, and Logic Apps.</p>
+                <div class="uc-criteria"><strong>Acceptance:</strong> All downstream systems redirected; refresh and pipeline validation pass</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ PERSONAS ============ -->
+<section class="section personas-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Personas</h2>
+            <p>The six roles that drive the migration from discovery through production cutover</p>
+        </div>
+        <div class="personas-grid">
+            <div class="persona-card" data-persona="sarah_chen" data-phase="overview" style="cursor:pointer" title="Click for narrative">
+                <img class="persona-photo" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Chen">
+                <h4>Sarah Chen</h4>
+                <div class="persona-role">Project Manager</div>
+                <p>Governance, sprint ceremonies, stakeholder communications, risk escalation, and cross-accelerator coordination</p>
+                <span class="persona-sprints">Sprints 0&ndash;5, 15</span>
+            </div>
+            <div class="persona-card" data-persona="marcus_rivera" data-phase="overview" style="cursor:pointer" title="Click for narrative">
+                <img class="persona-photo" src="https://randomuser.me/api/portraits/men/32.jpg" alt="Marcus Rivera">
+                <h4>Marcus Rivera</h4>
+                <div class="persona-role">Solution Architect</div>
+                <p>Batch planning, pattern validation, dependency analysis, Copilot configuration, and design decisions</p>
+                <span class="persona-sprints">Sprints 0&ndash;1</span>
+            </div>
+            <div class="persona-card" data-persona="priya_patel" data-phase="overview" style="cursor:pointer" title="Click for narrative">
+                <img class="persona-photo" src="https://randomuser.me/api/portraits/women/65.jpg" alt="Priya Patel">
+                <h4>Priya Patel</h4>
+                <div class="persona-role">Sr Data Engineer</div>
+                <p>DACPAC extraction, Copilot config, complex fix resolution, prompt library maintenance, and pattern cataloging</p>
+                <span class="persona-sprints">Sprints 0&ndash;3</span>
+            </div>
+            <div class="persona-card" data-persona="james_okafor" data-phase="overview" style="cursor:pointer" title="Click for narrative">
+                <img class="persona-photo" src="https://randomuser.me/api/portraits/men/75.jpg" alt="James Okafor">
+                <h4>James Okafor</h4>
+                <div class="persona-role">Data Engineer</div>
+                <p>Table and view migration execution, Data Factory copy jobs, row count validation, and data integrity checks</p>
+                <span class="persona-sprints">Sprints 2&ndash;5, 15</span>
+            </div>
+            <div class="persona-card" data-persona="elena_vasquez" data-phase="overview" style="cursor:pointer" title="Click for narrative">
+                <img class="persona-photo" src="https://randomuser.me/api/portraits/women/28.jpg" alt="Elena Vasquez">
+                <h4>Elena Vasquez</h4>
+                <div class="persona-role">QA Lead</div>
+                <p>Validation framework deployment, checksum testing, per-batch sign-off gates, and cross-batch verification</p>
+                <span class="persona-sprints">Sprints 1&ndash;5, 15</span>
+            </div>
+            <div class="persona-card" data-persona="david_kim" data-phase="overview" style="cursor:pointer" title="Click for narrative">
+                <img class="persona-photo" src="https://randomuser.me/api/portraits/men/85.jpg" alt="David Kim">
+                <h4>David Kim</h4>
+                <div class="persona-role">DBA</div>
+                <p>Schema and security migration, Entra ID mapping, RLS policies, connection rerouting, and performance tuning</p>
+                <span class="persona-sprints">Sprints 0&ndash;5, 15</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ JOURNEY MAP ============ -->
+<section class="section journey-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Journey Map</h2>
+            <p>How each persona contributes across every phase of the migration</p>
+        </div>
+        <div class="journey-table-wrap">
+            <table class="journey-table">
+                <thead>
+                    <tr>
+                        <th>Persona</th>
+                        <th>Phase 0: Discovery<span class="phase-sub">Sprint 0</span></th>
+                        <th>Phase 1: Metadata<span class="phase-sub">Sprint 1</span></th>
+                        <th>Phase 2: Fix &amp; Migrate<span class="phase-sub">Sprints 2&ndash;3</span></th>
+                        <th>Phase 3: Scale<span class="phase-sub">Sprints 4&ndash;5</span></th>
+                        <th>Phase 4: Reroute<span class="phase-sub">Sprint 15</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Sarah Chen — PM -->
+                    <tr>
+                        <td>
+                            <div class="journey-persona">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Chen">
+                                <div class="journey-persona-info">
+                                    <strong>Sarah Chen</strong>
+                                    <span>Project Manager</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="journey-cell primary-role" data-persona="sarah_chen" data-phase="phase0" style="cursor:pointer">Sprint ceremonies<br>Risk register setup<br>Stakeholder kick-off</td>
+                        <td class="journey-cell primary-role" data-persona="sarah_chen" data-phase="phase1" style="cursor:pointer">Status reporting<br>Foundation sign-off<br>Dependency tracking</td>
+                        <td class="journey-cell primary-role" data-persona="sarah_chen" data-phase="phase2" style="cursor:pointer">Batch progress tracking<br>Velocity monitoring<br>Escalation management</td>
+                        <td class="journey-cell primary-role" data-persona="sarah_chen" data-phase="phase3" style="cursor:pointer">Cross-accelerator coord.<br>Capacity rebalancing<br>Milestone reporting</td>
+                        <td class="journey-cell primary-role" data-persona="sarah_chen" data-phase="phase4" style="cursor:pointer">Cutover governance<br>Final sign-off<br>Lessons learned<br><span class="handoff-indicator">SIGN-OFF</span></td>
+                    </tr>
+                    <!-- Marcus Rivera — Architect -->
+                    <tr>
+                        <td>
+                            <div class="journey-persona">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Marcus Rivera">
+                                <div class="journey-persona-info">
+                                    <strong>Marcus Rivera</strong>
+                                    <span>Solution Architect</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="journey-cell primary-role" data-persona="marcus_rivera" data-phase="phase0" style="cursor:pointer">Batch planning<br>Dependency analysis<br>Copilot config review<br><span class="handoff-indicator">HANDOFF &rarr;</span></td>
+                        <td class="journey-cell support-role" data-persona="marcus_rivera" data-phase="phase1" style="cursor:pointer">Security audit review<br>Design sign-off</td>
+                        <td class="journey-cell not-involved" data-persona="marcus_rivera" data-phase="phase2" style="cursor:pointer">Available for escalation</td>
+                        <td class="journey-cell not-involved" data-persona="marcus_rivera" data-phase="phase3" style="cursor:pointer">Available for escalation</td>
+                        <td class="journey-cell not-involved" data-persona="marcus_rivera" data-phase="phase4" style="cursor:pointer">Available for escalation</td>
+                    </tr>
+                    <!-- Priya Patel — Sr DE -->
+                    <tr>
+                        <td>
+                            <div class="journey-persona">
+                                <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Priya Patel">
+                                <div class="journey-persona-info">
+                                    <strong>Priya Patel</strong>
+                                    <span>Sr Data Engineer</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="journey-cell primary-role" data-persona="priya_patel" data-phase="phase0" style="cursor:pointer">DACPAC extraction<br>Assessment upload<br>Prompt library init</td>
+                        <td class="journey-cell support-role" data-persona="priya_patel" data-phase="phase1" style="cursor:pointer">Foundation support<br>Copilot tuning</td>
+                        <td class="journey-cell primary-role" data-persona="priya_patel" data-phase="phase2" style="cursor:pointer">Complex fix resolution<br>Batch DACPAC uploads<br>Pattern cataloging<br><span class="handoff-indicator">HANDOFF &rarr;</span></td>
+                        <td class="journey-cell not-involved" data-persona="priya_patel" data-phase="phase3" style="cursor:pointer">Shifts to Acc 2 (ADF)</td>
+                        <td class="journey-cell not-involved" data-persona="priya_patel" data-phase="phase4" style="cursor:pointer">&mdash;</td>
+                    </tr>
+                    <!-- James Okafor — DE -->
+                    <tr>
+                        <td>
+                            <div class="journey-persona">
+                                <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="James Okafor">
+                                <div class="journey-persona-info">
+                                    <strong>James Okafor</strong>
+                                    <span>Data Engineer</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="journey-cell not-involved" data-persona="james_okafor" data-phase="phase0" style="cursor:pointer">&mdash;</td>
+                        <td class="journey-cell not-involved" data-persona="james_okafor" data-phase="phase1" style="cursor:pointer">&mdash;</td>
+                        <td class="journey-cell primary-role" data-persona="james_okafor" data-phase="phase2" style="cursor:pointer">DDL review &amp; deploy<br>Copy job execution<br>Row count validation<br>View migration</td>
+                        <td class="journey-cell primary-role" data-persona="james_okafor" data-phase="phase3" style="cursor:pointer">Batch 3&ndash;4 execution<br>Cross-batch validation<br>Runbook finalization</td>
+                        <td class="journey-cell support-role" data-persona="james_okafor" data-phase="phase4" style="cursor:pointer">Pipeline validation<br>Smoke tests</td>
+                    </tr>
+                    <!-- Elena Vasquez — QA -->
+                    <tr>
+                        <td>
+                            <div class="journey-persona">
+                                <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Elena Vasquez">
+                                <div class="journey-persona-info">
+                                    <strong>Elena Vasquez</strong>
+                                    <span>QA Lead</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="journey-cell not-involved" data-persona="elena_vasquez" data-phase="phase0" style="cursor:pointer">&mdash;</td>
+                        <td class="journey-cell support-role" data-persona="elena_vasquez" data-phase="phase1" style="cursor:pointer">Validation framework<br>deployment (Acc 5)</td>
+                        <td class="journey-cell primary-role" data-persona="elena_vasquez" data-phase="phase2" style="cursor:pointer">Checksum testing<br>Batch sign-off gates<br>Spot-check review</td>
+                        <td class="journey-cell primary-role" data-persona="elena_vasquez" data-phase="phase3" style="cursor:pointer">Cross-batch verification<br>Final validation pass<br><span class="handoff-indicator">GATE</span></td>
+                        <td class="journey-cell support-role" data-persona="elena_vasquez" data-phase="phase4" style="cursor:pointer">Cutover smoke tests</td>
+                    </tr>
+                    <!-- David Kim — DBA -->
+                    <tr>
+                        <td>
+                            <div class="journey-persona">
+                                <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="David Kim">
+                                <div class="journey-persona-info">
+                                    <strong>David Kim</strong>
+                                    <span>DBA</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="journey-cell support-role" data-persona="david_kim" data-phase="phase0" style="cursor:pointer">Assessment review<br>Incompatibility triage</td>
+                        <td class="journey-cell primary-role" data-persona="david_kim" data-phase="phase1" style="cursor:pointer">Fabric DW creation<br>Schema deploy (16)<br>Security migration (40)<br>Entra ID mapping</td>
+                        <td class="journey-cell support-role" data-persona="david_kim" data-phase="phase2" style="cursor:pointer">Fix support<br>Performance tuning</td>
+                        <td class="journey-cell support-role" data-persona="david_kim" data-phase="phase3" style="cursor:pointer">Fix support<br>Performance tuning</td>
+                        <td class="journey-cell primary-role" data-persona="david_kim" data-phase="phase4" style="cursor:pointer">Connection inventory<br>Batch PATCH rerouting<br><span class="handoff-indicator">CUTOVER</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="display: flex; gap: 1.5rem; justify-content: center; margin-top: 1.25rem; flex-wrap: wrap; font-size: 0.75rem;">
+            <span><span style="display:inline-block;width:14px;height:14px;background:rgba(134,188,37,0.12);border-radius:3px;vertical-align:middle;margin-right:4px;"></span> Primary Role</span>
+            <span><span style="display:inline-block;width:14px;height:14px;background:rgba(13,131,144,0.08);border-radius:3px;vertical-align:middle;margin-right:4px;"></span> Supporting</span>
+            <span><span style="display:inline-block;width:14px;height:14px;background:#f1f3f5;border-radius:3px;vertical-align:middle;margin-right:4px;"></span> Not Involved</span>
+            <span><span class="handoff-indicator" style="font-size:0.625rem;">HANDOFF</span> Key Transition</span>
+        </div>
+    </div>
+</section>
+
+<!-- ============ ACCEPTANCE CRITERIA ============ -->
+<section class="section criteria-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Acceptance Criteria</h2>
+            <p>Quantitative and qualitative targets that define success for this accelerator</p>
+        </div>
+        <div class="criteria-grid">
+            <div class="criteria-column">
+                <h3>Quantitative</h3>
+                <div class="criteria-item">
+                    <div class="criteria-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="criteria-text">
+                        <strong>Object migration completeness</strong> &mdash; all objects accounted for
+                        <span class="criteria-target">Target: 100% of 1,960 objects</span>
+                    </div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="criteria-text">
+                        <strong>Row count accuracy</strong> &mdash; source vs. target exact match
+                        <span class="criteria-target">Target: 100% match (automated validation)</span>
+                    </div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="criteria-text">
+                        <strong>Data checksum accuracy</strong> &mdash; hash comparison on key columns
+                        <span class="criteria-target">Target: 100% match</span>
+                    </div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="criteria-text">
+                        <strong>Hours within estimate</strong> &mdash; sprint burn tracking
+                        <span class="criteria-target">Target: Within 10% of 3,544 accelerated hours</span>
+                    </div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="criteria-text">
+                        <strong>Fix pattern catalog growth</strong> &mdash; documented reusable patterns
+                        <span class="criteria-target">Target: 20+ documented patterns</span>
+                    </div>
+                </div>
+            </div>
+            <div class="criteria-column">
+                <h3>Qualitative</h3>
+                <div class="criteria-item">
+                    <div class="criteria-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="criteria-text">
+                        <strong>Copilot prompt library enhanced</strong> &mdash; migration-specific prompts documented
+                        <span class="criteria-target">Target: 10+ new prompts</span>
+                    </div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="criteria-text">
+                        <strong>Team velocity improvement</strong> &mdash; learning curve demonstrated
+                        <span class="criteria-target">Target: Batch 4 throughput > Batch 1 throughput</span>
+                    </div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="criteria-text">
+                        <strong>Zero production data incidents</strong> &mdash; no data loss post-cutover
+                        <span class="criteria-target">Target: Zero incidents</span>
+                    </div>
+                </div>
+                <div class="criteria-item">
+                    <div class="criteria-check">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <div class="criteria-text">
+                        <strong>Reusable runbook delivered</strong> &mdash; ready for next engagement
+                        <span class="criteria-target">Target: DACPAC extraction + migration runbook complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-links">
+                <a href="../roadmap.md">Roadmap</a>
+                <a href="../backlog.md">Backlog</a>
+                <a href="orchestrator_fabric_migrate.md">Orchestrator</a>
+                <a href="../../../Sprint_Plan_Synapse_to_Fabric.md">Sprint Plan</a>
+                <a href="../../index.html">Accelerators Dashboard</a>
+            </div>
+            <div class="footer-meta">
+                <p><strong style="color: var(--gray-400);">Author:</strong> Keven Markham, VP Enterprise Transformation</p>
+                <p><strong style="color: var(--gray-400);">Date:</strong> February 6, 2026 &nbsp;|&nbsp; <strong style="color: var(--gray-400);">Version:</strong> 1.0</p>
+            </div>
+        </div>
+        <hr>
+        <p class="copyright">DMTSP Fabric Migration Accelerators &mdash; Internal Use Only</p>
+    </div>
+</footer>
+
+<!-- ============ NARRATIVE MODAL ============ -->
+<div class="modal-overlay" id="narrative-modal">
+    <div class="modal-card">
+        <button class="modal-close" id="modal-close-btn" aria-label="Close">&times;</button>
+        <div class="modal-header">
+            <img class="modal-photo" id="modal-photo" src="" alt="">
+            <div class="modal-persona-info">
+                <h3 id="modal-name"></h3>
+                <div class="modal-persona-role" id="modal-role"></div>
+                <span class="modal-phase-badge" id="modal-phase-badge"></span>
+            </div>
+        </div>
+        <div class="modal-body">
+            <p class="modal-narrative" id="modal-narrative"></p>
+        </div>
+        <div class="modal-footer">
+            <div class="modal-footer-label">Read Aloud</div>
+            <div class="lang-selector" id="lang-selector">
+                <label class="lang-option" data-lang="en-US">
+                    <input type="checkbox" value="en-US" checked> English
+                </label>
+                <label class="lang-option" data-lang="es-ES">
+                    <input type="checkbox" value="es-ES"> Spanish
+                </label>
+                <label class="lang-option" data-lang="fr-FR">
+                    <input type="checkbox" value="fr-FR"> French
+                </label>
+                <label class="lang-option" data-lang="de-DE">
+                    <input type="checkbox" value="de-DE"> German
+                </label>
+                <label class="lang-option" data-lang="pt-BR">
+                    <input type="checkbox" value="pt-BR"> Portuguese
+                </label>
+                <label class="lang-option" data-lang="ja-JP">
+                    <input type="checkbox" value="ja-JP"> Japanese
+                </label>
+            </div>
+            <div class="audio-controls">
+                <button class="audio-btn audio-btn-play" id="btn-play">&#9654; Play</button>
+                <button class="audio-btn audio-btn-stop" id="btn-stop">&#9632; Stop</button>
+                <span class="audio-status" id="audio-status"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    /* === Persona metadata === */
+    const PERSONAS = {
+        sarah_chen:    { name: 'Sarah Chen',     role: 'Project Manager',    photo: 'https://randomuser.me/api/portraits/women/44.jpg' },
+        marcus_rivera: { name: 'Marcus Rivera',  role: 'Solution Architect', photo: 'https://randomuser.me/api/portraits/men/32.jpg' },
+        priya_patel:   { name: 'Priya Patel',    role: 'Sr Data Engineer',   photo: 'https://randomuser.me/api/portraits/women/65.jpg' },
+        james_okafor:  { name: 'James Okafor',   role: 'Data Engineer',      photo: 'https://randomuser.me/api/portraits/men/75.jpg' },
+        elena_vasquez: { name: 'Elena Vasquez',   role: 'QA Lead',            photo: 'https://randomuser.me/api/portraits/women/28.jpg' },
+        david_kim:     { name: 'David Kim',       role: 'DBA',                photo: 'https://randomuser.me/api/portraits/men/85.jpg' }
+    };
+
+    const PHASE_LABELS = {
+        overview: 'Overview',
+        phase0: 'Phase 0: Discovery',
+        phase1: 'Phase 1: Metadata',
+        phase2: 'Phase 2: Fix & Migrate',
+        phase3: 'Phase 3: Scale',
+        phase4: 'Phase 4: Reroute'
+    };
+
+    /* === 36 Narratives (6 personas x 6 phases) === */
+    const NARRATIVES = {
+        sarah_chen: {
+            overview: 'Sarah Chen leads the migration as Project Manager, owning governance, sprint ceremonies, and stakeholder communications from Sprint 0 through the production cutover in Sprint 15. She tracks velocity across all four table batches and two view batches, escalates blockers before they become critical, and coordinates dependencies with the other five DMTSP accelerators. Her sign-off gates at each phase transition ensure nothing moves forward without validation.',
+            phase0: 'During Discovery, Sarah establishes sprint ceremonies and the governance cadence that will carry the team through all 15 sprints. She sets up the risk register, identifying eight key risks including Copilot capacity constraints and DACPAC extraction failures. She leads the stakeholder kick-off meeting that aligns business owners on the four-phase migration timeline and expected 47% effort reduction.',
+            phase1: 'In the Metadata phase, Sarah tracks foundation sign-off milestones as David deploys schemas, security objects, and functions into the new Fabric Data Warehouse. She maintains the dependency tracker to ensure nothing blocks the upcoming batch migrations, monitors sprint burn-down against the 200-hour baseline, and delivers the first round of status reports to leadership.',
+            phase2: 'Sarah monitors batch progress and velocity as the team executes the heaviest phase of the migration. With four Data Engineers running table batches in parallel and the Sr Data Engineers resolving Copilot-flagged incompatibilities, she manages escalation paths for blocked items and coordinates capacity across the team. Her daily stand-ups keep batch throughput visible and on track.',
+            phase3: 'Sarah coordinates across accelerators as team members begin shifting toward ADF pipeline work. She manages the capacity rebalancing, ensuring Batches 3 and 4 maintain velocity despite reduced headcount. Her milestone reporting demonstrates the learning curve effect\u2014Batch 4 throughput exceeds Batch 1\u2014and she prepares the team for the Sprint 15 production cutover.',
+            phase4: 'Sarah governs the production cutover, coordinating the final connection rerouting with all downstream system owners. She leads the final sign-off meeting, ensures zero-incident criteria are met, and captures lessons learned for the reusable migration runbook. Her closing stakeholder communication confirms all 1,960 objects are live on Fabric.'
+        },
+        marcus_rivera: {
+            overview: 'Marcus Rivera serves as the Solution Architect, designing the batch strategy and dependency framework that makes the entire migration feasible. He defines the four table batches (~380 tables each) and two view batches (~180 views each), validates Copilot configuration, and mentors the team on migration patterns. His heaviest involvement is in Sprints 0\u20131, after which he hands off execution and remains available for escalation.',
+            phase0: 'During Discovery, Marcus leads the batch planning effort, analyzing inter-table dependencies and clustering 1,538 tables into four optimally ordered batches. He reviews the Copilot configuration, verifying F2/P1 capacity allocation and enabling admin settings for the Migration Assistant. His dependency analysis ensures that parent tables migrate before child tables, preventing referential integrity failures during copy.',
+            phase1: 'In the Metadata phase, Marcus conducts a security audit alongside David Kim, reviewing the Entra ID mappings and RLS policy translations. He provides design sign-off on the 16 schema deployments and validates that the foundation objects meet the architectural requirements for the upcoming batch migrations. This is his last sprint of primary involvement.',
+            phase2: 'Marcus is not directly involved in the Fix and Migrate phase but remains available for escalation on complex architectural decisions. If the team encounters an incompatibility pattern that Copilot cannot resolve, Marcus steps in to evaluate alternative approaches and update the batch ordering if dependencies shift.',
+            phase3: 'Marcus has shifted his primary focus to Accelerator 2, the ADF Pipeline Upgrade assessment. He is available for Accelerator 1 escalations but is not actively involved in day-to-day batch execution. His batch planning from Phase 0 continues to guide the team through Batches 3 and 4 without his direct oversight.',
+            phase4: 'Marcus is not actively involved in the reroute phase. The connection rerouting is led by David Kim using the REST API approach Marcus validated during Phase 0. Marcus remains available if architectural questions arise during the PATCH operations or downstream validation.'
+        },
+        priya_patel: {
+            overview: 'Priya Patel is the Senior Data Engineer who drives the technical heart of the migration\u2014from DACPAC extraction through Copilot-assisted fix resolution. She owns the initial assessment upload, builds the prompt library with 10+ migration fix patterns, and leads the complex incompatibility resolution that defines the team\u2019s fix velocity. After Phase 2, she pivots to Accelerator 2 (ADF Pipelines), demonstrating the cross-accelerator mobility built into the sprint plan.',
+            phase0: 'Priya is the primary executor during Discovery. She extracts the DACPAC from the Synapse dedicated SQL pool using Visual Studio 2022 with a SqlPackage CLI backup method. She uploads the extracted DACPAC to the Migration Assistant, reviews the assessment report, triages primary versus dependent failures, and tests Copilot fix suggestions. She initializes the prompt library with 10+ migration fix patterns and documents the extraction runbook.',
+            phase1: 'During the Metadata phase, Priya supports the foundation deployment by reviewing Copilot configuration settings and assisting David with security object translation edge cases. She fine-tunes the Copilot parameters based on initial assessment results, ensuring the AI-assisted fix resolution will be effective when batch processing begins in Phase 2.',
+            phase2: 'Priya leads the Copilot-assisted incompatibility fix effort, the most technically demanding work of the migration. She oversees Batch 1 DACPAC uploads, configures partitioned copy jobs for tables larger than 10 GB, and manages the fix pattern catalog. For each flagged incompatibility, she evaluates Copilot suggestions, documents accepted patterns, and resolves complex cases manually. The prompt library grows from 10 to 20+ patterns under her curation.',
+            phase3: 'Priya shifts significantly toward ADF assessment work for Accelerator 2 starting in Sprint 4. Her Accelerator 1 involvement is minimal\u2014the fix patterns and prompt library she built in Phase 2 now guide the Data Engineers through Batches 3 and 4 without her direct oversight. She may finalize the pattern catalog in Sprint 5.',
+            phase4: 'Priya is not involved in the reroute phase. Her expertise was fully leveraged in Phases 0\u20132, and by Sprint 15 she is deep in ADF Pipeline Upgrade work for Accelerator 2. The runbook and pattern catalog she created remain available to the team.'
+        },
+        james_okafor: {
+            overview: 'James Okafor is one of four Data Engineers responsible for the hands-on execution of table and view migration. His work peaks during Phases 2 and 3, where he reviews auto-translated DDL, deploys table definitions, configures copy jobs, and validates data integrity batch by batch. He also takes primary ownership of view migration. In Phase 4, he validates downstream pipelines and runs smoke tests.',
+            phase0: 'James is not directly involved in Discovery. The DACPAC extraction and assessment are led by Priya and Marcus. James may support the Sr Data Engineers if additional hands are needed, but his primary work begins in Phase 2 when batch table migration starts.',
+            phase1: 'James is not involved in the Metadata phase. The foundation deployment\u2014schemas, security, and functions\u2014is led by David Kim with support from Priya. James uses this time to review the batch plan and prepare for the intensive execution work ahead in Sprints 2 through 5.',
+            phase2: 'This is James\u2019s heaviest phase. He reviews the auto-translated DDL for ~380 tables per batch, deploys table definitions into Fabric, configures standard copy jobs for tables under 10 GB, and executes data copy operations. After each batch, he performs row count and checksum validation alongside Elena. He also takes primary ownership of view migration\u2014deploying and validating 180+ views per batch across Sprints 2 and 3.',
+            phase3: 'James continues batch execution with Batches 3 and 4, now working with a slightly reduced team as one Data Engineer shifts to ADF work. The team maintains velocity thanks to patterns learned in earlier batches. James finalizes the runbook, performs cross-batch validation, and ensures all 1,538 tables pass cumulative integrity checks.',
+            phase4: 'During reroute, James validates Power BI refresh operations and downstream pipeline connections after David executes the PATCH rerouting. He runs smoke tests on critical data paths to confirm that Fabric is serving data correctly to all consumers that previously connected to Synapse.'
+        },
+        elena_vasquez: {
+            overview: 'Elena Vasquez is the QA Lead who owns the validation strategy and sign-off gates that ensure data integrity at every milestone. She deploys the validation framework from Accelerator 5, co-executes checksum and row count verification alongside the Data Engineers, and controls the batch sign-off gates that prevent the team from advancing on incomplete work. Her final cross-batch validation in Sprint 5 confirms all 1,538 tables pass integrity checks.',
+            phase0: 'Elena is not involved during Discovery. The validation framework and testing infrastructure are not yet needed, as Phase 0 focuses on DACPAC extraction and assessment. Her work begins in Phase 1 when the validation framework is deployed in preparation for batch processing.',
+            phase1: 'Elena deploys the validation framework from Accelerator 5 (Data Validation), establishing the automated testing infrastructure that will be used for every batch sign-off from this point forward. This includes row count comparison scripts, checksum generation tools, and the spot-check sampling configuration (0.1% record comparison).',
+            phase2: 'Elena owns the validation gates during the peak migration phase. After each batch completes its data copy, she co-executes checksum validation with the Data Engineers, comparing hash values on key columns between source and target. She reviews sample spot-checks, documents validation test cases, and enforces the rule that no batch advances until achieving 100% row count and checksum match.',
+            phase3: 'Elena continues validation ownership for Batches 3 and 4, maintaining the same rigor despite the team\u2019s reduced size. In Sprint 5, she performs a comprehensive cross-batch validation pass covering all 1,538 tables and 362 views, confirming cumulative integrity before the team proceeds to production cutover. Her final validation gate is the last checkpoint before Sprint 15.',
+            phase4: 'During reroute, Elena executes cutover smoke tests alongside James, validating that data served through Fabric matches expectations for critical downstream systems. She confirms that the end-to-end data integrity holds post-cutover and provides the QA sign-off that Sarah needs for the final stakeholder communication.'
+        },
+        david_kim: {
+            overview: 'David Kim is the DBA who owns the foundational infrastructure and the final connection rerouting. He creates the Fabric Data Warehouse, deploys all 16 schemas and 40 security objects, maps SQL Auth users to Entra ID identities, configures row-level security, and deploys functions. In the final phase, he leads the REST API\u2013driven connection rerouting that redirects all downstream systems from Synapse to Fabric. His work bookends the entire migration.',
+            phase0: 'During Discovery, David analyzes the incompatibility report from the Migration Assistant, triaging primary versus dependent failures. He examines table dependencies and clustering to inform Marcus\u2019s batch grouping strategy. His assessment findings document which objects will require manual intervention versus automated translation, setting expectations for the fix effort in Phase 2.',
+            phase1: 'David is the foundation owner in Phase 1. He creates the Fabric Data Warehouse and configures its settings, deploys all 16 schemas, migrates 40 security objects including the manual SQL Auth to Entra ID user mapping (16 hours of focused work), configures row-level security policies, verifies GRANT/REVOKE/DENY permissions match the source, and deploys and tests 4 functions. He conducts a security audit with Marcus to validate the entire foundation.',
+            phase2: 'David assists the Sr Data Engineers with Copilot-guided fixes for flagged incompatibilities, contributing 30 hours in Batch 1 and 45 hours in Batch 2. He validates dependency ordering after fixes are applied, ensuring that parent-child table relationships remain intact. His involvement is primarily oversight and quality assurance of the fix process rather than hands-on DDL work.',
+            phase3: 'David\u2019s involvement reduces in Phase 3 as the batch migration work becomes routine. He assists Data Engineers with complex fixes in Batches 3 and 4 and contributes to the cross-batch validation effort in Sprint 5, verifying that security policies and permissions propagated correctly across all migrated objects.',
+            phase4: 'David is the rerouting lead in Phase 4. He queries the Fabric REST API to inventory all Synapse-pointing connections across Power BI, pipelines, and Logic Apps. He creates the rerouting execution plan, executes batch PATCH operations to redirect each connection to Fabric, documents the results, and provides the technical sign-off that all downstream systems are now pointing to the new platform.'
+        }
+    };
+
+    /* === DOM references === */
+    const overlay    = document.getElementById('narrative-modal');
+    const modalPhoto = document.getElementById('modal-photo');
+    const modalName  = document.getElementById('modal-name');
+    const modalRole  = document.getElementById('modal-role');
+    const modalBadge = document.getElementById('modal-phase-badge');
+    const modalText  = document.getElementById('modal-narrative');
+    const btnPlay    = document.getElementById('btn-play');
+    const btnStop    = document.getElementById('btn-stop');
+    const audioStatus = document.getElementById('audio-status');
+    const langSelector = document.getElementById('lang-selector');
+
+    let currentLangQueue = [];
+    let currentLangIndex = 0;
+
+    /* === Open / Close === */
+    function openModal(persona, phase) {
+        const meta = PERSONAS[persona];
+        const text = NARRATIVES[persona] && NARRATIVES[persona][phase];
+        if (!meta || !text) return;
+
+        modalPhoto.src = meta.photo;
+        modalPhoto.alt = meta.name;
+        modalName.textContent = meta.name;
+        modalRole.textContent = meta.role;
+        modalBadge.textContent = PHASE_LABELS[phase] || phase;
+        modalText.textContent = text;
+
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        stopNarrative();
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    /* === SpeechSynthesis === */
+    function getSelectedLangs() {
+        const langs = [];
+        langSelector.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+            if (cb.checked) langs.push(cb.value);
+        });
+        return langs;
+    }
+
+    function clearLangHighlights() {
+        langSelector.querySelectorAll('.lang-option').forEach(function(el) {
+            el.classList.remove('lang-playing');
+        });
+    }
+
+    function highlightLang(langCode) {
+        clearLangHighlights();
+        var el = langSelector.querySelector('[data-lang="' + langCode + '"]');
+        if (el) el.classList.add('lang-playing');
+    }
+
+    function playNarrative() {
+        if (!window.speechSynthesis) {
+            audioStatus.textContent = 'Speech not supported in this browser';
+            return;
+        }
+        stopNarrative();
+
+        currentLangQueue = getSelectedLangs();
+        if (currentLangQueue.length === 0) {
+            audioStatus.textContent = 'Select at least one language';
+            return;
+        }
+        currentLangIndex = 0;
+        btnPlay.disabled = true;
+        speakNext();
+    }
+
+    function speakNext() {
+        if (currentLangIndex >= currentLangQueue.length) {
+            finishPlayback();
+            return;
+        }
+        var langCode = currentLangQueue[currentLangIndex];
+        var text = modalText.textContent;
+
+        var utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = langCode;
+
+        // Try to find a matching voice
+        var voices = speechSynthesis.getVoices();
+        var match = voices.find(function(v) { return v.lang === langCode; }) ||
+                    voices.find(function(v) { return v.lang.startsWith(langCode.split('-')[0]); });
+        if (match) {
+            utterance.voice = match;
+        }
+
+        var langName = langCode;
+        var label = langSelector.querySelector('[data-lang="' + langCode + '"]');
+        if (label) langName = label.textContent.trim();
+
+        if (!match && voices.length > 0) {
+            audioStatus.textContent = 'No voice for ' + langName + ' \u2014 skipping';
+            currentLangIndex++;
+            setTimeout(speakNext, 800);
+            return;
+        }
+
+        highlightLang(langCode);
+        var total = currentLangQueue.length;
+        audioStatus.textContent = 'Playing ' + langName + ' (' + (currentLangIndex + 1) + '/' + total + ')';
+
+        utterance.onend = function() {
+            currentLangIndex++;
+            speakNext();
+        };
+
+        utterance.onerror = function() {
+            audioStatus.textContent = 'Error playing ' + langName;
+            currentLangIndex++;
+            setTimeout(speakNext, 500);
+        };
+
+        speechSynthesis.speak(utterance);
+    }
+
+    function stopNarrative() {
+        if (window.speechSynthesis) {
+            speechSynthesis.cancel();
+        }
+        currentLangQueue = [];
+        currentLangIndex = 0;
+        clearLangHighlights();
+        audioStatus.textContent = '';
+        btnPlay.disabled = false;
+    }
+
+    function finishPlayback() {
+        clearLangHighlights();
+        audioStatus.textContent = 'Done';
+        btnPlay.disabled = false;
+        setTimeout(function() {
+            if (audioStatus.textContent === 'Done') audioStatus.textContent = '';
+        }, 3000);
+    }
+
+    /* === Event Listeners === */
+    // Persona cards
+    document.querySelectorAll('.persona-card[data-persona]').forEach(function(card) {
+        card.addEventListener('click', function() {
+            openModal(card.dataset.persona, card.dataset.phase);
+        });
+    });
+
+    // Journey map cells
+    document.querySelectorAll('.journey-cell[data-persona]').forEach(function(cell) {
+        cell.addEventListener('click', function() {
+            openModal(cell.dataset.persona, cell.dataset.phase);
+        });
+    });
+
+    // Close modal
+    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) closeModal();
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && overlay.classList.contains('active')) closeModal();
+    });
+
+    // Audio controls
+    btnPlay.addEventListener('click', playNarrative);
+    btnStop.addEventListener('click', stopNarrative);
+
+    // Ensure voices are loaded (some browsers load them async)
+    if (window.speechSynthesis) {
+        speechSynthesis.getVoices();
+        speechSynthesis.onvoiceschanged = function() { speechSynthesis.getVoices(); };
+    }
+})();
+</script>
+
+</body>
+</html>
