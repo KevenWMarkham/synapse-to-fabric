@@ -1,9 +1,10 @@
-# Fabric Migration Assistant — Sprint Orchestrator
+# Fabric Migration Assistant — Reusable Sprint Orchestrator
 
 **Version:** 1.0
 **Author:** Keven Markham, VP Enterprise Transformation — DMTSP
 **Date:** February 6, 2026
 **Execution Model:** Phase 2 (Accelerated Delivery)
+**Reusability:** Global — this orchestrator is a reusable execution template deployed at every Synapse-to-Fabric engagement. Team allocations and batch sizes scale per client.
 **Related Documents:**
 - [Roadmap](../roadmap.md) — Strategic phases, prerequisites, risk register
 - [Backlog](../backlog.md) — Epics, stories, acceptance criteria

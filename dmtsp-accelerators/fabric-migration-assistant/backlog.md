@@ -1,8 +1,9 @@
-# Fabric Migration Assistant — Backlog
+# Fabric Migration Assistant — Reusable Product Backlog
 
 **Version:** 1.0
 **Author:** Keven Markham, VP Enterprise Transformation — DMTSP
 **Date:** February 6, 2026
+**Reusability:** Global — this backlog is a reusable template deployed at every Synapse-to-Fabric engagement. Object counts and batch sizes are adjusted per client.
 **Related Documents:**
 - [Roadmap](roadmap.md) — Strategic phases and rationale
 - [Orchestrator](design/orchestrator_fabric_migrate.md) — Sprint-by-sprint execution plan

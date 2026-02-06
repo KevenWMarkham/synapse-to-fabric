@@ -14,7 +14,7 @@
 
 ## 1. Executive Summary
 
-The **Fabric Migration Assistant** (Acc 1) is the cornerstone accelerator for migrating Azure Synapse Analytics dedicated SQL pools into Microsoft Fabric Data Warehouse. Reaching GA in October 2025, it provides a native, guided four-step migration experience: **Copy Metadata** (DACPAC upload and T-SQL translation), **Fix Problems** (Copilot-assisted incompatibility resolution), **Copy Data** (Fabric Data Factory copy jobs), and **Reroute Connections** (REST API connection redirect).
+The **Fabric Migration Assistant** (Acc 1) is a reusable global accelerator for migrating Azure Synapse Analytics dedicated SQL pools into Microsoft Fabric Data Warehouse. Built once and deployed across every Synapse-to-Fabric engagement, it provides a native, guided four-step migration experience: **Copy Metadata** (DACPAC upload and T-SQL translation), **Fix Problems** (Copilot-assisted incompatibility resolution), **Copy Data** (Fabric Data Factory copy jobs), and **Reroute Connections** (REST API connection redirect). The object counts below represent a reference implementation; actual counts are scaled per client.
 
 ### Scope
 
@@ -39,7 +39,7 @@ The **Fabric Migration Assistant** (Acc 1) is the cornerstone accelerator for mi
 > Base hours = Tables (6,152) + Views (543) + Functions (4) + Schema (5) + Security (10) = 6,714
 > Accelerated hours = Tables (3,261) + Views (272) + Functions+Schema+Security (11) = 3,544
 
-This roadmap covers the Acc 1 scope within Phase 2 delivery: **Sprints 0–5 (discovery through table/view migration)** and **Sprint 15 (connection rerouting)**.
+This roadmap covers the reusable Acc 1 scope within Phase 2 delivery: **Sprints 0–5 (discovery through table/view migration)** and **Sprint 15 (connection rerouting)**. The framework is designed to be deployed as-is at every client engagement, with object counts and batch sizes adjusted to match each client's environment.
 
 ---
 
