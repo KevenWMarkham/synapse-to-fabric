@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric Migration Assistant — Strategic Roadmap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* === Design Tokens (from parent styles.css) === */
+        :root {
+            --primary: #86BC25;
+            --primary-dark: #6ba31b;
+            --primary-light: #a8d84e;
+            --secondary: #0D8390;
+            --secondary-dark: #0a6b75;
+            --accent: #26890D;
+            --dark: #1a1a2e;
+            --dark-secondary: #2d2d44;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            --gray-100: #f1f3f5;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+            --sidebar-width: 280px;
+        }
+
+        /* === Reset & Base === */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-primary);
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--gray-100);
+        }
+        h1, h2, h3, h4, h5 { font-weight: 600; line-height: 1.3; color: var(--dark); }
+        p { margin-bottom: 1rem; }
+        a { color: var(--secondary); text-decoration: none; }
+        a:hover { color: var(--secondary-dark); text-decoration: underline; }
+
+        /* === Top Nav === */
+        .top-nav {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-secondary) 100%);
+            padding: 0 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+        .top-nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+        }
+        .top-nav-brand {
+            font-size: 0.9375rem;
+            font-weight: 700;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .top-nav-brand .brand-accent { color: var(--primary); }
+        .top-nav-links {
+            display: flex;
+            gap: 0.25rem;
+            list-style: none;
+        }
+        .top-nav-links a {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: var(--gray-400);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            transition: color 150ms, background 150ms;
+            text-decoration: none;
+        }
+        .top-nav-links a:hover {
+            color: var(--white);
+            background: rgba(255,255,255,0.08);
+            text-decoration: none;
+        }
+        .top-nav-links a.active {
+            color: var(--primary);
+            background: rgba(134,188,37,0.12);
+        }
+        .nav-hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        .nav-hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--white);
+            margin: 5px 0;
+            transition: transform 200ms;
+        }
+
+        /* === Page Layout === */
+        .page-layout {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: calc(100vh - 56px);
+        }
+
+        /* === Sidebar TOC === */
+        .sidebar {
+            width: var(--sidebar-width);
+            flex-shrink: 0;
+            background: var(--white);
+            border-right: 1px solid var(--gray-200);
+            position: sticky;
+            top: 56px;
+            height: calc(100vh - 56px);
+            overflow-y: auto;
+            padding: 1.5rem 0;
+        }
+        .sidebar-title {
+            font-size: 0.6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--gray-500);
+            padding: 0 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .toc-list {
+            list-style: none;
+        }
+        .toc-list li {}
+        .toc-list a {
+            display: block;
+            padding: 0.4rem 1.25rem;
+            font-size: 0.8125rem;
+            color: var(--gray-600);
+            border-left: 3px solid transparent;
+            transition: color 150ms, border-color 150ms, background 150ms;
+            text-decoration: none;
+        }
+        .toc-list a:hover {
+            color: var(--dark);
+            background: var(--gray-100);
+            text-decoration: none;
+        }
+        .toc-list a.active {
+            color: var(--primary-dark);
+            border-left-color: var(--primary);
+            background: rgba(134,188,37,0.06);
+            font-weight: 600;
+        }
+        .toc-list .toc-sub {
+            padding-left: 2.25rem;
+            font-size: 0.75rem;
+        }
+
+        /* === Main Content === */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            padding: 2rem 2.5rem 4rem;
+        }
+
+        /* === Hero Header (inline, not full width) === */
+        .page-hero {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-secondary) 100%);
+            color: var(--white);
+            padding: 3rem 2.5rem;
+            border-radius: var(--radius-xl);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+        .page-hero-badge {
+            display: inline-block;
+            background: rgba(134,188,37,0.2);
+            color: var(--primary-light);
+            padding: 0.35rem 1.25rem;
+            border-radius: 50px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(134,188,37,0.3);
+        }
+        .page-hero h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+        .page-hero h1 .highlight { color: var(--primary); }
+        .page-hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-size: 0.8125rem;
+            color: var(--gray-400);
+            margin-bottom: 1.25rem;
+        }
+        .page-hero-meta strong { color: var(--gray-300); }
+        .page-hero-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .page-hero-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 1rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            border-radius: 50px;
+            border: 1px solid rgba(134,188,37,0.4);
+            color: var(--primary-light);
+            transition: background 150ms, color 150ms;
+            text-decoration: none;
+        }
+        .page-hero-links a:hover {
+            background: rgba(134,188,37,0.15);
+            color: var(--white);
+            text-decoration: none;
+        }
+        .hero-stats-row {
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .hero-stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* === Section Cards === */
+        .section-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 2rem 2.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--gray-200);
+        }
+        .section-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .section-card h2 .section-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 50%;
+            font-size: 0.875rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .section-card h3 {
+            font-size: 1.125rem;
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+            color: var(--secondary);
+        }
+        .section-card h4 {
+            font-size: 1rem;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .section-card p {
+            color: var(--gray-700);
+            font-size: 0.9375rem;
+        }
+        .section-card ul, .section-card ol {
+            margin: 0.75rem 0 1rem 1.5rem;
+            color: var(--gray-700);
+            font-size: 0.9375rem;
+        }
+        .section-card li {
+            margin-bottom: 0.4rem;
+        }
+        .section-card li::marker {
+            color: var(--primary);
+        }
+
+        /* === Tables === */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8625rem;
+        }
+        .data-table thead th {
+            background: var(--dark);
+            color: var(--white);
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            text-align: left;
+            font-size: 0.8125rem;
+            white-space: nowrap;
+        }
+        .data-table tbody td {
+            padding: 0.625rem 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: top;
+        }
+        .data-table tbody tr:nth-child(even) {
+            background: var(--gray-100);
+        }
+        .data-table tbody tr:hover {
+            background: rgba(134,188,37,0.06);
+        }
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .data-table .row-total td {
+            font-weight: 700;
+            background: rgba(134,188,37,0.08);
+            border-top: 2px solid var(--primary);
+        }
+        .data-table .row-total:hover td {
+            background: rgba(134,188,37,0.12);
+        }
+        .data-table a {
+            color: var(--secondary);
+        }
+
+        /* === Code Blocks === */
+        .code-block {
+            background: var(--dark);
+            color: #e0e0e0;
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.8125rem;
+            line-height: 1.7;
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem;
+            position: relative;
+        }
+        .code-block .code-lang {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.75rem;
+            font-size: 0.625rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: var(--font-primary);
+        }
+        .code-block .kw { color: #c792ea; }
+        .code-block .str { color: #c3e88d; }
+        .code-block .cmt { color: #546e7a; }
+        .code-block .url { color: #89ddff; }
+
+        /* === Dependency Tree === */
+        .dep-tree {
+            background: var(--dark);
+            color: #e0e0e0;
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.8;
+            margin: 1rem 0 1.5rem;
+        }
+
+        /* === Blockquotes === */
+        .blockquote {
+            border-left: 4px solid var(--primary);
+            background: rgba(134,188,37,0.06);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0 1.5rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+        .blockquote p {
+            margin-bottom: 0.25rem;
+        }
+        .blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* === Checklist Items === */
+        .checklist {
+            list-style: none;
+            margin: 0.75rem 0 1.5rem 0;
+            padding: 0;
+        }
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding: 0.625rem 1rem;
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            font-size: 0.9375rem;
+            color: var(--gray-700);
+        }
+        .checklist .check-icon {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-sm);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0.1rem;
+        }
+        .checklist .check-icon svg {
+            width: 14px;
+            height: 14px;
+            color: var(--primary);
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+        }
+
+        /* === Criteria Grid === */
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        .criteria-column h3 {
+            margin-top: 0;
+        }
+
+        /* === Badge / Tag === */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.625rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-high { background: rgba(220,53,69,0.12); color: var(--danger); }
+        .badge-medium { background: rgba(255,193,7,0.18); color: #b8860b; }
+        .badge-low { background: rgba(40,167,69,0.12); color: var(--success); }
+        .badge-critical { background: rgba(220,53,69,0.2); color: var(--danger); font-weight: 700; }
+
+        /* === Inline code === */
+        code {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            padding: 0.15rem 0.4rem;
+            border-radius: var(--radius-sm);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.85em;
+            color: var(--secondary-dark);
+        }
+
+        /* === Footer === */
+        .footer {
+            background: var(--dark);
+            color: var(--gray-500);
+            padding: 2.5rem 0;
+        }
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2.5rem;
+        }
+        .footer-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+            transition: color 150ms;
+            text-decoration: none;
+        }
+        .footer-links a:hover { color: var(--primary); text-decoration: none; }
+        .footer-meta {
+            text-align: right;
+            font-size: 0.8125rem;
+        }
+        .footer-meta p { margin-bottom: 0.25rem; }
+        .footer hr {
+            border: none;
+            border-top: 1px solid var(--dark-secondary);
+            margin-bottom: 1rem;
+        }
+        .copyright {
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        /* === Back to Top === */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 44px;
+            height: 44px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 200ms, visibility 200ms, background 150ms;
+            z-index: 50;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .back-to-top:hover {
+            background: var(--primary-dark);
+        }
+        .back-to-top svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* === Responsive === */
+        @media (max-width: 1024px) {
+            .sidebar {
+                display: none;
+            }
+            .sidebar.mobile-open {
+                display: block;
+                position: fixed;
+                top: 56px;
+                left: 0;
+                z-index: 90;
+                width: 280px;
+                box-shadow: var(--shadow-xl);
+            }
+            .main-content {
+                padding: 1.5rem;
+            }
+            .section-card {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-nav-links { display: none; }
+            .top-nav-links.mobile-open {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 56px;
+                left: 0;
+                right: 0;
+                background: var(--dark);
+                padding: 0.5rem;
+                box-shadow: var(--shadow-lg);
+            }
+            .nav-hamburger { display: block; }
+            .page-hero {
+                padding: 2rem 1.5rem;
+                border-radius: var(--radius-lg);
+            }
+            .page-hero h1 { font-size: 1.75rem; }
+            .hero-stats-row { gap: 1.5rem; }
+            .hero-stat-value { font-size: 1.5rem; }
+            .page-hero-meta { flex-direction: column; gap: 0.5rem; }
+            .main-content { padding: 1rem; }
+            .section-card { padding: 1.25rem; }
+            .section-card h2 { font-size: 1.25rem; }
+            .criteria-grid { grid-template-columns: 1fr; }
+            .footer-grid { flex-direction: column; }
+            .footer-meta { text-align: left; }
+            .footer-links { flex-direction: column; gap: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ TOP NAV ============ -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <div class="top-nav-brand">
+            <span class="brand-accent">DMTSP</span> Fabric Migration Assistant
+        </div>
+        <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="top-nav-links" id="nav-links">
+            <a href="index.html">One-Pager</a>
+            <a href="roadmap.html" class="active">Roadmap</a>
+            <a href="backlog.html">Backlog</a>
+            <a href="orchestrator.html">Orchestrator</a>
+            <a href="../../index.html">Dashboard</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ============ PAGE LAYOUT ============ -->
+<div class="page-layout">
+
+    <!-- ============ SIDEBAR TOC ============ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-title">Table of Contents</div>
+        <ul class="toc-list">
+            <li><a href="#executive-summary">1. Executive Summary</a></li>
+            <li><a href="#scope-object-inventory" class="toc-sub">2. Scope &amp; Object Inventory</a></li>
+            <li><a href="#prerequisites-dependencies" class="toc-sub">3. Prerequisites &amp; Dependencies</a></li>
+            <li><a href="#phase-0-discovery">4. Phase 0: Discovery</a></li>
+            <li><a href="#phase-1-copy-metadata">5. Phase 1: Copy Metadata</a></li>
+            <li><a href="#phase-2-fix-problems">6. Phase 2: Fix Problems</a></li>
+            <li><a href="#phase-3-copy-data">7. Phase 3: Copy Data</a></li>
+            <li><a href="#phase-4-reroute-connections">8. Phase 4: Reroute Connections</a></li>
+            <li><a href="#risk-register">9. Risk Register</a></li>
+            <li><a href="#success-criteria">10. Success Criteria</a></li>
+            <li><a href="#documentation-references">11. Documentation References</a></li>
+        </ul>
+    </aside>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="main-content">
+
+        <!-- ============ PAGE HERO ============ -->
+        <div class="page-hero">
+            <div class="page-hero-badge">Accelerator 01 &mdash; Strategic Roadmap</div>
+            <h1>Fabric <span class="highlight">Migration Assistant</span></h1>
+            <div class="page-hero-meta">
+                <span><strong>Version:</strong> 1.0</span>
+                <span><strong>Author:</strong> Keven Markham, VP Enterprise Transformation &mdash; DMTSP</span>
+                <span><strong>Date:</strong> February 6, 2026</span>
+                <span><strong>Status:</strong> Draft</span>
+            </div>
+            <div class="page-hero-links">
+                <a href="backlog.html">Backlog &mdash; Epics, stories &amp; tasks</a>
+                <a href="orchestrator.html">Orchestrator &mdash; Sprint execution plan</a>
+                <a href="../../index.html">Sprint Plan (root)</a>
+                <a href="../../index.html">Accelerator Buildout (root)</a>
+            </div>
+            <div class="hero-stats-row">
+                <div class="hero-stat">
+                    <span class="hero-stat-value">1,960</span>
+                    <span class="hero-stat-label">Objects</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">3,170</span>
+                    <span class="hero-stat-label">Hours Saved</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">47%</span>
+                    <span class="hero-stat-label">Reduction</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">4</span>
+                    <span class="hero-stat-label">Phase Process</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ 1. EXECUTIVE SUMMARY ============ -->
+        <div class="section-card" id="executive-summary">
+            <h2><span class="section-num">1</span> Executive Summary</h2>
+            <p>The <strong>Fabric Migration Assistant</strong> (Acc 1) is the cornerstone accelerator for migrating Azure Synapse Analytics dedicated SQL pools into Microsoft Fabric Data Warehouse. Reaching GA in October 2025, it provides a native, guided four-step migration experience: <strong>Copy Metadata</strong> (DACPAC upload and T-SQL translation), <strong>Fix Problems</strong> (Copilot-assisted incompatibility resolution), <strong>Copy Data</strong> (Fabric Data Factory copy jobs), and <strong>Reroute Connections</strong> (REST API connection redirect).</p>
+
+            <h3>Scope</h3>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Object Type</th><th>Count</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Tables</td><td>1,538</td></tr>
+                        <tr><td>Views</td><td>362</td></tr>
+                        <tr><td>Functions</td><td>4</td></tr>
+                        <tr><td>Schemas</td><td>16</td></tr>
+                        <tr><td>Security Objects</td><td>40</td></tr>
+                        <tr class="row-total"><td><strong>Total</strong></td><td><strong>1,960</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Hours Impact</h3>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Metric</th><th>Hours</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Base Hours (Phase 1 &mdash; Synapse DW workstream)</td><td>6,714</td></tr>
+                        <tr><td>Accelerated Hours (Phase 2 &mdash; with Acc 1 + Acc 6)</td><td>3,544</td></tr>
+                        <tr class="row-total"><td><strong>Hours Saved</strong></td><td><strong>3,170</strong></td></tr>
+                        <tr class="row-total"><td><strong>Reduction</strong></td><td><strong>47%</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="blockquote">
+                <p>Base hours = Tables (6,152) + Views (543) + Functions (4) + Schema (5) + Security (10) = 6,714</p>
+                <p>Accelerated hours = Tables (3,261) + Views (272) + Functions+Schema+Security (11) = 3,544</p>
+            </div>
+
+            <p>This roadmap covers the Acc 1 scope within Phase 2 delivery: <strong>Sprints 0&ndash;5 (discovery through table/view migration)</strong> and <strong>Sprint 15 (connection rerouting)</strong>.</p>
+        </div>
+
+        <!-- ============ 2. SCOPE & OBJECT INVENTORY ============ -->
+        <div class="section-card" id="scope-object-inventory">
+            <h2><span class="section-num">2</span> Scope &amp; Object Inventory</h2>
+
+            <h3>2.1 Object Breakdown</h3>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Object Type</th>
+                            <th>Count</th>
+                            <th>Unit Hrs (Base)</th>
+                            <th>Base Hrs</th>
+                            <th>Unit Hrs (Acc)</th>
+                            <th>Acc Hrs</th>
+                            <th>Reduction</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td><td>Tables</td><td>1,538</td><td>4.0</td><td>6,152</td><td>~2.1</td><td>3,261</td><td>47%</td>
+                        </tr>
+                        <tr>
+                            <td>2</td><td>Views</td><td>362</td><td>1.5</td><td>543</td><td>~0.75</td><td>272</td><td>50%</td>
+                        </tr>
+                        <tr>
+                            <td>3</td><td>Functions</td><td>4</td><td>1.0</td><td>4</td><td>~0.5</td><td>2</td><td>50%</td>
+                        </tr>
+                        <tr>
+                            <td>4</td><td>Schemas</td><td>16</td><td>&mdash;</td><td>5</td><td>&mdash;</td><td>3</td><td>40%</td>
+                        </tr>
+                        <tr>
+                            <td>5</td><td>Security</td><td>40</td><td>&mdash;</td><td>10</td><td>&mdash;</td><td>6</td><td>40%</td>
+                        </tr>
+                        <tr class="row-total">
+                            <td></td><td><strong>Total</strong></td><td><strong>1,960</strong></td><td></td><td><strong>6,714</strong></td><td></td><td><strong>3,544</strong></td><td><strong>47%</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>2.2 Out of Scope (Other Accelerators)</h3>
+            <ul>
+                <li>ADF Pipelines / Datasets / Triggers &rarr; Acc 2 (ADF PowerShell Upgrade Module)</li>
+                <li>Stored Procedures &rarr; Acc 3 (T-SQL to Spark Framework)</li>
+                <li>CI/CD &amp; Environment Deployment &rarr; Acc 4</li>
+                <li>Data Validation Framework &rarr; Acc 5</li>
+                <li>Logic Apps &amp; ADLS &rarr; Acc 7</li>
+            </ul>
+
+            <h3>2.3 Dependency Map</h3>
+            <div class="dep-tree">
+Schemas (16)<br>
+&nbsp;&nbsp;&#9492;&#9472;&#9472; Functions (4)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; Security (40)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; Tables (1,538) &#9472;&#9472; 4 batches &times; ~380<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; Views (362) &#9472;&#9472; 2 batches &times; ~180
+            </div>
+        </div>
+
+        <!-- ============ 3. PREREQUISITES & DEPENDENCIES ============ -->
+        <div class="section-card" id="prerequisites-dependencies">
+            <h2><span class="section-num">3</span> Prerequisites &amp; Dependencies</h2>
+
+            <h3>3.1 Client Environment</h3>
+            <ul class="checklist">
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Synapse Access</strong> &mdash; Read-only access to source dedicated SQL pool (Sprint 0)</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Fabric Capacity</strong> &mdash; F2 or P1 capacity provisioned (required for Copilot) (Sprint 0)</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Entra ID</strong> &mdash; Service principals + security groups configured (Sprint 1)</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>VNet Data Gateway</strong> &mdash; Deployed and connected to Fabric workspace (Sprint 1)</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Network Connectivity</strong> &mdash; Private endpoints between Synapse and Fabric (Sprint 1)</span>
+                </li>
+            </ul>
+
+            <h3>3.2 Tooling</h3>
+            <ul class="checklist">
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Visual Studio 2022 + SSDT</strong> &mdash; DACPAC extraction (primary method) &mdash; v17.x + SSDT</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>SqlPackage CLI</strong> &mdash; DACPAC extraction (alternative / CI method) &mdash; Latest</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Fabric Migration Assistant</strong> &mdash; Schema translation + migration orchestration &mdash; GA (Oct 2025)</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Fabric Copilot</strong> &mdash; AI-assisted fix resolution &mdash; Requires F2/P1</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Fabric Data Factory</strong> &mdash; Copy jobs for data migration &mdash; GA</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>PowerShell</strong> &mdash; Automation scripts &mdash; v7.x</span>
+                </li>
+            </ul>
+
+            <h3>3.3 Team</h3>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Role</th><th>Count</th><th>Sprint Capacity</th><th>Acc 1 Allocation</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Project Manager</td><td>1</td><td>70 hrs</td><td>Governance, status</td></tr>
+                        <tr><td>Solution Architect</td><td>1</td><td>70 hrs</td><td>Design, pattern validation</td></tr>
+                        <tr><td>Sr Data Engineer</td><td>2</td><td>140 hrs</td><td>Accelerator setup, complex fixes</td></tr>
+                        <tr><td>Data Engineer</td><td>4</td><td>280 hrs</td><td>Table/view migration execution</td></tr>
+                        <tr><td>QA Lead</td><td>1</td><td>70 hrs</td><td>Validation framework</td></tr>
+                        <tr><td>DBA</td><td>1</td><td>70 hrs</td><td>Schema, security, performance</td></tr>
+                        <tr class="row-total"><td><strong>Total</strong></td><td><strong>10</strong></td><td><strong>700 hrs/sprint</strong></td><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>3.4 External Dependencies</h3>
+            <ul class="checklist">
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Microsoft Migration Factory</strong> &mdash; Free personalized migration support &mdash; engage in Sprint 0</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Copilot availability</strong> &mdash; Requires F2/P1 capacity; confirm license in Sprint 0</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Acc 5 (Validation Framework)</strong> &mdash; Validation notebooks needed by Sprint 2</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Acc 4 (CI/CD)</strong> &mdash; Deployment pipelines needed for SIT promotion, Sprint 10+</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ============ 4. PHASE 0: DISCOVERY ============ -->
+        <div class="section-card" id="phase-0-discovery">
+            <h2><span class="section-num">4</span> Phase 0: Discovery &amp; Accelerator Setup</h2>
+            <p><strong>Sprint:</strong> 0 &nbsp;|&nbsp; <strong>Hours:</strong> ~120</p>
+
+            <h3>4.1 DACPAC Extraction</h3>
+            <p>Extract the source schema using one of two methods:</p>
+
+            <h4>Method A &mdash; Visual Studio 2022 + SSDT:</h4>
+            <ul>
+                <li>Open VS 2022 &rarr; SQL Server Object Explorer &rarr; connect to Synapse SQL pool</li>
+                <li>Right-click database &rarr; Extract Data-tier Application &rarr; save .dacpac</li>
+                <li>Verify extraction includes all 1,960 objects</li>
+            </ul>
+
+            <h4>Method B &mdash; SqlPackage CLI:</h4>
+            <div class="code-block">
+                <span class="code-lang">bash</span>
+SqlPackage /Action:Extract /TargetFile:source.dacpac \<br>
+&nbsp;&nbsp;/SourceServerName:&lt;synapse-endpoint&gt; \<br>
+&nbsp;&nbsp;/SourceDatabaseName:&lt;database&gt; \<br>
+&nbsp;&nbsp;/SourceUser:&lt;user&gt; /SourcePassword:&lt;password&gt;
+            </div>
+
+            <h3>4.2 Source Assessment Upload</h3>
+            <p>Upload DACPAC to Fabric Migration Assistant. The tool generates:</p>
+            <ul>
+                <li>Object inventory with migration status (pass/fail/warning)</li>
+                <li>Incompatibility report (unsupported T-SQL constructs)</li>
+                <li>Dependency graph (primary vs. dependent object failures)</li>
+                <li>Assessment findings documented</li>
+            </ul>
+
+            <h3>4.3 Copilot Configuration</h3>
+            <ul class="checklist">
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span>Confirm F2 or P1 capacity is assigned to workspace</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span>Enable Copilot in Fabric admin settings</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span>Test Copilot fix suggestions against sample failed objects</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span>Initialize prompt library with pre-built fix patterns</span>
+                </li>
+            </ul>
+
+            <h3>4.4 Batch Planning</h3>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Batch</th><th>Tables</th><th>Views</th><th>Sprint</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Batch 1</td><td>380</td><td>180</td><td>Sprint 2</td></tr>
+                        <tr><td>Batch 2</td><td>380</td><td>182</td><td>Sprint 3</td></tr>
+                        <tr><td>Batch 3</td><td>380</td><td>&mdash;</td><td>Sprint 4</td></tr>
+                        <tr><td>Batch 4</td><td>398</td><td>&mdash;</td><td>Sprint 5</td></tr>
+                        <tr class="row-total"><td><strong>Total</strong></td><td><strong>1,538</strong></td><td><strong>362</strong></td><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============ 5. PHASE 1: COPY METADATA ============ -->
+        <div class="section-card" id="phase-1-copy-metadata">
+            <h2><span class="section-num">5</span> Phase 1: Copy Metadata</h2>
+            <p><strong>Sprints:</strong> 1&ndash;5 &nbsp;|&nbsp; <strong>Total Acc 1 Hours:</strong> ~2,573</p>
+
+            <h3>5.1 Fabric Data Warehouse Creation (Sprint 1)</h3>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Object Type</th><th>Count</th><th>Hours</th><th>Method</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Fabric DW creation</td><td>1</td><td>10</td><td>Portal / API</td></tr>
+                        <tr><td>Schemas</td><td>16</td><td>3</td><td>DACPAC auto-translate</td></tr>
+                        <tr><td>Security objects</td><td>40</td><td>6</td><td>DACPAC + manual Entra ID mapping</td></tr>
+                        <tr><td>Functions</td><td>4</td><td>2</td><td>DACPAC auto-translate</td></tr>
+                        <tr class="row-total"><td><strong>Subtotal</strong></td><td><strong>61</strong></td><td><strong>21</strong></td><td></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>5.2 Schema &amp; Security Migration</h3>
+            <p><strong>Automated:</strong> Roles, GRANT/REVOKE/DENY permissions, dynamic data masking</p>
+            <p><strong>Manual:</strong> SQL-authenticated users &rarr; Entra ID mapping, row-level security policies</p>
+
+            <h3>5.3 Table DDL Migration (Sprints 2&ndash;5)</h3>
+            <p>Each batch follows: <strong>Upload &rarr; Translate &rarr; Fix &rarr; Deploy &rarr; Validate</strong></p>
+            <ul>
+                <li><strong>Batch 1</strong> &mdash; 380 tables &mdash; Sprint 2</li>
+                <li><strong>Batch 2</strong> &mdash; 380 tables &mdash; Sprint 3</li>
+                <li><strong>Batch 3</strong> &mdash; 380 tables &mdash; Sprint 4</li>
+                <li><strong>Batch 4</strong> &mdash; 398 tables &mdash; Sprint 5</li>
+            </ul>
+
+            <h3>5.4 View DDL Migration (Sprints 2&ndash;3)</h3>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Batch</th><th>Views</th><th>Depends On</th><th>Sprint</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>View Batch 1</td><td>180</td><td>Table Batch 1</td><td>Sprint 2</td></tr>
+                        <tr><td>View Batch 2</td><td>182</td><td>Table Batch 2</td><td>Sprint 3</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>5.5 Data Type Mapping Reference</h3>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Synapse Type</th><th>Fabric Type</th><th>Notes</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>money</code></td><td><code>decimal(19,4)</code></td><td>Precision preserved</td></tr>
+                        <tr><td><code>smallmoney</code></td><td><code>decimal(10,4)</code></td><td>Precision preserved</td></tr>
+                        <tr><td><code>datetime</code></td><td><code>datetime2(3)</code></td><td>Higher precision default</td></tr>
+                        <tr><td><code>smalldatetime</code></td><td><code>datetime2(0)</code></td><td>Rounded to minutes</td></tr>
+                        <tr><td><code>datetimeoffset</code></td><td><code>datetime2</code> + offset column</td><td>Split required</td></tr>
+                        <tr><td><code>nchar(n)</code></td><td><code>char(n)</code></td><td>Unicode normalization</td></tr>
+                        <tr><td><code>nvarchar(n)</code></td><td><code>varchar(n)</code></td><td>Unicode normalization</td></tr>
+                        <tr><td><code>ntext</code></td><td><code>varchar(max)</code></td><td>Deprecated type conversion</td></tr>
+                        <tr><td><code>text</code></td><td><code>varchar(max)</code></td><td>Deprecated type conversion</td></tr>
+                        <tr><td><code>image</code></td><td><code>varbinary(max)</code></td><td>Binary data preservation</td></tr>
+                        <tr><td><code>geometry</code></td><td>Not supported</td><td>Requires workaround (WKT string)</td></tr>
+                        <tr><td><code>geography</code></td><td>Not supported</td><td>Requires workaround (WKT string)</td></tr>
+                        <tr><td><code>hierarchyid</code></td><td>Not supported</td><td>Flatten to string path</td></tr>
+                        <tr><td><code>sql_variant</code></td><td>Not supported</td><td>Requires typed column decomposition</td></tr>
+                        <tr><td><code>xml</code></td><td><code>varchar(max)</code></td><td>Stored as string</td></tr>
+                        <tr><td><code>rowversion</code>/<code>timestamp</code></td><td><code>bigint</code></td><td>Versioning behavior changes</td></tr>
+                        <tr><td><code>uniqueidentifier</code></td><td><code>varchar(36)</code></td><td>Stored as string</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============ 6. PHASE 2: FIX PROBLEMS ============ -->
+        <div class="section-card" id="phase-2-fix-problems">
+            <h2><span class="section-num">6</span> Phase 2: Fix Problems</h2>
+            <p><strong>Embedded in Sprints 2&ndash;5</strong> &nbsp;|&nbsp; <strong>Hours:</strong> ~500</p>
+
+            <h3>6.1 Copilot-Assisted Resolution Workflow</h3>
+            <ol>
+                <li><strong>Triage</strong> &mdash; Migration Assistant flags failed objects as "primary" or "dependent"</li>
+                <li><strong>Fix primary objects first</strong> &mdash; Resolving a primary object often auto-fixes 3&ndash;5 dependent objects</li>
+                <li><strong>Copilot analysis</strong> &mdash; For each failed object, Copilot analyzes and suggests a fix</li>
+                <li><strong>Apply and validate</strong> &mdash; Apply fix, re-run migration, confirm dependent objects resolve</li>
+                <li><strong>Catalog the pattern</strong> &mdash; Add new fix patterns to the prompt library</li>
+            </ol>
+
+            <h3>6.2 Common Fix Patterns</h3>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Pattern</th><th>Frequency</th><th>Resolution</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Distribution hints (<code>DISTRIBUTION = HASH</code>)</td><td><span class="badge badge-high">High</span></td><td>Remove</td></tr>
+                        <tr><td>Clustered columnstore index syntax</td><td><span class="badge badge-high">High</span></td><td>Simplify to standard</td></tr>
+                        <tr><td>IDENTITY columns</td><td><span class="badge badge-medium">Medium</span></td><td>Use <code>surrogate_key()</code></td></tr>
+                        <tr><td>Materialized views</td><td><span class="badge badge-medium">Medium</span></td><td>Convert to standard views</td></tr>
+                        <tr><td>External tables</td><td><span class="badge badge-medium">Medium</span></td><td>Replace with OneLake shortcuts</td></tr>
+                        <tr><td>CTAS statements</td><td><span class="badge badge-medium">Medium</span></td><td>Convert to CREATE TABLE + INSERT</td></tr>
+                        <tr><td>Workload management refs</td><td><span class="badge badge-low">Low</span></td><td>Remove</td></tr>
+                        <tr><td>Cross-database references</td><td><span class="badge badge-low">Low</span></td><td>Remap to cross-warehouse shortcuts</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>6.3 Expected Fix Volume</h3>
+            <ul>
+                <li><strong>~60%</strong> of failed objects auto-resolve via Copilot</li>
+                <li><strong>~30%</strong> require minor manual editing with Copilot guidance</li>
+                <li><strong>~10%</strong> require significant manual refactoring</li>
+            </ul>
+        </div>
+
+        <!-- ============ 7. PHASE 3: COPY DATA ============ -->
+        <div class="section-card" id="phase-3-copy-data">
+            <h2><span class="section-num">7</span> Phase 3: Copy Data</h2>
+            <p><strong>Embedded in Sprints 2&ndash;5</strong></p>
+
+            <h3>7.1 Fabric Data Factory Copy Jobs</h3>
+            <ol>
+                <li>Connect to source Synapse SQL pool via Fabric Data Factory</li>
+                <li>Select tables for the current batch</li>
+                <li>Configure column mappings</li>
+                <li>Execute copy &mdash; one-time full copy</li>
+            </ol>
+
+            <h3>7.2 Migration Methods</h3>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Method</th><th>Use Case</th><th>Batch Application</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Copy job (full)</td><td>Standard tables &lt; 10 GB</td><td>Primary method</td></tr>
+                        <tr><td>Copy job (partitioned)</td><td>Large fact tables &gt; 10 GB</td><td>Partition by date/key</td></tr>
+                        <tr><td>ADLS extract + COPY command</td><td>Very large tables &gt; 50 GB</td><td>Extract to parquet</td></tr>
+                        <tr><td>Dataflow Gen2</td><td>Complex transformations</td><td>Edge cases</td></tr>
+                        <tr><td>Notebook (Spark)</td><td>Custom logic required</td><td>Fallback</td></tr>
+                        <tr><td>Shortcut</td><td>No physical copy needed</td><td>ADLS-backed tables</td></tr>
+                        <tr><td>Mirroring</td><td>Near-real-time sync</td><td>Post-migration</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>7.3 Validation</h3>
+            <ul class="checklist">
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Row counts</strong> &mdash; Source vs. target exact match</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Checksums</strong> &mdash; Hash comparison on key columns</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Sample records</strong> &mdash; Spot-check 0.1% of records</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span><strong>Null/empty patterns</strong> &mdash; Verify nullable columns</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ============ 8. PHASE 4: REROUTE CONNECTIONS ============ -->
+        <div class="section-card" id="phase-4-reroute-connections">
+            <h2><span class="section-num">8</span> Phase 4: Reroute Connections</h2>
+            <p><strong>Sprint:</strong> 15 &nbsp;|&nbsp; <strong>Hours:</strong> ~15</p>
+
+            <h3>8.1 Connection Inventory</h3>
+            <div class="code-block">
+                <span class="code-lang">REST API</span>
+<span class="kw">GET</span> <span class="url">https://api.fabric.microsoft.com/v1/connections</span>
+            </div>
+
+            <h3>8.2 Batch PATCH Rerouting</h3>
+            <div class="code-block">
+                <span class="code-lang">REST API</span>
+<span class="kw">PATCH</span> <span class="url">https://api.fabric.microsoft.com/v1/connections/{connectionId}</span>
+            </div>
+
+            <h3>8.3 Downstream Validation</h3>
+            <ul class="checklist">
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span>Power BI semantic models refresh successfully</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span>Downstream pipelines connect to Fabric DW</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span>Logic App connections validated</span>
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                    <span>Smoke tests pass on critical data paths</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- ============ 9. RISK REGISTER ============ -->
+        <div class="section-card" id="risk-register">
+            <h2><span class="section-num">9</span> Risk Register</h2>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Risk</th>
+                            <th>Probability</th>
+                            <th>Impact</th>
+                            <th>Mitigation</th>
+                            <th>Phase</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>R1</strong></td>
+                            <td>T-SQL incompatibilities exceed estimates</td>
+                            <td><span class="badge badge-medium">Medium</span></td>
+                            <td><span class="badge badge-high">High</span></td>
+                            <td>Pre-flight DACPAC analysis; Copilot prompt library; 20% buffer</td>
+                            <td>Phase 1&ndash;2</td>
+                        </tr>
+                        <tr>
+                            <td><strong>R2</strong></td>
+                            <td>Fabric capacity constraints during peak</td>
+                            <td><span class="badge badge-medium">Medium</span></td>
+                            <td><span class="badge badge-medium">Medium</span></td>
+                            <td>Right-size F-SKU; schedule off-hours; monitor CU usage</td>
+                            <td>Phase 3</td>
+                        </tr>
+                        <tr>
+                            <td><strong>R3</strong></td>
+                            <td>DACPAC extraction failures</td>
+                            <td><span class="badge badge-low">Low</span></td>
+                            <td><span class="badge badge-high">High</span></td>
+                            <td>Test in Sprint 0; SqlPackage CLI fallback</td>
+                            <td>Phase 0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>R4</strong></td>
+                            <td>Copilot unavailability</td>
+                            <td><span class="badge badge-low">Low</span></td>
+                            <td><span class="badge badge-medium">Medium</span></td>
+                            <td>Manual fix fallback; fix pattern catalog</td>
+                            <td>Phase 2</td>
+                        </tr>
+                        <tr>
+                            <td><strong>R5</strong></td>
+                            <td>Silent data loss during copy</td>
+                            <td><span class="badge badge-low">Low</span></td>
+                            <td><span class="badge badge-critical">Critical</span></td>
+                            <td>Row count + checksum per batch (Acc 5)</td>
+                            <td>Phase 3</td>
+                        </tr>
+                        <tr>
+                            <td><strong>R6</strong></td>
+                            <td>Security gaps after migration</td>
+                            <td><span class="badge badge-medium">Medium</span></td>
+                            <td><span class="badge badge-high">High</span></td>
+                            <td>Security audit; compare Entra ID mapping</td>
+                            <td>Phase 1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>R7</strong></td>
+                            <td>View dependency resolution failures</td>
+                            <td><span class="badge badge-medium">Medium</span></td>
+                            <td><span class="badge badge-medium">Medium</span></td>
+                            <td>Strict dependency ordering</td>
+                            <td>Phase 1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>R8</strong></td>
+                            <td>Large fact table copy throughput</td>
+                            <td><span class="badge badge-medium">Medium</span></td>
+                            <td><span class="badge badge-medium">Medium</span></td>
+                            <td>Partitioned Copy Activity; ADLS fallback</td>
+                            <td>Phase 3</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============ 10. SUCCESS CRITERIA ============ -->
+        <div class="section-card" id="success-criteria">
+            <h2><span class="section-num">10</span> Success Criteria</h2>
+
+            <div class="criteria-grid">
+                <div class="criteria-column">
+                    <h3>10.1 Quantitative</h3>
+                    <ul class="checklist">
+                        <li>
+                            <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            <span><strong>Object migration completeness</strong> &mdash; 100% of 1,960 objects</span>
+                        </li>
+                        <li>
+                            <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            <span><strong>Row count accuracy</strong> &mdash; 100% match</span>
+                        </li>
+                        <li>
+                            <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            <span><strong>Data checksum accuracy</strong> &mdash; 100% match</span>
+                        </li>
+                        <li>
+                            <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            <span><strong>Hours within estimate</strong> &mdash; within 10% of 3,544</span>
+                        </li>
+                        <li>
+                            <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            <span><strong>Fix pattern catalog</strong> &mdash; 20+ documented patterns</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="criteria-column">
+                    <h3>10.2 Qualitative</h3>
+                    <ul class="checklist">
+                        <li>
+                            <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            <span><strong>Copilot prompt library enhanced</strong> &mdash; 10+ new prompts</span>
+                        </li>
+                        <li>
+                            <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            <span><strong>Team velocity improvement</strong> &mdash; Batch 4 &gt; Batch 1</span>
+                        </li>
+                        <li>
+                            <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            <span><strong>Zero production data incidents</strong></span>
+                        </li>
+                        <li>
+                            <span class="check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            <span><strong>Reusable runbook delivered</strong></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ 11. DOCUMENTATION REFERENCES ============ -->
+        <div class="section-card" id="documentation-references">
+            <h2><span class="section-num">11</span> Microsoft Documentation References</h2>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>#</th><th>Topic</th><th>URL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Fabric Migration Assistant overview</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-warehouse/migration-assistant" target="_blank">learn.microsoft.com/.../migration-assistant</a></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Migration Assistant &mdash; Copy Metadata</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-warehouse/migration-assistant-copy-metadata" target="_blank">learn.microsoft.com/.../migration-assistant-copy-metadata</a></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Migration Assistant &mdash; Fix Problems</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-warehouse/migration-assistant-fix-problems" target="_blank">learn.microsoft.com/.../migration-assistant-fix-problems</a></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Migration Assistant &mdash; Copy Data</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-warehouse/migration-assistant-copy-data" target="_blank">learn.microsoft.com/.../migration-assistant-copy-data</a></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Migration Assistant &mdash; Reroute Connections</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-warehouse/migration-assistant-reroute-connections" target="_blank">learn.microsoft.com/.../migration-assistant-reroute-connections</a></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>DACPAC extraction with SqlPackage</td>
+                            <td><a href="https://learn.microsoft.com/en-us/sql/tools/sqlpackage/sqlpackage-extract" target="_blank">learn.microsoft.com/.../sqlpackage-extract</a></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>DACPAC extraction with VS 2022 / SSDT</td>
+                            <td><a href="https://learn.microsoft.com/en-us/sql/ssdt/extract-publish-and-register-dacpac-files" target="_blank">learn.microsoft.com/.../extract-publish-and-register-dacpac-files</a></td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>T-SQL surface area</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-warehouse/tsql-surface-area" target="_blank">learn.microsoft.com/.../tsql-surface-area</a></td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>Data types in Fabric DW</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-warehouse/data-types" target="_blank">learn.microsoft.com/.../data-types</a></td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>Fabric Data Factory copy jobs</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-factory/copy-data-activity" target="_blank">learn.microsoft.com/.../copy-data-activity</a></td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>Migration strategy</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-warehouse/migration-synapse-dedicated-sql-pool-warehouse" target="_blank">learn.microsoft.com/.../migration-synapse-dedicated-sql-pool-warehouse</a></td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>Migration methods (7 paths)</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-warehouse/ingest-data" target="_blank">learn.microsoft.com/.../ingest-data</a></td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>Connections REST API</td>
+                            <td><a href="https://learn.microsoft.com/en-us/rest/api/fabric/core/connections" target="_blank">learn.microsoft.com/.../connections</a></td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>ADF migration to Fabric</td>
+                            <td><a href="https://learn.microsoft.com/en-us/fabric/data-factory/upgrade-paths" target="_blank">learn.microsoft.com/.../upgrade-paths</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div class="footer-links">
+                <a href="index.html">One-Pager</a>
+                <a href="roadmap.html">Roadmap</a>
+                <a href="backlog.html">Backlog</a>
+                <a href="orchestrator.html">Orchestrator</a>
+                <a href="../../index.html">Accelerators Dashboard</a>
+            </div>
+            <div class="footer-meta">
+                <p><strong style="color: var(--gray-400);">Author:</strong> Keven Markham, VP Enterprise Transformation</p>
+                <p><strong style="color: var(--gray-400);">Date:</strong> February 6, 2026 &nbsp;|&nbsp; <strong style="color: var(--gray-400);">Version:</strong> 1.0</p>
+            </div>
+        </div>
+        <hr>
+        <p class="copyright">DMTSP Fabric Migration Accelerators &mdash; Internal Use Only</p>
+    </div>
+</footer>
+
+<!-- ============ BACK TO TOP ============ -->
+<button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15"/>
+    </svg>
+</button>
+
+<script>
+(function() {
+    /* === Mobile Nav Toggle === */
+    var hamburger = document.getElementById('nav-hamburger');
+    var navLinks = document.getElementById('nav-links');
+    hamburger.addEventListener('click', function() {
+        navLinks.classList.toggle('mobile-open');
+    });
+
+    /* === Sidebar TOC Active State (IntersectionObserver) === */
+    var sections = document.querySelectorAll('.section-card[id]');
+    var tocLinks = document.querySelectorAll('.toc-list a');
+
+    if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    var id = entry.target.getAttribute('id');
+                    tocLinks.forEach(function(link) {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, {
+            rootMargin: '-80px 0px -60% 0px',
+            threshold: 0
+        });
+
+        sections.forEach(function(section) {
+            observer.observe(section);
+        });
+    }
+
+    /* === Back to Top Button === */
+    var backToTop = document.getElementById('back-to-top');
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 400) {
+            backToTop.classList.add('visible');
+        } else {
+            backToTop.classList.remove('visible');
+        }
+    });
+    backToTop.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* === Smooth scroll for TOC links (accounts for sticky nav) === */
+    tocLinks.forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var targetId = this.getAttribute('href').substring(1);
+            var target = document.getElementById(targetId);
+            if (target) {
+                var offset = 72; /* nav height + padding */
+                var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                window.scrollTo({ top: top, behavior: 'smooth' });
+            }
+            /* Close mobile sidebar if open */
+            var sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('mobile-open')) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+    });
+
+    /* === Mobile Sidebar Toggle (tap hamburger or use a TOC toggle) === */
+    /* For tablets, we use the same hamburger to toggle sidebar */
+    hamburger.addEventListener('click', function() {
+        var sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('mobile-open');
+    });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric Migration Assistant — Product Backlog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* === Design Tokens (from parent styles.css) === */
+        :root {
+            --primary: #86BC25;
+            --primary-dark: #6ba31b;
+            --primary-light: #a8d84e;
+            --secondary: #0D8390;
+            --secondary-dark: #0a6b75;
+            --accent: #26890D;
+            --dark: #1a1a2e;
+            --dark-secondary: #2d2d44;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            --gray-100: #f1f3f5;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+
+            /* Epic accent colors */
+            --epic-e0: #0D8390;
+            --epic-e1: #86BC25;
+            --epic-e2: #e67e22;
+            --epic-e3: #3498db;
+            --epic-e4: #8e44ad;
+
+            /* Priority colors */
+            --priority-p0: #dc3545;
+            --priority-p1: #e67e22;
+            --priority-p2: #3498db;
+            --priority-p3: #adb5bd;
+
+            /* Effort colors */
+            --effort-xs: #28a745;
+            --effort-s: #28a745;
+            --effort-m: #3498db;
+            --effort-l: #e67e22;
+            --effort-xl: #dc3545;
+            --effort-xxl: #dc3545;
+        }
+
+        /* === Reset & Base === */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-primary);
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--gray-100);
+        }
+        h1, h2, h3, h4, h5 { font-weight: 600; line-height: 1.3; color: var(--dark); }
+        p { margin-bottom: 1rem; }
+        a { color: var(--secondary); text-decoration: none; }
+        a:hover { color: var(--secondary-dark); text-decoration: underline; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* === Nav Bar === */
+        .nav-bar {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-secondary) 100%);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        .nav-brand {
+            color: var(--white);
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .nav-brand .brand-accent { color: var(--primary); }
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 0;
+        }
+        .nav-links a {
+            display: block;
+            color: var(--gray-400);
+            padding: 1rem 1.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 150ms, background 150ms;
+            text-decoration: none;
+        }
+        .nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.05); }
+        .nav-links a.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        /* === Hero === */
+        .hero {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-secondary) 100%);
+            color: var(--white);
+            padding: 3.5rem 0 3rem;
+        }
+        .hero h1 { font-size: 2.5rem; font-weight: 700; color: var(--white); margin-bottom: 0.75rem; }
+        .hero h1 .highlight { color: var(--primary); }
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-400);
+        }
+        .hero-meta strong { color: var(--gray-300); }
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .stat-pill {
+            background: rgba(134,188,37,0.15);
+            border: 1px solid rgba(134,188,37,0.3);
+            border-radius: 50px;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.875rem;
+            color: var(--primary-light);
+        }
+        .stat-pill strong { font-weight: 700; }
+        .hero-links {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+        }
+        .hero-links a {
+            color: var(--primary-light);
+            border-bottom: 1px dashed rgba(134,188,37,0.4);
+            padding-bottom: 1px;
+        }
+        .hero-links a:hover { color: var(--white); text-decoration: none; border-bottom-color: var(--white); }
+
+        /* === Layout: Sidebar + Main === */
+        .page-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        /* === Table of Contents Sidebar === */
+        .toc {
+            position: sticky;
+            top: 80px;
+            align-self: start;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 1.5rem;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        .toc h3 {
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+        .toc ul { list-style: none; }
+        .toc > ul > li { margin-bottom: 0.75rem; }
+        .toc > ul > li > a {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0;
+        }
+        .toc > ul > li > a:hover { color: var(--secondary); text-decoration: none; }
+        .toc .toc-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .toc .toc-sub { margin-top: 0.25rem; padding-left: 1.25rem; }
+        .toc .toc-sub li { margin-bottom: 0.125rem; }
+        .toc .toc-sub a {
+            font-size: 0.8125rem;
+            color: var(--gray-600);
+            padding: 0.2rem 0;
+            display: block;
+        }
+        .toc .toc-sub a:hover { color: var(--secondary); text-decoration: none; }
+
+        /* === Main Content === */
+        .main-content { min-width: 0; }
+
+        /* === Section Cards (Overview, Legend, Dep Graph) === */
+        .content-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .content-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        .content-card h3 {
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+        }
+        .content-card h3:first-of-type { margin-top: 0; }
+
+        /* === Tables === */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+        .data-table th {
+            background: var(--dark);
+            color: var(--white);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .data-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+        .data-table th:last-child { border-radius: 0 var(--radius-sm) 0 0; }
+        .data-table td {
+            padding: 0.625rem 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: top;
+        }
+        .data-table tr:nth-child(even) td { background: var(--gray-100); }
+        .data-table tr:hover td { background: rgba(13,131,144,0.05); }
+        .data-table td strong { color: var(--dark); }
+
+        /* Compact tables for inline use */
+        .compact-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8125rem;
+            margin-bottom: 1rem;
+        }
+        .compact-table th {
+            background: var(--gray-200);
+            color: var(--dark);
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .compact-table td {
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .compact-table tr:nth-child(even) td { background: rgba(0,0,0,0.02); }
+
+        /* === Code Blocks === */
+        .code-block {
+            background: var(--dark);
+            color: #e0e0e0;
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.8125rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            white-space: pre;
+            margin-bottom: 1.5rem;
+        }
+        .code-block .code-comment { color: var(--gray-500); }
+        .code-block .code-keyword { color: var(--primary); font-weight: 600; }
+        .code-block .code-arrow { color: var(--warning); }
+
+        /* === Epic Cards === */
+        .epic-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .epic-header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .epic-header h2 {
+            font-size: 1.375rem;
+            margin: 0;
+            padding: 0;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .epic-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        .epic-meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+        .epic-meta strong { color: var(--gray-800); }
+        .epic-body { padding: 0 2rem 2rem; }
+
+        /* Left border accent per epic */
+        .epic-e0 { border-left: 5px solid var(--epic-e0); }
+        .epic-e0 .epic-badge { background: var(--epic-e0); }
+        .epic-e1 { border-left: 5px solid var(--epic-e1); }
+        .epic-e1 .epic-badge { background: var(--epic-e1); }
+        .epic-e2 { border-left: 5px solid var(--epic-e2); }
+        .epic-e2 .epic-badge { background: var(--epic-e2); }
+        .epic-e3 { border-left: 5px solid var(--epic-e3); }
+        .epic-e3 .epic-badge { background: var(--epic-e3); }
+        .epic-e4 { border-left: 5px solid var(--epic-e4); }
+        .epic-e4 .epic-badge { background: var(--epic-e4); }
+
+        /* === Story Cards === */
+        .story-card {
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .story-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .story-header h3 {
+            font-size: 1.125rem;
+            margin: 0;
+        }
+        .story-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Priority badges */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.625rem;
+            border-radius: 50px;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-p0 { background: rgba(220,53,69,0.12); color: var(--priority-p0); }
+        .badge-p1 { background: rgba(230,126,34,0.12); color: var(--priority-p1); }
+        .badge-p2 { background: rgba(52,152,219,0.12); color: var(--priority-p2); }
+        .badge-p3 { background: rgba(173,181,189,0.15); color: var(--priority-p3); }
+
+        /* Effort badges */
+        .badge-xs, .badge-s { background: rgba(40,167,69,0.12); color: var(--effort-xs); }
+        .badge-m { background: rgba(52,152,219,0.12); color: var(--effort-m); }
+        .badge-l { background: rgba(230,126,34,0.12); color: var(--effort-l); }
+        .badge-xl, .badge-xxl { background: rgba(220,53,69,0.12); color: var(--effort-xl); }
+
+        /* === Story Detail Fields === */
+        .story-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+        .story-field {
+            background: var(--white);
+            padding: 0.625rem 0.875rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8125rem;
+        }
+        .story-field .field-label {
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.6875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+        .story-field .field-value {
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .acceptance-criteria {
+            background: var(--white);
+            border-left: 3px solid var(--success);
+            padding: 0.75rem 1rem;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin-bottom: 1.25rem;
+            font-size: 0.875rem;
+        }
+        .acceptance-criteria strong { color: var(--success); }
+
+        .story-note {
+            background: var(--white);
+            border-left: 3px solid var(--warning);
+            padding: 0.75rem 1rem;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        /* === Summary Section === */
+        .summary-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .summary-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--primary);
+        }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        .summary-table th {
+            background: var(--dark);
+            color: var(--white);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8125rem;
+        }
+        .summary-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+        .summary-table th:last-child { border-radius: 0 var(--radius-sm) 0 0; }
+        .summary-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .summary-table tr:nth-child(even) td { background: var(--gray-100); }
+        .summary-table tr:last-child td { font-weight: 700; background: rgba(134,188,37,0.08); }
+        .summary-table .epic-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        /* === Footer === */
+        .footer {
+            background: var(--dark);
+            color: var(--gray-500);
+            padding: 2.5rem 0;
+        }
+        .footer-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+        .footer-links a { color: var(--gray-400); font-size: 0.875rem; transition: color 150ms; text-decoration: none; }
+        .footer-links a:hover { color: var(--primary); }
+        .footer-meta { text-align: right; font-size: 0.8125rem; }
+        .footer-meta p { margin-bottom: 0.25rem; }
+        .footer hr { border: none; border-top: 1px solid var(--dark-secondary); margin-bottom: 1rem; }
+        .copyright { text-align: center; font-size: 0.75rem; color: var(--gray-600); margin: 0; }
+
+        /* === Responsive === */
+        @media (max-width: 768px) {
+            .nav-inner { flex-direction: column; align-items: flex-start; }
+            .nav-links { flex-wrap: wrap; }
+            .nav-links a { padding: 0.75rem 1rem; font-size: 0.8125rem; }
+
+            .hero h1 { font-size: 1.75rem; }
+            .hero-meta { flex-direction: column; gap: 0.5rem; }
+            .hero-stats { flex-direction: column; gap: 0.5rem; }
+
+            .page-layout {
+                grid-template-columns: 1fr;
+            }
+            .toc {
+                position: static;
+                max-height: none;
+                margin-bottom: 1rem;
+            }
+
+            .epic-header { flex-direction: column; align-items: flex-start; }
+            .epic-body { padding: 0 1.25rem 1.25rem; }
+            .story-fields { grid-template-columns: 1fr; }
+            .story-header { flex-direction: column; align-items: flex-start; }
+
+            .content-card { padding: 1.25rem; }
+            .data-table, .compact-table { font-size: 0.8125rem; }
+            .data-table th, .data-table td,
+            .compact-table th, .compact-table td {
+                padding: 0.5rem 0.625rem;
+            }
+
+            .footer-grid { flex-direction: column; }
+            .footer-meta { text-align: left; }
+            .footer-links { flex-direction: column; gap: 0.75rem; }
+        }
+
+        /* === Scroll-to-top === */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 300ms, visibility 300ms, transform 150ms;
+            z-index: 50;
+        }
+        .scroll-top.visible { opacity: 1; visibility: visible; }
+        .scroll-top:hover { transform: scale(1.1); background: var(--primary-dark); }
+    </style>
+</head>
+<body>
+
+<!-- ============ NAV BAR ============ -->
+<nav class="nav-bar">
+    <div class="nav-inner">
+        <div class="nav-brand">
+            <span class="brand-accent">DMTSP</span> Fabric Migration Assistant
+        </div>
+        <div class="nav-links">
+            <a href="index.html">One-Pager</a>
+            <a href="roadmap.html">Roadmap</a>
+            <a href="backlog.html" class="active">Backlog</a>
+            <a href="orchestrator.html">Orchestrator</a>
+            <a href="../../index.html">Dashboard</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+    <div class="container">
+        <h1>Product <span class="highlight">Backlog</span></h1>
+        <div class="hero-meta">
+            <span><strong>Version:</strong> 1.0</span>
+            <span><strong>Author:</strong> Keven Markham, VP Enterprise Transformation &mdash; DMTSP</span>
+            <span><strong>Date:</strong> February 6, 2026</span>
+        </div>
+        <div class="hero-stats">
+            <span class="stat-pill"><strong>5</strong> Epics (E0&ndash;E4)</span>
+            <span class="stat-pill"><strong>16</strong> Stories</span>
+            <span class="stat-pill"><strong>1,960</strong> Objects</span>
+            <span class="stat-pill"><strong>~3,544</strong> Accelerated Hours</span>
+        </div>
+        <div class="hero-links">
+            <a href="roadmap.html">Roadmap &mdash; Strategic phases and rationale</a>
+            <a href="orchestrator.html">Orchestrator &mdash; Sprint-by-sprint execution plan</a>
+        </div>
+    </div>
+</section>
+
+<!-- ============ PAGE LAYOUT ============ -->
+<div class="container">
+    <div class="page-layout">
+
+        <!-- ============ TABLE OF CONTENTS ============ -->
+        <aside class="toc" id="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li>
+                    <a href="#overview"><span class="toc-dot" style="background:var(--gray-600)"></span> Backlog Overview</a>
+                    <ul class="toc-sub">
+                        <li><a href="#priority-legend">Priority Legend</a></li>
+                        <li><a href="#effort-scale">Effort Scale</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#dep-graph"><span class="toc-dot" style="background:var(--gray-600)"></span> Dependency Graph</a>
+                </li>
+                <li>
+                    <a href="#epic-e0"><span class="toc-dot" style="background:var(--epic-e0)"></span> E0: Discovery &amp; Setup</a>
+                    <ul class="toc-sub">
+                        <li><a href="#e0-s1">E0-S1: DACPAC Extraction</a></li>
+                        <li><a href="#e0-s2">E0-S2: Source Assessment</a></li>
+                        <li><a href="#e0-s3">E0-S3: Copilot Configuration</a></li>
+                        <li><a href="#e0-s4">E0-S4: Batch Groupings</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#epic-e1"><span class="toc-dot" style="background:var(--epic-e1)"></span> E1: Schema &amp; Foundation</a>
+                    <ul class="toc-sub">
+                        <li><a href="#e1-s1">E1-S1: Fabric DW Creation</a></li>
+                        <li><a href="#e1-s2">E1-S2: Schema Migration</a></li>
+                        <li><a href="#e1-s3">E1-S3: Security Migration</a></li>
+                        <li><a href="#e1-s4">E1-S4: Function Migration</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#epic-e2"><span class="toc-dot" style="background:var(--epic-e2)"></span> E2: Table Migration</a>
+                    <ul class="toc-sub">
+                        <li><a href="#e2-s1">E2-S1: Table Batch 1</a></li>
+                        <li><a href="#e2-s2">E2-S2: Table Batch 2</a></li>
+                        <li><a href="#e2-s3">E2-S3: Table Batch 3</a></li>
+                        <li><a href="#e2-s4">E2-S4: Table Batch 4</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#epic-e3"><span class="toc-dot" style="background:var(--epic-e3)"></span> E3: View Migration</a>
+                    <ul class="toc-sub">
+                        <li><a href="#e3-s1">E3-S1: View Batch 1</a></li>
+                        <li><a href="#e3-s2">E3-S2: View Batch 2</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#epic-e4"><span class="toc-dot" style="background:var(--epic-e4)"></span> E4: Connection Rerouting</a>
+                    <ul class="toc-sub">
+                        <li><a href="#e4-s1">E4-S1: Connection Inventory</a></li>
+                        <li><a href="#e4-s2">E4-S2: Execute Rerouting</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#summary"><span class="toc-dot" style="background:var(--primary)"></span> Summary</a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- ============ MAIN CONTENT ============ -->
+        <main class="main-content">
+
+            <!-- ===== BACKLOG OVERVIEW ===== -->
+            <div class="content-card" id="overview">
+                <h2>Backlog Overview</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Epics</td><td><strong>5 (E0&ndash;E4)</strong></td></tr>
+                        <tr><td>Stories</td><td><strong>16</strong></td></tr>
+                        <tr><td>Total Scope</td><td><strong>1,960 objects</strong></td></tr>
+                        <tr><td>Total Accelerated Hours</td><td><strong>~3,544</strong></td></tr>
+                        <tr><td>Sprint Range</td><td><strong>0&ndash;5, 15</strong></td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="priority-legend">Priority Legend</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Meaning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge badge-p0">P0</span></td><td>Blocker &mdash; must complete before any downstream work</td></tr>
+                        <tr><td><span class="badge badge-p1">P1</span></td><td>Critical &mdash; on the sprint critical path</td></tr>
+                        <tr><td><span class="badge badge-p2">P2</span></td><td>Important &mdash; needed for sprint completion</td></tr>
+                        <tr><td><span class="badge badge-p3">P3</span></td><td>Nice-to-have &mdash; can slip to next sprint if needed</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 id="effort-scale">Effort Scale</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Size</th>
+                            <th>Hours</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="badge badge-xs">XS</span></td><td>1&ndash;10</td><td>Single config change</td></tr>
+                        <tr><td><span class="badge badge-s">S</span></td><td>11&ndash;40</td><td>Foundation object migration</td></tr>
+                        <tr><td><span class="badge badge-m">M</span></td><td>41&ndash;150</td><td>View batch migration</td></tr>
+                        <tr><td><span class="badge badge-l">L</span></td><td>151&ndash;400</td><td>Table batch migration</td></tr>
+                        <tr><td><span class="badge badge-xl">XL</span></td><td>401&ndash;700</td><td>Full sprint table + view batch</td></tr>
+                        <tr><td><span class="badge badge-xxl">XXL</span></td><td>700+</td><td>Multi-sprint workstream</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- ===== DEPENDENCY GRAPH ===== -->
+            <div class="content-card" id="dep-graph">
+                <h2>Dependency Graph</h2>
+                <div class="code-block"><span class="code-keyword">E0: Discovery &amp; Setup</span> (Sprint 0)
+  |
+  <span class="code-arrow">&#9492;&#9472;&#9472;&#9654;</span> <span class="code-keyword">E1: Schema &amp; Foundation</span> (Sprint 1)
+         |
+         <span class="code-arrow">&#9500;&#9472;&#9472;&#9654;</span> <span class="code-keyword">E2: Table Migration</span> (Sprints 2&ndash;5)
+         |       |
+         |       <span class="code-arrow">&#9492;&#9472;&#9472;&#9654;</span> <span class="code-keyword">E4: Connection Rerouting</span> (Sprint 15)
+         |
+         <span class="code-arrow">&#9492;&#9472;&#9472;&#9654;</span> <span class="code-keyword">E3: View Migration</span> (Sprints 2&ndash;3)
+                 |
+                 <span class="code-arrow">&#9492;&#9472;&#9472;&#9654;</span> <span class="code-keyword">E4: Connection Rerouting</span> (Sprint 15)</div>
+            </div>
+
+            <!-- ===== EPIC E0 ===== -->
+            <div class="epic-card epic-e0" id="epic-e0">
+                <div class="epic-header">
+                    <h2><span class="epic-badge">E0</span> Discovery &amp; Setup</h2>
+                    <div class="epic-meta">
+                        <span><strong>Sprint:</strong> 0</span>
+                        <span><strong>Total Hours:</strong> ~120</span>
+                    </div>
+                </div>
+                <div class="epic-body">
+
+                    <!-- E0-S1 -->
+                    <div class="story-card" id="e0-s1">
+                        <div class="story-header">
+                            <h3>E0-S1: DACPAC Extraction</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p0">P0</span>
+                                <span class="badge badge-s">S (20 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">0</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Sr Data Engineer</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">Synapse read-only access</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> DACPAC extracted containing all 1,960 objects; verified via object count comparison against source
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E0-S1.T1</td><td>Connect to Synapse SQL pool via VS 2022 SSDT</td><td>2</td><td>Sr Data Engineer</td></tr>
+                                <tr><td>E0-S1.T2</td><td>Extract DACPAC (primary method: VS 2022)</td><td>4</td><td>Sr Data Engineer</td></tr>
+                                <tr><td>E0-S1.T3</td><td>Verify DACPAC object count (1,960 objects)</td><td>4</td><td>Sr Data Engineer</td></tr>
+                                <tr><td>E0-S1.T4</td><td>Extract DACPAC via SqlPackage CLI (backup method)</td><td>4</td><td>Sr Data Engineer</td></tr>
+                                <tr><td>E0-S1.T5</td><td>Document extraction procedure in runbook</td><td>6</td><td>Sr Data Engineer</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- E0-S2 -->
+                    <div class="story-card" id="e0-s2">
+                        <div class="story-header">
+                            <h3>E0-S2: Source Assessment</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p0">P0</span>
+                                <span class="badge badge-m">M (40 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">0</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Sr Data Engineer, DBA</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E0-S1 (DACPAC available)</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> Migration Assistant assessment complete; incompatibility report reviewed; primary vs. dependent failures triaged
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E0-S2.T1</td><td>Upload DACPAC to Fabric Migration Assistant</td><td>4</td><td>Sr Data Engineer</td></tr>
+                                <tr><td>E0-S2.T2</td><td>Review object inventory and migration status</td><td>8</td><td>Sr Data Engineer, DBA</td></tr>
+                                <tr><td>E0-S2.T3</td><td>Analyze incompatibility report</td><td>12</td><td>DBA</td></tr>
+                                <tr><td>E0-S2.T4</td><td>Triage primary vs. dependent failures</td><td>8</td><td>DBA, Sr Data Engineer</td></tr>
+                                <tr><td>E0-S2.T5</td><td>Document assessment findings</td><td>8</td><td>Sr Data Engineer</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- E0-S3 -->
+                    <div class="story-card" id="e0-s3">
+                        <div class="story-header">
+                            <h3>E0-S3: Copilot Configuration</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p1">P1</span>
+                                <span class="badge badge-s">S (30 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">0</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Sr Data Engineer, Architect</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">Fabric F2/P1 capacity provisioned</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> Copilot enabled and tested; prompt library initialized with 10+ migration fix prompts
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E0-S3.T1</td><td>Verify F2/P1 capacity assignment</td><td>2</td><td>Architect</td></tr>
+                                <tr><td>E0-S3.T2</td><td>Enable Copilot in Fabric admin settings</td><td>4</td><td>Architect</td></tr>
+                                <tr><td>E0-S3.T3</td><td>Test Copilot fix suggestions against sample failed objects</td><td>8</td><td>Sr Data Engineer</td></tr>
+                                <tr><td>E0-S3.T4</td><td>Initialize prompt library with pre-built fix patterns</td><td>12</td><td>Sr Data Engineer</td></tr>
+                                <tr><td>E0-S3.T5</td><td>Document Copilot configuration and prompt catalog</td><td>4</td><td>Sr Data Engineer</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- E0-S4 -->
+                    <div class="story-card" id="e0-s4">
+                        <div class="story-header">
+                            <h3>E0-S4: Batch Groupings</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p1">P1</span>
+                                <span class="badge badge-s">S (30 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">0</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Architect, DBA</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E0-S2 (assessment complete)</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> 4 table batches and 2 view batches defined; dependency ordering confirmed; batch assignments documented
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E0-S4.T1</td><td>Analyze table dependencies and clustering</td><td>10</td><td>DBA, Architect</td></tr>
+                                <tr><td>E0-S4.T2</td><td>Define 4 table batches (~380 each)</td><td>6</td><td>Architect</td></tr>
+                                <tr><td>E0-S4.T3</td><td>Define 2 view batches (~180 each)</td><td>4</td><td>Architect</td></tr>
+                                <tr><td>E0-S4.T4</td><td>Validate dependency ordering across batches</td><td>6</td><td>DBA</td></tr>
+                                <tr><td>E0-S4.T5</td><td>Document batch assignments and migration sequence</td><td>4</td><td>Architect</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ===== EPIC E1 ===== -->
+            <div class="epic-card epic-e1" id="epic-e1">
+                <div class="epic-header">
+                    <h2><span class="epic-badge">E1</span> Schema &amp; Foundation</h2>
+                    <div class="epic-meta">
+                        <span><strong>Sprint:</strong> 1</span>
+                        <span><strong>Total Hours:</strong> ~91</span>
+                    </div>
+                </div>
+                <div class="epic-body">
+
+                    <!-- E1-S1 -->
+                    <div class="story-card" id="e1-s1">
+                        <div class="story-header">
+                            <h3>E1-S1: Fabric DW Creation</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p0">P0</span>
+                                <span class="badge badge-xs">XS (10 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">1</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">DBA</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E0 complete; Fabric workspace provisioned</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> Target Fabric Data Warehouse created; SQL analytics endpoint accessible
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E1-S1.T1</td><td>Create Fabric Data Warehouse in target workspace</td><td>4</td><td>DBA</td></tr>
+                                <tr><td>E1-S1.T2</td><td>Configure warehouse settings (collation, defaults)</td><td>3</td><td>DBA</td></tr>
+                                <tr><td>E1-S1.T3</td><td>Verify SQL analytics endpoint connectivity</td><td>3</td><td>DBA</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- E1-S2 -->
+                    <div class="story-card" id="e1-s2">
+                        <div class="story-header">
+                            <h3>E1-S2: Schema Migration</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p0">P0</span>
+                                <span class="badge badge-xs">XS (3 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">1</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">DBA</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E1-S1</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> All 16 schemas created in target DW; names match source
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E1-S2.T1</td><td>Deploy 16 schemas via Migration Assistant</td><td>2</td><td>DBA</td></tr>
+                                <tr><td>E1-S2.T2</td><td>Verify schema names and properties</td><td>1</td><td>DBA</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- E1-S3 -->
+                    <div class="story-card" id="e1-s3">
+                        <div class="story-header">
+                            <h3>E1-S3: Security Migration</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p0">P0</span>
+                                <span class="badge badge-s">S (40 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">1</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">DBA</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E1-S2; Entra ID groups configured</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> All 40 security objects migrated; SQL auth users mapped to Entra ID; permissions verified
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E1-S3.T1</td><td>Deploy automated security objects via DACPAC</td><td>4</td><td>DBA</td></tr>
+                                <tr><td>E1-S3.T2</td><td>Map SQL-authenticated users to Entra ID identities</td><td>16</td><td>DBA</td></tr>
+                                <tr><td>E1-S3.T3</td><td>Configure row-level security policies</td><td>10</td><td>DBA</td></tr>
+                                <tr><td>E1-S3.T4</td><td>Verify GRANT/REVOKE/DENY permissions match source</td><td>6</td><td>DBA</td></tr>
+                                <tr><td>E1-S3.T5</td><td>Security audit and sign-off</td><td>4</td><td>DBA, Architect</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- E1-S4 -->
+                    <div class="story-card" id="e1-s4">
+                        <div class="story-header">
+                            <h3>E1-S4: Function Migration</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p1">P1</span>
+                                <span class="badge badge-xs">XS (2 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">1</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">DBA</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E1-S2</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> All 4 functions migrated and tested
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E1-S4.T1</td><td>Deploy 4 functions via Migration Assistant</td><td>1</td><td>DBA</td></tr>
+                                <tr><td>E1-S4.T2</td><td>Test function execution in target DW</td><td>1</td><td>DBA</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ===== EPIC E2 ===== -->
+            <div class="epic-card epic-e2" id="epic-e2">
+                <div class="epic-header">
+                    <h2><span class="epic-badge">E2</span> Table Migration</h2>
+                    <div class="epic-meta">
+                        <span><strong>Sprints:</strong> 2&ndash;5</span>
+                        <span><strong>Total Hours:</strong> ~2,292</span>
+                    </div>
+                </div>
+                <div class="epic-body">
+
+                    <!-- E2-S1 -->
+                    <div class="story-card" id="e2-s1">
+                        <div class="story-header">
+                            <h3>E2-S1: Table Batch 1 (380 tables)</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p1">P1</span>
+                                <span class="badge badge-xl">XL (646 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">2</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Data Engineers (4), DBA, Sr Data Engineers</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E1 complete</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> 380 tables migrated (DDL + data); row count validation 100% pass; checksum validation pass
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E2-S1.T1</td><td>Upload Batch 1 DACPAC to Migration Assistant</td><td>4</td><td>Sr Data Engineer</td></tr>
+                                <tr><td>E2-S1.T2</td><td>Review auto-translated DDL for 380 tables</td><td>30</td><td>Data Engineers (4)</td></tr>
+                                <tr><td>E2-S1.T3</td><td>Fix flagged incompatibilities (Copilot-assisted)</td><td>60</td><td>Sr Data Engineers, DBA</td></tr>
+                                <tr><td>E2-S1.T4</td><td>Deploy table DDL to target Fabric DW</td><td>20</td><td>Data Engineers (4)</td></tr>
+                                <tr><td>E2-S1.T5</td><td>Configure Data Factory copy jobs (standard tables)</td><td>80</td><td>Data Engineers (4)</td></tr>
+                                <tr><td>E2-S1.T6</td><td>Configure partitioned copy jobs (large tables)</td><td>40</td><td>Sr Data Engineer</td></tr>
+                                <tr><td>E2-S1.T7</td><td>Execute data copy jobs</td><td>120</td><td>Data Engineers (4)</td></tr>
+                                <tr><td>E2-S1.T8</td><td>Row count validation</td><td>60</td><td>Data Engineers (4)</td></tr>
+                                <tr><td>E2-S1.T9</td><td>Checksum validation on key columns</td><td>80</td><td>Data Engineers (4), QA Lead</td></tr>
+                                <tr><td>E2-S1.T10</td><td>Sample record spot-checks</td><td>40</td><td>Data Engineers (2)</td></tr>
+                                <tr><td>E2-S1.T11</td><td>Document fix patterns and update prompt library</td><td>12</td><td>Sr Data Engineer</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- E2-S2 -->
+                    <div class="story-card" id="e2-s2">
+                        <div class="story-header">
+                            <h3>E2-S2: Table Batch 2 (380 tables)</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p1">P1</span>
+                                <span class="badge badge-xl">XL (646 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">3</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Data Engineers (4), DBA, Sr Data Engineers</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E2-S1</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> 760 cumulative tables migrated; all validation gates pass
+                        </div>
+                        <div class="story-note">
+                            Tasks mirror E2-S1 structure. Team applies patterns learned in Batch 1 &mdash; expect fix resolution to be faster.
+                        </div>
+                    </div>
+
+                    <!-- E2-S3 -->
+                    <div class="story-card" id="e2-s3">
+                        <div class="story-header">
+                            <h3>E2-S3: Table Batch 3 (380 tables)</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p1">P1</span>
+                                <span class="badge badge-l">L (500 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">4</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Data Engineers (3), DBA</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E2-S2</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> 1,140 cumulative tables migrated; all validation gates pass
+                        </div>
+                        <div class="story-note">
+                            Reduced capacity (3 DEs instead of 4; 1 DE allocated to Acc 2 ADF work).
+                        </div>
+                    </div>
+
+                    <!-- E2-S4 -->
+                    <div class="story-card" id="e2-s4">
+                        <div class="story-header">
+                            <h3>E2-S4: Table Batch 4 (398 tables, final)</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p1">P1</span>
+                                <span class="badge badge-l">L (500 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">5</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Data Engineers (3), DBA</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E2-S3</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> 1,538 / 1,538 tables migrated (100%); TABLE MIGRATION COMPLETE
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ===== EPIC E3 ===== -->
+            <div class="epic-card epic-e3" id="epic-e3">
+                <div class="epic-header">
+                    <h2><span class="epic-badge">E3</span> View Migration</h2>
+                    <div class="epic-meta">
+                        <span><strong>Sprints:</strong> 2&ndash;3</span>
+                        <span><strong>Total Hours:</strong> ~272</span>
+                    </div>
+                </div>
+                <div class="epic-body">
+
+                    <!-- E3-S1 -->
+                    <div class="story-card" id="e3-s1">
+                        <div class="story-header">
+                            <h3>E3-S1: View Batch 1 (180 views)</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p2">P2</span>
+                                <span class="badge badge-m">M (136 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">2</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Data Engineer</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E2-S1 (Batch 1 tables deployed)</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> 180 views migrated; dependency resolution confirmed; view queries execute correctly
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E3-S1.T1</td><td>Upload view definitions to Migration Assistant</td><td>4</td><td>Data Engineer</td></tr>
+                                <tr><td>E3-S1.T2</td><td>Review auto-translated view DDL</td><td>16</td><td>Data Engineer</td></tr>
+                                <tr><td>E3-S1.T3</td><td>Fix incompatible view constructs (Copilot-assisted)</td><td>24</td><td>Data Engineer, Sr Data Engineer</td></tr>
+                                <tr><td>E3-S1.T4</td><td>Deploy view DDL to target Fabric DW</td><td>12</td><td>Data Engineer</td></tr>
+                                <tr><td>E3-S1.T5</td><td>Validate view query execution</td><td>30</td><td>Data Engineer</td></tr>
+                                <tr><td>E3-S1.T6</td><td>Verify view-to-table dependency resolution</td><td>20</td><td>Data Engineer</td></tr>
+                                <tr><td>E3-S1.T7</td><td>Row count comparison (view results vs. source)</td><td>20</td><td>Data Engineer</td></tr>
+                                <tr><td>E3-S1.T8</td><td>Document view-specific fix patterns</td><td>10</td><td>Data Engineer</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- E3-S2 -->
+                    <div class="story-card" id="e3-s2">
+                        <div class="story-header">
+                            <h3>E3-S2: View Batch 2 (182 views, final)</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p2">P2</span>
+                                <span class="badge badge-m">M (136 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">3</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Data Engineer</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E3-S1; E2-S2</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> 362 / 362 views migrated (100%); VIEW MIGRATION COMPLETE
+                        </div>
+                        <div class="story-note">
+                            Tasks mirror E3-S1 structure.
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ===== EPIC E4 ===== -->
+            <div class="epic-card epic-e4" id="epic-e4">
+                <div class="epic-header">
+                    <h2><span class="epic-badge">E4</span> Connection Rerouting</h2>
+                    <div class="epic-meta">
+                        <span><strong>Sprint:</strong> 15</span>
+                        <span><strong>Total Hours:</strong> ~15</span>
+                    </div>
+                </div>
+                <div class="epic-body">
+
+                    <!-- E4-S1 -->
+                    <div class="story-card" id="e4-s1">
+                        <div class="story-header">
+                            <h3>E4-S1: Connection Inventory</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p1">P1</span>
+                                <span class="badge badge-xs">XS (5 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">15</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">DBA</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">All migration complete</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> Complete inventory of Synapse-pointing connections
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E4-S1.T1</td><td>Query Fabric REST API for all connections</td><td>2</td><td>DBA</td></tr>
+                                <tr><td>E4-S1.T2</td><td>Filter and catalog Synapse-pointing connections</td><td>2</td><td>DBA</td></tr>
+                                <tr><td>E4-S1.T3</td><td>Create rerouting execution plan</td><td>1</td><td>DBA</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- E4-S2 -->
+                    <div class="story-card" id="e4-s2">
+                        <div class="story-header">
+                            <h3>E4-S2: Execute Connection Rerouting</h3>
+                            <div class="story-tags">
+                                <span class="badge badge-p1">P1</span>
+                                <span class="badge badge-xs">XS (10 hrs)</span>
+                            </div>
+                        </div>
+                        <div class="story-fields">
+                            <div class="story-field">
+                                <span class="field-label">Sprint</span>
+                                <span class="field-value">15</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Owner</span>
+                                <span class="field-value">Data Engineers, DBA</span>
+                            </div>
+                            <div class="story-field">
+                                <span class="field-label">Depends On</span>
+                                <span class="field-value">E4-S1</span>
+                            </div>
+                        </div>
+                        <div class="acceptance-criteria">
+                            <strong>Acceptance Criteria:</strong> All connections rerouted; Power BI refresh succeeds; pipelines validated
+                        </div>
+                        <table class="compact-table">
+                            <thead>
+                                <tr><th>ID</th><th>Task</th><th>Hours</th><th>Role</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>E4-S2.T1</td><td>Batch PATCH connections via REST API</td><td>3</td><td>DBA</td></tr>
+                                <tr><td>E4-S2.T2</td><td>Validate Power BI semantic model refresh</td><td>2</td><td>Data Engineer</td></tr>
+                                <tr><td>E4-S2.T3</td><td>Validate downstream pipeline connections</td><td>2</td><td>Data Engineer</td></tr>
+                                <tr><td>E4-S2.T4</td><td>Run smoke tests on critical data paths</td><td>2</td><td>Data Engineer, QA Lead</td></tr>
+                                <tr><td>E4-S2.T5</td><td>Sign-off and document rerouting results</td><td>1</td><td>DBA</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ===== SUMMARY ===== -->
+            <div class="summary-card" id="summary">
+                <h2>Summary</h2>
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Epic</th>
+                            <th>Stories</th>
+                            <th>Sprint(s)</th>
+                            <th>Hours</th>
+                            <th>Objects</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="epic-dot" style="background:var(--epic-e0)"></span>E0: Discovery &amp; Setup</td>
+                            <td>4</td>
+                            <td>0</td>
+                            <td>~120</td>
+                            <td>&mdash;</td>
+                        </tr>
+                        <tr>
+                            <td><span class="epic-dot" style="background:var(--epic-e1)"></span>E1: Schema &amp; Foundation</td>
+                            <td>4</td>
+                            <td>1</td>
+                            <td>~91</td>
+                            <td>60</td>
+                        </tr>
+                        <tr>
+                            <td><span class="epic-dot" style="background:var(--epic-e2)"></span>E2: Table Migration</td>
+                            <td>4</td>
+                            <td>2&ndash;5</td>
+                            <td>~2,292</td>
+                            <td>1,538</td>
+                        </tr>
+                        <tr>
+                            <td><span class="epic-dot" style="background:var(--epic-e3)"></span>E3: View Migration</td>
+                            <td>2</td>
+                            <td>2&ndash;3</td>
+                            <td>~272</td>
+                            <td>362</td>
+                        </tr>
+                        <tr>
+                            <td><span class="epic-dot" style="background:var(--epic-e4)"></span>E4: Connection Rerouting</td>
+                            <td>2</td>
+                            <td>15</td>
+                            <td>~15</td>
+                            <td>&mdash;</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td><strong>16</strong></td>
+                            <td><strong>0&ndash;5, 15</strong></td>
+                            <td><strong>~2,790</strong></td>
+                            <td><strong>1,960</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-links">
+                <a href="index.html">One-Pager</a>
+                <a href="roadmap.html">Roadmap</a>
+                <a href="backlog.html">Backlog</a>
+                <a href="orchestrator.html">Orchestrator</a>
+                <a href="../../index.html">Accelerators Dashboard</a>
+            </div>
+            <div class="footer-meta">
+                <p><strong style="color: var(--gray-400);">Author:</strong> Keven Markham, VP Enterprise Transformation</p>
+                <p><strong style="color: var(--gray-400);">Date:</strong> February 6, 2026 &nbsp;|&nbsp; <strong style="color: var(--gray-400);">Version:</strong> 1.0</p>
+            </div>
+        </div>
+        <hr>
+        <p class="copyright">DMTSP Fabric Migration Accelerators &mdash; Internal Use Only</p>
+    </div>
+</footer>
+
+<!-- ============ SCROLL TO TOP ============ -->
+<button class="scroll-top" id="scroll-top-btn" aria-label="Scroll to top">&#8593;</button>
+
+<script>
+(function() {
+    /* === Scroll-to-top button === */
+    var scrollBtn = document.getElementById('scroll-top-btn');
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 400) {
+            scrollBtn.classList.add('visible');
+        } else {
+            scrollBtn.classList.remove('visible');
+        }
+    });
+    scrollBtn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    /* === Active TOC highlighting on scroll === */
+    var tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+    var sections = [];
+    tocLinks.forEach(function(link) {
+        var id = link.getAttribute('href').slice(1);
+        var el = document.getElementById(id);
+        if (el) sections.push({ id: id, el: el, link: link });
+    });
+
+    function updateActiveToc() {
+        var scrollPos = window.scrollY + 120;
+        var active = null;
+        for (var i = sections.length - 1; i >= 0; i--) {
+            if (sections[i].el.offsetTop <= scrollPos) {
+                active = sections[i];
+                break;
+            }
+        }
+        tocLinks.forEach(function(link) {
+            link.style.color = '';
+            link.style.fontWeight = '';
+        });
+        if (active) {
+            active.link.style.color = 'var(--secondary)';
+            active.link.style.fontWeight = '700';
+        }
+    }
+
+    window.addEventListener('scroll', updateActiveToc);
+    updateActiveToc();
+})();
+</script>
+
+</body>
+</html>

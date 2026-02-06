@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric Migration Assistant — Sprint Orchestrator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* === Design Tokens (from parent styles.css) === */
+        :root {
+            --primary: #86BC25;
+            --primary-dark: #6ba31b;
+            --primary-light: #a8d84e;
+            --secondary: #0D8390;
+            --secondary-dark: #0a6b75;
+            --accent: #26890D;
+            --dark: #1a1a2e;
+            --dark-secondary: #2d2d44;
+            --light: #f8f9fa;
+            --white: #ffffff;
+            --gray-100: #f1f3f5;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+            /* Sprint accent colors */
+            --sprint0: #0D8390;
+            --sprint1: #26890D;
+            --sprint2: #86BC25;
+            --sprint3: #6ba31b;
+            --sprint4: #e67e22;
+            --sprint5: #dc3545;
+            --sprint15: #8e44ad;
+        }
+
+        /* === Reset & Base === */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-primary);
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--gray-100);
+        }
+        h1, h2, h3, h4, h5 { font-weight: 600; line-height: 1.3; color: var(--dark); }
+        p { margin-bottom: 1rem; }
+        a { color: var(--secondary); text-decoration: none; }
+        a:hover { color: var(--secondary-dark); text-decoration: underline; }
+
+        /* === Nav Bar === */
+        .top-nav {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-secondary) 100%);
+            padding: 0 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+        .top-nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+        }
+        .top-nav-brand {
+            color: var(--white);
+            font-weight: 700;
+            font-size: 0.9375rem;
+            letter-spacing: -0.25px;
+        }
+        .top-nav-brand span { color: var(--primary); }
+        .top-nav-links {
+            display: flex;
+            gap: 0.25rem;
+            list-style: none;
+        }
+        .top-nav-links a {
+            color: var(--gray-400);
+            font-size: 0.8125rem;
+            font-weight: 500;
+            padding: 0.5rem 0.875rem;
+            border-radius: var(--radius-sm);
+            transition: color 150ms, background 150ms;
+            text-decoration: none;
+        }
+        .top-nav-links a:hover {
+            color: var(--white);
+            background: rgba(255,255,255,0.08);
+            text-decoration: none;
+        }
+        .top-nav-links a.active {
+            color: var(--primary);
+            background: rgba(134,188,37,0.12);
+        }
+
+        /* === Layout === */
+        .page-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+            align-items: start;
+        }
+
+        /* === Table of Contents === */
+        .toc {
+            position: sticky;
+            top: 72px;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 1.25rem;
+            max-height: calc(100vh - 88px);
+            overflow-y: auto;
+        }
+        .toc h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray-500);
+            margin-bottom: 0.75rem;
+        }
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+        .toc li { margin-bottom: 0.125rem; }
+        .toc a {
+            display: block;
+            font-size: 0.8125rem;
+            color: var(--gray-600);
+            padding: 0.3rem 0.5rem;
+            border-radius: var(--radius-sm);
+            border-left: 2px solid transparent;
+            transition: all 150ms;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            color: var(--dark);
+            background: var(--gray-100);
+            border-left-color: var(--primary);
+            text-decoration: none;
+        }
+        .toc a.active {
+            color: var(--primary-dark);
+            background: rgba(134,188,37,0.08);
+            border-left-color: var(--primary);
+            font-weight: 600;
+        }
+        .toc .toc-indent { padding-left: 1.25rem; }
+        .toc .toc-section-label {
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0.75rem 0.5rem 0.25rem;
+        }
+
+        /* === Main Content === */
+        .main-content { min-width: 0; }
+
+        /* === Hero Header === */
+        .page-hero {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-secondary) 100%);
+            color: var(--white);
+            padding: 3rem 2.5rem;
+            border-radius: var(--radius-xl);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+        .page-hero-badge {
+            display: inline-block;
+            background: rgba(134,188,37,0.2);
+            color: var(--primary-light);
+            padding: 0.375rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(134,188,37,0.3);
+        }
+        .page-hero h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+        .page-hero h1 .highlight { color: var(--primary); }
+        .page-hero-subtitle {
+            font-size: 1rem;
+            color: var(--gray-400);
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+        }
+        .page-hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-size: 0.8125rem;
+            color: var(--gray-500);
+        }
+        .page-hero-meta strong { color: var(--gray-300); }
+        .page-hero-links {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .page-hero-links a {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--primary-light);
+            background: rgba(134,188,37,0.12);
+            border: 1px solid rgba(134,188,37,0.25);
+            padding: 0.3rem 0.75rem;
+            border-radius: 50px;
+            transition: background 150ms;
+            text-decoration: none;
+        }
+        .page-hero-links a:hover {
+            background: rgba(134,188,37,0.25);
+            text-decoration: none;
+        }
+
+        /* === Section Card === */
+        .section-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        /* === Sprint Card === */
+        .sprint-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        .sprint-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            cursor: pointer;
+            user-select: none;
+            transition: background 150ms;
+        }
+        .sprint-card-header:hover { background: var(--gray-100); }
+        .sprint-badge {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--white);
+            flex-shrink: 0;
+        }
+        .sprint-badge.s0 { background: var(--sprint0); }
+        .sprint-badge.s1 { background: var(--sprint1); }
+        .sprint-badge.s2 { background: var(--sprint2); }
+        .sprint-badge.s3 { background: var(--sprint3); }
+        .sprint-badge.s4 { background: var(--sprint4); }
+        .sprint-badge.s5 { background: var(--sprint5); }
+        .sprint-badge.s15 { background: var(--sprint15); }
+        .sprint-card-title {
+            flex: 1;
+        }
+        .sprint-card-title h2 {
+            font-size: 1.25rem;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        .sprint-card-title p {
+            font-size: 0.8125rem;
+            color: var(--gray-600);
+            margin: 0.25rem 0 0;
+        }
+        .sprint-card-meta {
+            display: flex;
+            gap: 1rem;
+            flex-shrink: 0;
+        }
+        .sprint-meta-pill {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+        .sprint-chevron {
+            width: 24px;
+            height: 24px;
+            color: var(--gray-500);
+            transition: transform 250ms;
+            flex-shrink: 0;
+        }
+        .sprint-card.open .sprint-chevron { transform: rotate(180deg); }
+        .sprint-card-body {
+            padding: 0 2rem 2rem;
+            display: none;
+            border-left: 4px solid var(--gray-300);
+            margin-left: 0;
+        }
+        .sprint-card.open .sprint-card-body { display: block; }
+        .sprint-card.s0-border .sprint-card-body { border-left-color: var(--sprint0); }
+        .sprint-card.s1-border .sprint-card-body { border-left-color: var(--sprint1); }
+        .sprint-card.s2-border .sprint-card-body { border-left-color: var(--sprint2); }
+        .sprint-card.s3-border .sprint-card-body { border-left-color: var(--sprint3); }
+        .sprint-card.s4-border .sprint-card-body { border-left-color: var(--sprint4); }
+        .sprint-card.s5-border .sprint-card-body { border-left-color: var(--sprint5); }
+        .sprint-card.s15-border .sprint-card-body { border-left-color: var(--sprint15); }
+
+        /* === Criteria Boxes === */
+        .criteria-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .criteria-box {
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+        }
+        .criteria-box h4 {
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+        .criteria-box.entry { background: rgba(13,131,144,0.05); border-color: rgba(13,131,144,0.2); }
+        .criteria-box.entry h4 { color: var(--secondary); }
+        .criteria-box.exit { background: rgba(134,188,37,0.05); border-color: rgba(134,188,37,0.2); }
+        .criteria-box.exit h4 { color: var(--primary-dark); }
+        .criteria-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        .criteria-box li {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            padding: 0.25rem 0;
+            padding-left: 1.25rem;
+            position: relative;
+        }
+        .criteria-box li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6rem;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        .criteria-box.entry li::before { background: var(--secondary); }
+        .criteria-box.exit li::before { background: var(--primary); }
+
+        /* === Tables === */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8125rem;
+        }
+        th {
+            background: var(--dark);
+            color: var(--white);
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem 0.875rem;
+            white-space: nowrap;
+        }
+        td {
+            padding: 0.625rem 0.875rem;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: top;
+        }
+        tr:last-child td { border-bottom: none; }
+        tbody tr:nth-child(even) { background: var(--gray-100); }
+        tbody tr:hover { background: rgba(134,188,37,0.06); }
+        td:first-child { font-weight: 500; }
+        .task-id {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.75rem;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        /* === Sub-headings inside sprint cards === */
+        .sprint-card-body h3 {
+            font-size: 1.0625rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--dark);
+        }
+        .sprint-card-body h3:first-child { margin-top: 1rem; }
+        .sprint-card-body h4 {
+            font-size: 0.9375rem;
+            margin: 1.25rem 0 0.5rem;
+            color: var(--gray-700);
+        }
+
+        /* === Milestone Timeline === */
+        .milestones {
+            margin: 1rem 0;
+        }
+        .milestone-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            position: relative;
+        }
+        .milestone-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 38px;
+            bottom: -4px;
+            width: 2px;
+            background: var(--gray-300);
+        }
+        .milestone-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            flex-shrink: 0;
+            z-index: 1;
+        }
+        .milestone-dot.complete {
+            background: var(--primary);
+            color: var(--white);
+        }
+        .milestone-content {
+            flex: 1;
+        }
+        .milestone-content strong {
+            font-size: 0.875rem;
+            display: block;
+            margin-bottom: 0.125rem;
+        }
+        .milestone-content span {
+            font-size: 0.8125rem;
+            color: var(--gray-600);
+        }
+        .milestone-day {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--secondary);
+            flex-shrink: 0;
+            background: rgba(13,131,144,0.08);
+            padding: 0.2rem 0.625rem;
+            border-radius: 50px;
+        }
+
+        /* === Blockers === */
+        .blockers {
+            background: rgba(220,53,69,0.04);
+            border: 1px solid rgba(220,53,69,0.2);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            margin-top: 1rem;
+        }
+        .blockers h4 {
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+        }
+        .blockers ul {
+            list-style: none;
+            padding: 0;
+        }
+        .blockers li {
+            font-size: 0.8125rem;
+            color: var(--gray-700);
+            padding: 0.375rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .blockers li::before {
+            content: '!';
+            position: absolute;
+            left: 0;
+            top: 0.375rem;
+            width: 16px;
+            height: 16px;
+            background: var(--danger);
+            color: var(--white);
+            border-radius: 50%;
+            font-size: 0.625rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* === Cumulative Progress === */
+        .cumulative-progress {
+            background: var(--gray-100);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.25rem;
+            margin-top: 1rem;
+        }
+        .cumulative-progress p {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        .progress-item {
+            margin-bottom: 0.5rem;
+        }
+        .progress-item-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8125rem;
+            margin-bottom: 0.25rem;
+        }
+        .progress-item-label span:first-child { color: var(--gray-700); font-weight: 500; }
+        .progress-item-label span:last-child { color: var(--secondary); font-weight: 600; }
+        .progress-bar {
+            height: 8px;
+            background: var(--gray-300);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%);
+            transition: width 600ms ease;
+        }
+
+        /* === Code Blocks === */
+        pre {
+            background: var(--dark);
+            color: #e0e0e0;
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.8125rem;
+            line-height: 1.6;
+            margin: 1rem 0;
+        }
+        pre code {
+            color: inherit;
+            font-family: inherit;
+        }
+        code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.8125rem;
+            background: var(--gray-100);
+            padding: 0.125rem 0.375rem;
+            border-radius: var(--radius-sm);
+            color: var(--secondary-dark);
+        }
+        pre .kw { color: #c792ea; }
+        pre .str { color: #c3e88d; }
+        pre .cmt { color: #546e7a; }
+        pre .fn { color: #82aaff; }
+
+        /* === Sprint Timeline Visual === */
+        .timeline-visual {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        .timeline-track {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            min-width: 700px;
+            padding: 1rem 0;
+        }
+        .timeline-node {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        .timeline-node::after {
+            content: '';
+            position: absolute;
+            top: 16px;
+            right: -50%;
+            width: 100%;
+            height: 3px;
+            background: var(--gray-300);
+            z-index: 0;
+        }
+        .timeline-node:last-child::after { display: none; }
+        .timeline-node-dot {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        .timeline-node-label {
+            font-size: 0.6875rem;
+            color: var(--gray-600);
+            line-height: 1.3;
+        }
+        .timeline-node-label strong {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--dark);
+        }
+
+        /* === Checklist === */
+        .checklist {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+        .checklist li {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            padding: 0.5rem 0.75rem;
+            padding-left: 2rem;
+            position: relative;
+            background: var(--gray-100);
+            border-radius: var(--radius-sm);
+        }
+        .checklist li::before {
+            content: '';
+            position: absolute;
+            left: 0.75rem;
+            top: 0.7rem;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--primary);
+            border-radius: 2px;
+        }
+
+        /* === Appendix Prompt Blocks === */
+        .prompt-block {
+            margin-bottom: 1.5rem;
+        }
+        .prompt-block h4 {
+            font-size: 0.9375rem;
+            margin-bottom: 0.5rem;
+        }
+        .prompt-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        /* === Footer === */
+        .footer {
+            background: var(--dark);
+            color: var(--gray-500);
+            padding: 2.5rem 0;
+            margin-top: 2rem;
+        }
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        .footer-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+            transition: color 150ms;
+            text-decoration: none;
+        }
+        .footer-links a:hover { color: var(--primary); text-decoration: none; }
+        .footer-meta { text-align: right; font-size: 0.8125rem; }
+        .footer-meta p { margin-bottom: 0.25rem; }
+        .footer hr { border: none; border-top: 1px solid var(--dark-secondary); margin-bottom: 1rem; }
+        .copyright { text-align: center; font-size: 0.75rem; color: var(--gray-600); margin: 0; }
+
+        /* === Responsive === */
+        @media (max-width: 768px) {
+            .page-layout {
+                grid-template-columns: 1fr;
+            }
+            .toc {
+                position: static;
+                max-height: none;
+            }
+            .page-hero h1 { font-size: 1.75rem; }
+            .page-hero { padding: 2rem 1.5rem; }
+            .sprint-card-header { flex-wrap: wrap; padding: 1rem 1.25rem; }
+            .sprint-card-body { padding: 0 1.25rem 1.25rem; }
+            .sprint-card-meta { width: 100%; justify-content: flex-start; margin-top: 0.5rem; }
+            .criteria-row { grid-template-columns: 1fr; }
+            .section-card { padding: 1.25rem; }
+            .checklist { grid-template-columns: 1fr; }
+            .page-hero-meta { flex-direction: column; gap: 0.5rem; }
+            .footer-grid { flex-direction: column; }
+            .footer-meta { text-align: left; }
+            .footer-links { flex-direction: column; gap: 0.75rem; }
+            .top-nav-links { gap: 0; }
+            .top-nav-links a { padding: 0.5rem 0.5rem; font-size: 0.75rem; }
+            table { font-size: 0.75rem; }
+            th, td { padding: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============ TOP NAV ============ -->
+<nav class="top-nav">
+    <div class="top-nav-inner">
+        <div class="top-nav-brand">DMTSP <span>Accelerators</span></div>
+        <div class="top-nav-links">
+            <a href="index.html">One-Pager</a>
+            <a href="roadmap.html">Roadmap</a>
+            <a href="backlog.html">Backlog</a>
+            <a href="orchestrator.html" class="active">Orchestrator</a>
+            <a href="../../index.html">Dashboard</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ============ PAGE LAYOUT ============ -->
+<div class="page-layout">
+
+<!-- ============ TABLE OF CONTENTS ============ -->
+<aside class="toc" id="toc">
+    <h3>Contents</h3>
+    <ul>
+        <li><a href="#team-allocation">Team Allocation Matrix</a></li>
+        <li><a href="#sprint-timeline">Sprint Timeline</a></li>
+        <li class="toc-section-label">Sprints</li>
+        <li><a href="#sprint-0" class="toc-indent">Sprint 0 &mdash; Discovery</a></li>
+        <li><a href="#sprint-1" class="toc-indent">Sprint 1 &mdash; Foundation</a></li>
+        <li><a href="#sprint-2" class="toc-indent">Sprint 2 &mdash; Batch 1</a></li>
+        <li><a href="#sprint-3" class="toc-indent">Sprint 3 &mdash; Batch 2</a></li>
+        <li><a href="#sprint-4" class="toc-indent">Sprint 4 &mdash; Batch 3</a></li>
+        <li><a href="#sprint-5" class="toc-indent">Sprint 5 &mdash; Batch 4</a></li>
+        <li><a href="#sprint-15" class="toc-indent">Sprint 15 &mdash; Cutover</a></li>
+        <li class="toc-section-label">Metrics</li>
+        <li><a href="#object-progress">Object Progress Tracker</a></li>
+        <li><a href="#hours-burn">Cumulative Hours Burn</a></li>
+        <li><a href="#milestone-summary">Milestone Summary</a></li>
+        <li class="toc-section-label">Appendices</li>
+        <li><a href="#appendix-a" class="toc-indent">A: Data Type Mapping</a></li>
+        <li><a href="#appendix-b" class="toc-indent">B: Copilot Prompts</a></li>
+        <li><a href="#appendix-c" class="toc-indent">C: Validation Checklist</a></li>
+        <li><a href="#appendix-d" class="toc-indent">D: Escalation Procedures</a></li>
+    </ul>
+</aside>
+
+<!-- ============ MAIN CONTENT ============ -->
+<main class="main-content">
+
+<!-- Hero -->
+<div class="page-hero">
+    <div class="page-hero-badge">Accelerator 01 &mdash; Sprint Orchestrator</div>
+    <h1>Fabric Migration Assistant &mdash; <span class="highlight">Sprint Orchestrator</span></h1>
+    <p class="page-hero-subtitle">Sprint-by-sprint execution plan with role assignments, entry/exit criteria, milestones, and escalation paths for migrating 1,960 Synapse objects to Fabric Data Warehouse.</p>
+    <div class="page-hero-meta">
+        <span><strong>Version:</strong> 1.0</span>
+        <span><strong>Author:</strong> Keven Markham, VP Enterprise Transformation &mdash; DMTSP</span>
+        <span><strong>Date:</strong> February 6, 2026</span>
+        <span><strong>Model:</strong> Phase 2 (Accelerated Delivery)</span>
+    </div>
+    <div class="page-hero-links">
+        <a href="roadmap.html">Roadmap</a>
+        <a href="backlog.html">Backlog</a>
+        <a href="../../index.html">Sprint Plan (root)</a>
+    </div>
+</div>
+
+<!-- ============ TEAM ALLOCATION MATRIX ============ -->
+<div class="section-card" id="team-allocation">
+    <h2>Team Allocation Matrix</h2>
+    <p><strong>Sprint Cadence:</strong> 2-week sprints &nbsp;|&nbsp; <strong>Team Capacity:</strong> 700 hrs/sprint &nbsp;|&nbsp; <strong>10 FTEs</strong></p>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Sprint 0</th>
+                    <th>Sprint 1</th>
+                    <th>Sprint 2</th>
+                    <th>Sprint 3</th>
+                    <th>Sprint 4</th>
+                    <th>Sprint 5</th>
+                    <th>Sprint 15</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>PM (1x70)</td><td>40</td><td>40</td><td>40</td><td>40</td><td>40</td><td>40</td><td>60</td></tr>
+                <tr><td>Architect (1x70)</td><td>50</td><td>20</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+                <tr><td>Sr Data Engineer x2 (140)</td><td>80</td><td>50</td><td>60</td><td>60</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+                <tr><td>Data Engineer x4 (280)</td><td>&mdash;</td><td>&mdash;</td><td>260</td><td>260</td><td>240</td><td>260</td><td>10</td></tr>
+                <tr><td>QA Lead (1x70)</td><td>&mdash;</td><td>30</td><td>30</td><td>30</td><td>20</td><td>30</td><td>5</td></tr>
+                <tr><td>DBA (1x70)</td><td>30</td><td>60</td><td>30</td><td>30</td><td>20</td><td>30</td><td>5</td></tr>
+                <tr style="background: rgba(134,188,37,0.08); font-weight: 700;">
+                    <td>Acc 1 Subtotal</td><td>200</td><td>200</td><td>420</td><td>420</td><td>320</td><td>360</td><td>80</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============ SPRINT TIMELINE ============ -->
+<div class="section-card" id="sprint-timeline">
+    <h2>Sprint Timeline</h2>
+    <pre><code>Sprint 0 ──── Sprint 1 ──── Sprint 2 ──── Sprint 3 ──── Sprint 4 ──── Sprint 5 ──── ... ──── Sprint 15
+Discovery     Foundation    Batch 1       Batch 2       Batch 3       Batch 4               Reroute
+&amp; Setup       &amp; Schema      380 tbl       380 tbl       380 tbl       398 tbl               Connections
+              60 objects    180 views     182 views     + ADF Start   + ADF Continue
+                                          VIEWS done                  TABLES done            REROUTE done</code></pre>
+    <div class="timeline-visual">
+        <div class="timeline-track">
+            <div class="timeline-node">
+                <div class="timeline-node-dot" style="background:var(--sprint0);">S0</div>
+                <div class="timeline-node-label"><strong>Discovery</strong>DACPAC + Assessment</div>
+            </div>
+            <div class="timeline-node">
+                <div class="timeline-node-dot" style="background:var(--sprint1);">S1</div>
+                <div class="timeline-node-label"><strong>Foundation</strong>60 objects</div>
+            </div>
+            <div class="timeline-node">
+                <div class="timeline-node-dot" style="background:var(--sprint2);">S2</div>
+                <div class="timeline-node-label"><strong>Batch 1</strong>380 tbl + 180 views</div>
+            </div>
+            <div class="timeline-node">
+                <div class="timeline-node-dot" style="background:var(--sprint3);">S3</div>
+                <div class="timeline-node-label"><strong>Batch 2</strong>380 tbl + 182 views</div>
+            </div>
+            <div class="timeline-node">
+                <div class="timeline-node-dot" style="background:var(--sprint4);">S4</div>
+                <div class="timeline-node-label"><strong>Batch 3</strong>380 tbl + ADF</div>
+            </div>
+            <div class="timeline-node">
+                <div class="timeline-node-dot" style="background:var(--sprint5);">S5</div>
+                <div class="timeline-node-label"><strong>Batch 4</strong>398 tbl (final)</div>
+            </div>
+            <div class="timeline-node">
+                <div class="timeline-node-dot" style="background:var(--sprint15);">15</div>
+                <div class="timeline-node-label"><strong>Cutover</strong>Connection reroute</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SPRINT 0 ============ -->
+<div class="sprint-card open s0-border" id="sprint-0">
+    <div class="sprint-card-header" onclick="toggleSprint(this)">
+        <div class="sprint-badge s0">S0</div>
+        <div class="sprint-card-title">
+            <h2>Sprint 0 &mdash; Discovery &amp; Accelerator Setup</h2>
+            <p>DACPAC extraction, assessment review, Copilot configuration, batch planning</p>
+        </div>
+        <div class="sprint-card-meta">
+            <span class="sprint-meta-pill">2 weeks</span>
+            <span class="sprint-meta-pill">~200 hrs</span>
+        </div>
+        <svg class="sprint-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sprint-card-body">
+        <div class="criteria-row">
+            <div class="criteria-box entry">
+                <h4>Entry Criteria</h4>
+                <ul>
+                    <li>Synapse SQL pool read-only access granted</li>
+                    <li>Fabric workspace provisioned with F2/P1 capacity</li>
+                    <li>VS 2022 + SSDT installed on engineer workstations</li>
+                    <li>Team onboarded and sprint ceremonies scheduled</li>
+                </ul>
+            </div>
+            <div class="criteria-box exit">
+                <h4>Exit Criteria</h4>
+                <ul>
+                    <li>DACPAC extracted and verified (1,960 objects)</li>
+                    <li>Migration Assistant assessment report reviewed</li>
+                    <li>Copilot enabled and prompt library initialized</li>
+                    <li>4 table batches + 2 view batches defined and documented</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Tasks</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Task</th><th>Subtasks</th><th>Hours</th><th>Role</th><th>Backlog Ref</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="task-id">S0-T1</td><td>Connect to Synapse</td><td>Configure VS 2022 SSDT connection</td><td>2</td><td>Sr DE</td><td>E0-S1.T1</td></tr>
+                    <tr><td class="task-id">S0-T2</td><td>Extract DACPAC (VS 2022)</td><td>Right-click &rarr; Extract Data-tier Application</td><td>4</td><td>Sr DE</td><td>E0-S1.T2</td></tr>
+                    <tr><td class="task-id">S0-T3</td><td>Verify DACPAC</td><td>Confirm 1,960 objects</td><td>4</td><td>Sr DE</td><td>E0-S1.T3</td></tr>
+                    <tr><td class="task-id">S0-T4</td><td>Extract DACPAC (CLI backup)</td><td>Run SqlPackage /Action:Extract</td><td>4</td><td>Sr DE</td><td>E0-S1.T4</td></tr>
+                    <tr><td class="task-id">S0-T5</td><td>Upload to Migration Assistant</td><td>Upload DACPAC; trigger assessment scan</td><td>4</td><td>Sr DE</td><td>E0-S2.T1</td></tr>
+                    <tr><td class="task-id">S0-T6</td><td>Review assessment report</td><td>Object inventory, incompatibility flags, triage</td><td>28</td><td>Sr DE, DBA</td><td>E0-S2.T2-T4</td></tr>
+                    <tr><td class="task-id">S0-T7</td><td>Configure Copilot</td><td>Verify F2/P1, enable admin settings, test</td><td>14</td><td>Architect, Sr DE</td><td>E0-S3.T1-T3</td></tr>
+                    <tr><td class="task-id">S0-T8</td><td>Initialize prompt library</td><td>Create 10+ migration fix prompts</td><td>16</td><td>Sr DE</td><td>E0-S3.T4-T5</td></tr>
+                    <tr><td class="task-id">S0-T9</td><td>Define batch groupings</td><td>Analyze dependencies; define batches</td><td>30</td><td>Architect, DBA</td><td>E0-S4.T1-T5</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Milestones</h3>
+        <div class="milestones">
+            <div class="milestone-item">
+                <div class="milestone-dot">M0.1</div>
+                <div class="milestone-content">
+                    <strong>DACPAC Extracted</strong>
+                    <span>.dacpac file with 1,960 objects verified</span>
+                </div>
+                <div class="milestone-day">Day 3</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M0.2</div>
+                <div class="milestone-content">
+                    <strong>Assessment Complete</strong>
+                    <span>Report reviewed and triaged</span>
+                </div>
+                <div class="milestone-day">Day 6</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M0.3</div>
+                <div class="milestone-content">
+                    <strong>Copilot Operational</strong>
+                    <span>Fix suggestions tested</span>
+                </div>
+                <div class="milestone-day">Day 8</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M0.4</div>
+                <div class="milestone-content">
+                    <strong>Batch Plan Approved</strong>
+                    <span>4+2 batches documented and signed off</span>
+                </div>
+                <div class="milestone-day">Day 10</div>
+            </div>
+        </div>
+
+        <div class="blockers">
+            <h4>Blockers to Escalate</h4>
+            <ul>
+                <li>Synapse access not granted &rarr; Escalate to client IT</li>
+                <li>F2/P1 capacity not available &rarr; Escalate to Microsoft account team</li>
+                <li>DACPAC extraction failure &rarr; Fall back to SqlPackage CLI</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SPRINT 1 ============ -->
+<div class="sprint-card s1-border" id="sprint-1">
+    <div class="sprint-card-header" onclick="toggleSprint(this)">
+        <div class="sprint-badge s1">S1</div>
+        <div class="sprint-card-title">
+            <h2>Sprint 1 &mdash; Foundation + Schema/Security/Functions</h2>
+            <p>Fabric DW creation, 16 schemas, 40 security objects, 4 functions</p>
+        </div>
+        <div class="sprint-card-meta">
+            <span class="sprint-meta-pill">2 weeks</span>
+            <span class="sprint-meta-pill">~91 hrs</span>
+        </div>
+        <svg class="sprint-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sprint-card-body">
+        <div class="criteria-row">
+            <div class="criteria-box entry">
+                <h4>Entry Criteria</h4>
+                <ul>
+                    <li>Sprint 0 milestones M0.1-M0.4 achieved</li>
+                    <li>Fabric workspace networking configured</li>
+                    <li>Entra ID service principals and security groups ready</li>
+                </ul>
+            </div>
+            <div class="criteria-box exit">
+                <h4>Exit Criteria</h4>
+                <ul>
+                    <li>Fabric Data Warehouse created with SQL analytics endpoint</li>
+                    <li>16 schemas deployed and verified</li>
+                    <li>40 security objects migrated (including Entra ID mapping)</li>
+                    <li>4 functions deployed and tested</li>
+                    <li>All 60 foundation objects confirmed</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Tasks</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Task</th><th>Subtasks</th><th>Hours</th><th>Role</th><th>Backlog Ref</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="task-id">S1-T1</td><td>Create Fabric DW</td><td>Create warehouse in target workspace</td><td>4</td><td>DBA</td><td>E1-S1.T1</td></tr>
+                    <tr><td class="task-id">S1-T2</td><td>Configure DW settings</td><td>Collation, defaults, SQL analytics endpoint</td><td>3</td><td>DBA</td><td>E1-S1.T2</td></tr>
+                    <tr><td class="task-id">S1-T3</td><td>Verify endpoint connectivity</td><td>Test SQL analytics endpoint</td><td>3</td><td>DBA</td><td>E1-S1.T3</td></tr>
+                    <tr><td class="task-id">S1-T4</td><td>Deploy schemas (16)</td><td>Run Migration Assistant schema deployment</td><td>2</td><td>DBA</td><td>E1-S2.T1</td></tr>
+                    <tr><td class="task-id">S1-T5</td><td>Verify schemas</td><td>Confirm 16 schema names match source</td><td>1</td><td>DBA</td><td>E1-S2.T2</td></tr>
+                    <tr><td class="task-id">S1-T6</td><td>Deploy automated security</td><td>DACPAC-driven roles, permissions, DDM</td><td>4</td><td>DBA</td><td>E1-S3.T1</td></tr>
+                    <tr><td class="task-id">S1-T7</td><td>Map SQL auth &rarr; Entra ID</td><td>Manual user mapping</td><td>16</td><td>DBA</td><td>E1-S3.T2</td></tr>
+                    <tr><td class="task-id">S1-T8</td><td>Configure RLS policies</td><td>Row-level security policy migration</td><td>10</td><td>DBA</td><td>E1-S3.T3</td></tr>
+                    <tr><td class="task-id">S1-T9</td><td>Verify permissions</td><td>Compare GRANT/REVOKE/DENY against source</td><td>6</td><td>DBA</td><td>E1-S3.T4</td></tr>
+                    <tr><td class="task-id">S1-T10</td><td>Security audit</td><td>Full security comparison and sign-off</td><td>4</td><td>DBA, Architect</td><td>E1-S3.T5</td></tr>
+                    <tr><td class="task-id">S1-T11</td><td>Deploy functions (4)</td><td>Migration Assistant function deployment</td><td>1</td><td>DBA</td><td>E1-S4.T1</td></tr>
+                    <tr><td class="task-id">S1-T12</td><td>Test functions</td><td>Execute each function; verify output</td><td>1</td><td>DBA</td><td>E1-S4.T2</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Milestones</h3>
+        <div class="milestones">
+            <div class="milestone-item">
+                <div class="milestone-dot">M1.1</div>
+                <div class="milestone-content">
+                    <strong>Fabric DW Created</strong>
+                    <span>Warehouse accessible via SQL analytics endpoint</span>
+                </div>
+                <div class="milestone-day">Day 2</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M1.2</div>
+                <div class="milestone-content">
+                    <strong>Schemas Deployed</strong>
+                    <span>16/16 schemas confirmed</span>
+                </div>
+                <div class="milestone-day">Day 3</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M1.3</div>
+                <div class="milestone-content">
+                    <strong>Functions Deployed</strong>
+                    <span>4/4 functions tested and passing</span>
+                </div>
+                <div class="milestone-day">Day 4</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M1.4</div>
+                <div class="milestone-content">
+                    <strong>Security Complete</strong>
+                    <span>40/40 security objects migrated</span>
+                </div>
+                <div class="milestone-day">Day 8</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M1.5</div>
+                <div class="milestone-content">
+                    <strong>Foundation Sign-Off</strong>
+                    <span>All 60 foundation objects verified</span>
+                </div>
+                <div class="milestone-day">Day 10</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SPRINT 2 ============ -->
+<div class="sprint-card s2-border" id="sprint-2">
+    <div class="sprint-card-header" onclick="toggleSprint(this)">
+        <div class="sprint-badge s2">S2</div>
+        <div class="sprint-card-title">
+            <h2>Sprint 2 &mdash; Table Batch 1 + View Batch 1</h2>
+            <p>380 tables migrated and validated, 180 views migrated</p>
+        </div>
+        <div class="sprint-card-meta">
+            <span class="sprint-meta-pill">2 weeks</span>
+            <span class="sprint-meta-pill">~782 hrs</span>
+        </div>
+        <svg class="sprint-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sprint-card-body">
+        <div class="criteria-row">
+            <div class="criteria-box entry">
+                <h4>Entry Criteria</h4>
+                <ul>
+                    <li>M1.5 Foundation Sign-Off achieved</li>
+                    <li>Validation framework (Acc 5) deployed</li>
+                </ul>
+            </div>
+            <div class="criteria-box exit">
+                <h4>Exit Criteria</h4>
+                <ul>
+                    <li>380 tables migrated with validation pass</li>
+                    <li>180 views migrated</li>
+                    <li>Fix patterns documented</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Tasks &mdash; Tables (Batch 1: 380 tables)</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Task</th><th>Subtasks</th><th>Hours</th><th>Role</th><th>Backlog Ref</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="task-id">S2-T1</td><td>Upload Batch 1 DACPAC</td><td>Load 380-table segment</td><td>4</td><td>Sr DE</td><td>E2-S1.T1</td></tr>
+                    <tr><td class="task-id">S2-T2</td><td>Review translated DDL</td><td>Verify auto-translated DDL for 380 tables</td><td>30</td><td>DE (4)</td><td>E2-S1.T2</td></tr>
+                    <tr><td class="task-id">S2-T3</td><td>Fix incompatibilities</td><td>Copilot-assisted resolution</td><td>60</td><td>Sr DE, DBA</td><td>E2-S1.T3</td></tr>
+                    <tr><td class="task-id">S2-T4</td><td>Deploy table DDL</td><td>Create tables in target DW</td><td>20</td><td>DE (4)</td><td>E2-S1.T4</td></tr>
+                    <tr><td class="task-id">S2-T5</td><td>Configure copy jobs (standard)</td><td>Data Factory copy jobs &lt; 10 GB</td><td>80</td><td>DE (4)</td><td>E2-S1.T5</td></tr>
+                    <tr><td class="task-id">S2-T6</td><td>Configure copy jobs (large)</td><td>Partitioned Copy Activity &gt; 10 GB</td><td>40</td><td>Sr DE</td><td>E2-S1.T6</td></tr>
+                    <tr><td class="task-id">S2-T7</td><td>Execute data copy</td><td>Run all copy jobs</td><td>120</td><td>DE (4)</td><td>E2-S1.T7</td></tr>
+                    <tr><td class="task-id">S2-T8</td><td>Row count validation</td><td>Source vs. target match for 380 tables</td><td>60</td><td>DE (4)</td><td>E2-S1.T8</td></tr>
+                    <tr><td class="task-id">S2-T9</td><td>Checksum validation</td><td>Hash comparison on key columns</td><td>80</td><td>DE (4), QA</td><td>E2-S1.T9</td></tr>
+                    <tr><td class="task-id">S2-T10</td><td>Sample spot-checks</td><td>0.1% record comparison</td><td>40</td><td>DE (2)</td><td>E2-S1.T10</td></tr>
+                    <tr><td class="task-id">S2-T11</td><td>Update fix pattern catalog</td><td>Document new patterns</td><td>12</td><td>Sr DE</td><td>E2-S1.T11</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Tasks &mdash; Views (Batch 1: 180 views)</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Task</th><th>Subtasks</th><th>Hours</th><th>Role</th><th>Backlog Ref</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="task-id">S2-T12</td><td>Upload view definitions</td><td>Load 180-view segment</td><td>4</td><td>DE</td><td>E3-S1.T1</td></tr>
+                    <tr><td class="task-id">S2-T13</td><td>Review translated view DDL</td><td>Verify view definitions</td><td>16</td><td>DE</td><td>E3-S1.T2</td></tr>
+                    <tr><td class="task-id">S2-T14</td><td>Fix view incompatibilities</td><td>Copilot-assisted resolution</td><td>24</td><td>DE, Sr DE</td><td>E3-S1.T3</td></tr>
+                    <tr><td class="task-id">S2-T15</td><td>Deploy view DDL</td><td>Create views in target DW</td><td>12</td><td>DE</td><td>E3-S1.T4</td></tr>
+                    <tr><td class="task-id">S2-T16</td><td>Validate view execution</td><td>Run each view query</td><td>30</td><td>DE</td><td>E3-S1.T5</td></tr>
+                    <tr><td class="task-id">S2-T17</td><td>Verify dependencies</td><td>View-to-table resolution</td><td>20</td><td>DE</td><td>E3-S1.T6</td></tr>
+                    <tr><td class="task-id">S2-T18</td><td>View row count comparison</td><td>Compare view results</td><td>20</td><td>DE</td><td>E3-S1.T7</td></tr>
+                    <tr><td class="task-id">S2-T19</td><td>Document view fix patterns</td><td>Catalog view patterns</td><td>10</td><td>DE</td><td>E3-S1.T8</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Role Assignment Matrix &mdash; Sprint 2</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Role</th><th>Table Tasks</th><th>View Tasks</th><th>Other</th><th>Total</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Data Engineer 1</td><td>S2-T2,T4,T5,T7,T8</td><td>&mdash;</td><td>&mdash;</td><td>170</td></tr>
+                    <tr><td>Data Engineer 2</td><td>S2-T2,T4,T5,T7,T8</td><td>&mdash;</td><td>&mdash;</td><td>170</td></tr>
+                    <tr><td>Data Engineer 3</td><td>S2-T2,T4,T5,T7,T9,T10</td><td>&mdash;</td><td>&mdash;</td><td>170</td></tr>
+                    <tr><td>Data Engineer 4</td><td>&mdash;</td><td>S2-T12 through T19</td><td>&mdash;</td><td>136</td></tr>
+                    <tr><td>Sr Data Engineer 1</td><td>S2-T1,T3,T6,T11</td><td>&mdash;</td><td>&mdash;</td><td>58</td></tr>
+                    <tr><td>Sr Data Engineer 2</td><td>S2-T3</td><td>S2-T14</td><td>&mdash;</td><td>38</td></tr>
+                    <tr><td>DBA</td><td>S2-T3</td><td>&mdash;</td><td>&mdash;</td><td>30</td></tr>
+                    <tr><td>QA Lead</td><td>S2-T9</td><td>&mdash;</td><td>&mdash;</td><td>30</td></tr>
+                    <tr><td>PM</td><td>&mdash;</td><td>&mdash;</td><td>Governance</td><td>40</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Milestones</h3>
+        <div class="milestones">
+            <div class="milestone-item">
+                <div class="milestone-dot">M2.1</div>
+                <div class="milestone-content">
+                    <strong>DDL Deployed (Tables)</strong>
+                    <span>380 table definitions created</span>
+                </div>
+                <div class="milestone-day">Day 4</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M2.2</div>
+                <div class="milestone-content">
+                    <strong>Data Copy Started</strong>
+                    <span>All copy jobs running</span>
+                </div>
+                <div class="milestone-day">Day 5</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M2.3</div>
+                <div class="milestone-content">
+                    <strong>Data Copy Complete</strong>
+                    <span>All 380 tables fully copied</span>
+                </div>
+                <div class="milestone-day">Day 7</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M2.4</div>
+                <div class="milestone-content">
+                    <strong>Table Validation Pass</strong>
+                    <span>Row count + checksum 100% pass</span>
+                </div>
+                <div class="milestone-day">Day 9</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M2.5</div>
+                <div class="milestone-content">
+                    <strong>Views Deployed</strong>
+                    <span>180 views migrated and validated</span>
+                </div>
+                <div class="milestone-day">Day 10</div>
+            </div>
+        </div>
+
+        <div class="cumulative-progress">
+            <p>Cumulative Progress After Sprint 2</p>
+            <div class="progress-item">
+                <div class="progress-item-label">
+                    <span>Tables</span>
+                    <span>380 / 1,538 (25%)</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:25%"></div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-item-label">
+                    <span>Views</span>
+                    <span>180 / 362 (50%)</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SPRINT 3 ============ -->
+<div class="sprint-card s3-border" id="sprint-3">
+    <div class="sprint-card-header" onclick="toggleSprint(this)">
+        <div class="sprint-badge s3">S3</div>
+        <div class="sprint-card-title">
+            <h2>Sprint 3 &mdash; Table Batch 2 + View Batch 2 (Final)</h2>
+            <p>380 tables migrated, 182 views (final view batch), VIEW MIGRATION COMPLETE</p>
+        </div>
+        <div class="sprint-card-meta">
+            <span class="sprint-meta-pill">2 weeks</span>
+            <span class="sprint-meta-pill">~782 hrs</span>
+        </div>
+        <svg class="sprint-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sprint-card-body">
+        <h3>Tasks &mdash; Tables (Batch 2: 380 tables)</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Task</th><th>Subtasks</th><th>Hours</th><th>Role</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="task-id">S3-T1</td><td>Upload Batch 2 DACPAC</td><td>Load 380-table segment</td><td>4</td><td>Sr DE</td></tr>
+                    <tr><td class="task-id">S3-T2</td><td>Review translated DDL</td><td>Verify DDL for 380 tables</td><td>25</td><td>DE (4)</td></tr>
+                    <tr><td class="task-id">S3-T3</td><td>Fix incompatibilities</td><td>Apply Batch 1 patterns</td><td>45</td><td>Sr DE, DBA</td></tr>
+                    <tr><td class="task-id">S3-T4</td><td>Deploy table DDL</td><td>Create tables</td><td>18</td><td>DE (4)</td></tr>
+                    <tr><td class="task-id">S3-T5</td><td>Configure + execute copy jobs</td><td>Standard + partitioned</td><td>180</td><td>DE (4), Sr DE</td></tr>
+                    <tr><td class="task-id">S3-T6</td><td>Row count validation</td><td>380 tables</td><td>55</td><td>DE (4)</td></tr>
+                    <tr><td class="task-id">S3-T7</td><td>Checksum validation</td><td>Hash comparison</td><td>70</td><td>DE (4), QA</td></tr>
+                    <tr><td class="task-id">S3-T8</td><td>Sample spot-checks</td><td>0.1%</td><td>35</td><td>DE (2)</td></tr>
+                    <tr><td class="task-id">S3-T9</td><td>Update pattern catalog</td><td>New patterns</td><td>8</td><td>Sr DE</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Tasks &mdash; Views (Batch 2: 182 views, final)</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Task</th><th>Subtasks</th><th>Hours</th><th>Role</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="task-id">S3-T10</td><td>Upload view definitions</td><td>Load 182-view segment</td><td>4</td><td>DE</td></tr>
+                    <tr><td class="task-id">S3-T11</td><td>Review + fix + deploy views</td><td>Apply Sprint 2 patterns</td><td>48</td><td>DE, Sr DE</td></tr>
+                    <tr><td class="task-id">S3-T12</td><td>Validate views</td><td>Query execution + dependency + row count</td><td>60</td><td>DE</td></tr>
+                    <tr><td class="task-id">S3-T13</td><td>Document final view patterns</td><td>Complete catalog</td><td>10</td><td>DE</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Milestones</h3>
+        <div class="milestones">
+            <div class="milestone-item">
+                <div class="milestone-dot">M3.1</div>
+                <div class="milestone-content">
+                    <strong>Batch 2 DDL Deployed</strong>
+                    <span>380 table definitions created</span>
+                </div>
+                <div class="milestone-day">Day 4</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M3.2</div>
+                <div class="milestone-content">
+                    <strong>Batch 2 Data Copy Complete</strong>
+                    <span>All 380 tables fully copied</span>
+                </div>
+                <div class="milestone-day">Day 7</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M3.3</div>
+                <div class="milestone-content">
+                    <strong>Batch 2 Validation Pass</strong>
+                    <span>Row count + checksum 100% pass</span>
+                </div>
+                <div class="milestone-day">Day 9</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot complete">M3.4</div>
+                <div class="milestone-content">
+                    <strong>VIEW MIGRATION COMPLETE</strong>
+                    <span>362/362 views migrated and validated</span>
+                </div>
+                <div class="milestone-day">Day 10</div>
+            </div>
+        </div>
+
+        <div class="cumulative-progress">
+            <p>Cumulative Progress After Sprint 3</p>
+            <div class="progress-item">
+                <div class="progress-item-label">
+                    <span>Tables</span>
+                    <span>760 / 1,538 (49%)</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:49%"></div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-item-label">
+                    <span>Views</span>
+                    <span>362 / 362 (100%)</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SPRINT 4 ============ -->
+<div class="sprint-card s4-border" id="sprint-4">
+    <div class="sprint-card-header" onclick="toggleSprint(this)">
+        <div class="sprint-badge s4">S4</div>
+        <div class="sprint-card-title">
+            <h2>Sprint 4 &mdash; Table Batch 3 + ADF Start</h2>
+            <p>380 tables migrated and validated, ADF pipeline work begins</p>
+        </div>
+        <div class="sprint-card-meta">
+            <span class="sprint-meta-pill">2 weeks</span>
+            <span class="sprint-meta-pill">~500 hrs</span>
+        </div>
+        <svg class="sprint-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sprint-card-body">
+        <h3>Tasks</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Task</th><th>Subtasks</th><th>Hours</th><th>Role</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="task-id">S4-T1</td><td>Upload Batch 3 DACPAC</td><td>Load 380-table segment</td><td>4</td><td>DE</td></tr>
+                    <tr><td class="task-id">S4-T2</td><td>Review + fix DDL</td><td>Translate, fix (leveraging catalog)</td><td>60</td><td>DE (3), DBA</td></tr>
+                    <tr><td class="task-id">S4-T3</td><td>Deploy table DDL</td><td>Create tables</td><td>16</td><td>DE (3)</td></tr>
+                    <tr><td class="task-id">S4-T4</td><td>Configure + execute copy</td><td>Standard + partitioned</td><td>160</td><td>DE (3)</td></tr>
+                    <tr><td class="task-id">S4-T5</td><td>Full validation suite</td><td>Row count + checksum + spot-checks</td><td>120</td><td>DE (3), QA</td></tr>
+                    <tr><td class="task-id">S4-T6</td><td>Update pattern catalog</td><td>Incremental updates</td><td>4</td><td>DE</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Milestones</h3>
+        <div class="milestones">
+            <div class="milestone-item">
+                <div class="milestone-dot">M4.1</div>
+                <div class="milestone-content">
+                    <strong>Batch 3 DDL Deployed</strong>
+                    <span>380 table definitions</span>
+                </div>
+                <div class="milestone-day">Day 4</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M4.2</div>
+                <div class="milestone-content">
+                    <strong>Batch 3 Data Complete</strong>
+                    <span>All 380 tables copied</span>
+                </div>
+                <div class="milestone-day">Day 7</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M4.3</div>
+                <div class="milestone-content">
+                    <strong>Batch 3 Validation Pass</strong>
+                    <span>100% validation pass</span>
+                </div>
+                <div class="milestone-day">Day 10</div>
+            </div>
+        </div>
+
+        <div class="cumulative-progress">
+            <p>Cumulative Progress After Sprint 4</p>
+            <div class="progress-item">
+                <div class="progress-item-label">
+                    <span>Tables</span>
+                    <span>1,140 / 1,538 (74%)</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:74%"></div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-item-label">
+                    <span>Views</span>
+                    <span>362 / 362 (100%)</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SPRINT 5 ============ -->
+<div class="sprint-card s5-border" id="sprint-5">
+    <div class="sprint-card-header" onclick="toggleSprint(this)">
+        <div class="sprint-badge s5">S5</div>
+        <div class="sprint-card-title">
+            <h2>Sprint 5 &mdash; Table Batch 4 (Final) + ADF Continue</h2>
+            <p>398 tables (final batch), cross-batch validation, TABLE MIGRATION COMPLETE</p>
+        </div>
+        <div class="sprint-card-meta">
+            <span class="sprint-meta-pill">2 weeks</span>
+            <span class="sprint-meta-pill">~500 hrs</span>
+        </div>
+        <svg class="sprint-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sprint-card-body">
+        <h3>Tasks</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Task</th><th>Subtasks</th><th>Hours</th><th>Role</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="task-id">S5-T1</td><td>Upload Batch 4 DACPAC</td><td>Load 398-table segment (final)</td><td>4</td><td>DE</td></tr>
+                    <tr><td class="task-id">S5-T2</td><td>Review + fix DDL</td><td>Translate, fix</td><td>55</td><td>DE (3), DBA</td></tr>
+                    <tr><td class="task-id">S5-T3</td><td>Deploy table DDL</td><td>Create tables</td><td>16</td><td>DE (3)</td></tr>
+                    <tr><td class="task-id">S5-T4</td><td>Configure + execute copy</td><td>Standard + partitioned</td><td>160</td><td>DE (3)</td></tr>
+                    <tr><td class="task-id">S5-T5</td><td>Full validation suite</td><td>Row count + checksum + spot-checks</td><td>120</td><td>DE (3), QA</td></tr>
+                    <tr><td class="task-id">S5-T6</td><td>Cross-batch validation</td><td>Verify all 1,538 tables</td><td>40</td><td>QA, DBA</td></tr>
+                    <tr><td class="task-id">S5-T7</td><td>Finalize pattern catalog</td><td>Complete migration runbook</td><td>8</td><td>Sr DE</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Milestones</h3>
+        <div class="milestones">
+            <div class="milestone-item">
+                <div class="milestone-dot">M5.1</div>
+                <div class="milestone-content">
+                    <strong>Batch 4 DDL Deployed</strong>
+                    <span>398 table definitions</span>
+                </div>
+                <div class="milestone-day">Day 4</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M5.2</div>
+                <div class="milestone-content">
+                    <strong>Batch 4 Data Complete</strong>
+                    <span>All 398 tables copied</span>
+                </div>
+                <div class="milestone-day">Day 7</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M5.3</div>
+                <div class="milestone-content">
+                    <strong>Batch 4 Validation Pass</strong>
+                    <span>100% validation pass</span>
+                </div>
+                <div class="milestone-day">Day 9</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot complete">M5.4</div>
+                <div class="milestone-content">
+                    <strong>TABLE MIGRATION COMPLETE</strong>
+                    <span>1,538/1,538 tables verified</span>
+                </div>
+                <div class="milestone-day">Day 10</div>
+            </div>
+        </div>
+
+        <div class="cumulative-progress">
+            <p>Cumulative Progress After Sprint 5</p>
+            <div class="progress-item">
+                <div class="progress-item-label">
+                    <span>Tables</span>
+                    <span>1,538 / 1,538 (100%)</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+            </div>
+            <div class="progress-item">
+                <div class="progress-item-label">
+                    <span>Views</span>
+                    <span>362 / 362 (100%)</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ SPRINT 15 ============ -->
+<div class="sprint-card s15-border" id="sprint-15">
+    <div class="sprint-card-header" onclick="toggleSprint(this)">
+        <div class="sprint-badge s15">15</div>
+        <div class="sprint-card-title">
+            <h2>Sprint 15 &mdash; Production Cutover (Connection Rerouting)</h2>
+            <p>REST API connection rerouting, downstream validation, final sign-off</p>
+        </div>
+        <div class="sprint-card-meta">
+            <span class="sprint-meta-pill">2 weeks</span>
+            <span class="sprint-meta-pill">~15 hrs</span>
+        </div>
+        <svg class="sprint-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sprint-card-body">
+        <h3>Tasks</h3>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>ID</th><th>Task</th><th>Subtasks</th><th>Hours</th><th>Role</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td class="task-id">S15-T1</td><td>Query connections API</td><td>GET /v1/connections; filter Synapse endpoints</td><td>2</td><td>DBA</td></tr>
+                    <tr><td class="task-id">S15-T2</td><td>Catalog connections</td><td>Document all Synapse-pointing connections</td><td>2</td><td>DBA</td></tr>
+                    <tr><td class="task-id">S15-T3</td><td>Create rerouting plan</td><td>Map each connection to Fabric DW endpoint</td><td>1</td><td>DBA</td></tr>
+                    <tr><td class="task-id">S15-T4</td><td>Execute batch PATCH</td><td>PATCH /v1/connections/{id} for each</td><td>3</td><td>DBA</td></tr>
+                    <tr><td class="task-id">S15-T5</td><td>Validate Power BI</td><td>Refresh semantic models</td><td>2</td><td>DE</td></tr>
+                    <tr><td class="task-id">S15-T6</td><td>Validate pipelines</td><td>Run downstream pipelines</td><td>2</td><td>DE</td></tr>
+                    <tr><td class="task-id">S15-T7</td><td>Smoke tests</td><td>End-to-end verification</td><td>2</td><td>DE, QA</td></tr>
+                    <tr><td class="task-id">S15-T8</td><td>Sign-off</td><td>Document rerouting results</td><td>1</td><td>DBA</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Milestones</h3>
+        <div class="milestones">
+            <div class="milestone-item">
+                <div class="milestone-dot">M15.1</div>
+                <div class="milestone-content">
+                    <strong>Connections Inventoried</strong>
+                    <span>All Synapse connections cataloged</span>
+                </div>
+                <div class="milestone-day">Day 1</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot">M15.2</div>
+                <div class="milestone-content">
+                    <strong>Rerouting Complete</strong>
+                    <span>All PATCH operations successful</span>
+                </div>
+                <div class="milestone-day">Day 2</div>
+            </div>
+            <div class="milestone-item">
+                <div class="milestone-dot complete">M15.3</div>
+                <div class="milestone-content">
+                    <strong>Downstream Validated</strong>
+                    <span>Power BI + pipelines + Logic Apps confirmed</span>
+                </div>
+                <div class="milestone-day">Day 3</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ CROSS-SPRINT METRICS ============ -->
+<div class="section-card" id="object-progress">
+    <h2>Cross-Sprint Metrics: Object Progress Tracker</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Object Type</th>
+                    <th>Count</th>
+                    <th>Sprint 0</th>
+                    <th>Sprint 1</th>
+                    <th>Sprint 2</th>
+                    <th>Sprint 3</th>
+                    <th>Sprint 4</th>
+                    <th>Sprint 5</th>
+                    <th>Sprint 15</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Schemas</td><td>16</td><td>&mdash;</td><td style="color:var(--success);font-weight:600;">16 done</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+                <tr><td>Security</td><td>40</td><td>&mdash;</td><td style="color:var(--success);font-weight:600;">40 done</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+                <tr><td>Functions</td><td>4</td><td>&mdash;</td><td style="color:var(--success);font-weight:600;">4 done</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+                <tr><td>Tables</td><td>1,538</td><td>&mdash;</td><td>&mdash;</td><td>380</td><td>760</td><td>1,140</td><td style="color:var(--success);font-weight:600;">1,538</td><td>&mdash;</td></tr>
+                <tr><td>Views</td><td>362</td><td>&mdash;</td><td>&mdash;</td><td>180</td><td style="color:var(--success);font-weight:600;">362</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+                <tr><td>Connections</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td style="color:var(--success);font-weight:600;">done</td></tr>
+                <tr style="background:rgba(134,188,37,0.08);font-weight:700;">
+                    <td>Cumulative</td><td>1,960</td><td>0</td><td>60</td><td>620</td><td>1,182</td><td>1,200</td><td>1,960</td><td>Done</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Visual progress bars for object migration -->
+    <h4 style="margin-top:1.5rem;">Migration Progress by Object Type</h4>
+    <div style="margin-top:0.75rem;">
+        <div class="progress-item">
+            <div class="progress-item-label"><span>Schemas (16)</span><span>Complete by Sprint 1</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-item-label"><span>Security (40)</span><span>Complete by Sprint 1</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-item-label"><span>Functions (4)</span><span>Complete by Sprint 1</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-item-label"><span>Tables (1,538)</span><span>Complete by Sprint 5</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-item-label"><span>Views (362)</span><span>Complete by Sprint 3</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+        </div>
+    </div>
+</div>
+
+<div class="section-card" id="hours-burn">
+    <h2>Cumulative Hours Burn (Acc 1 Scope)</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Sprint</th><th>Sprint Hours</th><th>Cumulative</th><th>% of 3,544 Budget</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>0</td><td>200</td><td>200</td><td>6%</td></tr>
+                <tr><td>1</td><td>91</td><td>291</td><td>8%</td></tr>
+                <tr><td>2</td><td>782</td><td>1,073</td><td>30%</td></tr>
+                <tr><td>3</td><td>782</td><td>1,855</td><td>52%</td></tr>
+                <tr><td>4</td><td>500</td><td>2,355</td><td>66%</td></tr>
+                <tr><td>5</td><td>500</td><td>2,855</td><td>81%</td></tr>
+                <tr><td>15</td><td>15</td><td>2,870</td><td>81%</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h4 style="margin-top:1.5rem;">Budget Burn Visualization</h4>
+    <div style="margin-top:0.75rem;">
+        <div class="progress-item">
+            <div class="progress-item-label"><span>Sprint 0</span><span>200 hrs &mdash; 6%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:6%"></div></div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-item-label"><span>After Sprint 1</span><span>291 hrs &mdash; 8%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:8%"></div></div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-item-label"><span>After Sprint 2</span><span>1,073 hrs &mdash; 30%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-item-label"><span>After Sprint 3</span><span>1,855 hrs &mdash; 52%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:52%"></div></div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-item-label"><span>After Sprint 4</span><span>2,355 hrs &mdash; 66%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-item-label"><span>After Sprint 5</span><span>2,855 hrs &mdash; 81%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:81%"></div></div>
+        </div>
+        <div class="progress-item">
+            <div class="progress-item-label"><span>After Sprint 15</span><span>2,870 hrs &mdash; 81%</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:81%"></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ MILESTONE SUMMARY ============ -->
+<div class="section-card" id="milestone-summary">
+    <h2>Milestone Summary (27 milestones)</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Sprint</th><th>Milestone</th><th>Criteria</th><th>Sprint Day</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="task-id">M0.1</td><td>Sprint 0</td><td>DACPAC Extracted</td><td>.dacpac file with 1,960 objects verified</td><td>Day 3</td></tr>
+                <tr><td class="task-id">M0.2</td><td>Sprint 0</td><td>Assessment Complete</td><td>Report reviewed and triaged</td><td>Day 6</td></tr>
+                <tr><td class="task-id">M0.3</td><td>Sprint 0</td><td>Copilot Operational</td><td>Fix suggestions tested</td><td>Day 8</td></tr>
+                <tr><td class="task-id">M0.4</td><td>Sprint 0</td><td>Batch Plan Approved</td><td>4+2 batches documented and signed off</td><td>Day 10</td></tr>
+                <tr><td class="task-id">M1.1</td><td>Sprint 1</td><td>Fabric DW Created</td><td>Warehouse accessible via SQL analytics endpoint</td><td>Day 2</td></tr>
+                <tr><td class="task-id">M1.2</td><td>Sprint 1</td><td>Schemas Deployed</td><td>16/16 schemas confirmed</td><td>Day 3</td></tr>
+                <tr><td class="task-id">M1.3</td><td>Sprint 1</td><td>Functions Deployed</td><td>4/4 functions tested and passing</td><td>Day 4</td></tr>
+                <tr><td class="task-id">M1.4</td><td>Sprint 1</td><td>Security Complete</td><td>40/40 security objects migrated</td><td>Day 8</td></tr>
+                <tr><td class="task-id">M1.5</td><td>Sprint 1</td><td>Foundation Sign-Off</td><td>All 60 foundation objects verified</td><td>Day 10</td></tr>
+                <tr><td class="task-id">M2.1</td><td>Sprint 2</td><td>DDL Deployed (Tables)</td><td>380 table definitions created</td><td>Day 4</td></tr>
+                <tr><td class="task-id">M2.2</td><td>Sprint 2</td><td>Data Copy Started</td><td>All copy jobs running</td><td>Day 5</td></tr>
+                <tr><td class="task-id">M2.3</td><td>Sprint 2</td><td>Data Copy Complete</td><td>All 380 tables fully copied</td><td>Day 7</td></tr>
+                <tr><td class="task-id">M2.4</td><td>Sprint 2</td><td>Table Validation Pass</td><td>Row count + checksum 100% pass</td><td>Day 9</td></tr>
+                <tr><td class="task-id">M2.5</td><td>Sprint 2</td><td>Views Deployed</td><td>180 views migrated and validated</td><td>Day 10</td></tr>
+                <tr><td class="task-id">M3.1</td><td>Sprint 3</td><td>Batch 2 DDL Deployed</td><td>380 table definitions created</td><td>Day 4</td></tr>
+                <tr><td class="task-id">M3.2</td><td>Sprint 3</td><td>Batch 2 Data Copy Complete</td><td>All 380 tables fully copied</td><td>Day 7</td></tr>
+                <tr><td class="task-id">M3.3</td><td>Sprint 3</td><td>Batch 2 Validation Pass</td><td>Row count + checksum 100% pass</td><td>Day 9</td></tr>
+                <tr style="background:rgba(134,188,37,0.12);"><td class="task-id">M3.4</td><td>Sprint 3</td><td><strong>VIEW MIGRATION COMPLETE</strong></td><td>362/362 views migrated and validated</td><td>Day 10</td></tr>
+                <tr><td class="task-id">M4.1</td><td>Sprint 4</td><td>Batch 3 DDL Deployed</td><td>380 table definitions</td><td>Day 4</td></tr>
+                <tr><td class="task-id">M4.2</td><td>Sprint 4</td><td>Batch 3 Data Complete</td><td>All 380 tables copied</td><td>Day 7</td></tr>
+                <tr><td class="task-id">M4.3</td><td>Sprint 4</td><td>Batch 3 Validation Pass</td><td>100% validation pass</td><td>Day 10</td></tr>
+                <tr><td class="task-id">M5.1</td><td>Sprint 5</td><td>Batch 4 DDL Deployed</td><td>398 table definitions</td><td>Day 4</td></tr>
+                <tr><td class="task-id">M5.2</td><td>Sprint 5</td><td>Batch 4 Data Complete</td><td>All 398 tables copied</td><td>Day 7</td></tr>
+                <tr><td class="task-id">M5.3</td><td>Sprint 5</td><td>Batch 4 Validation Pass</td><td>100% validation pass</td><td>Day 9</td></tr>
+                <tr style="background:rgba(134,188,37,0.12);"><td class="task-id">M5.4</td><td>Sprint 5</td><td><strong>TABLE MIGRATION COMPLETE</strong></td><td>1,538/1,538 tables verified</td><td>Day 10</td></tr>
+                <tr><td class="task-id">M15.1</td><td>Sprint 15</td><td>Connections Inventoried</td><td>All Synapse connections cataloged</td><td>Day 1</td></tr>
+                <tr><td class="task-id">M15.2</td><td>Sprint 15</td><td>Rerouting Complete</td><td>All PATCH operations successful</td><td>Day 2</td></tr>
+                <tr style="background:rgba(142,68,173,0.08);"><td class="task-id">M15.3</td><td>Sprint 15</td><td><strong>Downstream Validated</strong></td><td>Power BI + pipelines + Logic Apps confirmed</td><td>Day 3</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============ APPENDIX A ============ -->
+<div class="section-card" id="appendix-a">
+    <h2>Appendix A: Data Type Mapping Quick Reference</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Synapse Type</th><th>Fabric Type</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>money</code></td><td><code>decimal(19,4)</code></td><td>Auto-mapped</td></tr>
+                <tr><td><code>smallmoney</code></td><td><code>decimal(10,4)</code></td><td>Auto-mapped</td></tr>
+                <tr><td><code>datetime</code></td><td><code>datetime2(3)</code></td><td>Auto-mapped</td></tr>
+                <tr><td><code>smalldatetime</code></td><td><code>datetime2(0)</code></td><td>Auto-mapped</td></tr>
+                <tr><td><code>datetimeoffset</code></td><td><code>datetime2</code> + offset col</td><td>Manual split</td></tr>
+                <tr><td><code>nchar(n)</code> / <code>nvarchar(n)</code></td><td><code>char(n)</code> / <code>varchar(n)</code></td><td>Auto-mapped</td></tr>
+                <tr><td><code>ntext</code> / <code>text</code></td><td><code>varchar(max)</code></td><td>Auto-mapped</td></tr>
+                <tr><td><code>image</code></td><td><code>varbinary(max)</code></td><td>Auto-mapped</td></tr>
+                <tr><td><code>geometry</code> / <code>geography</code></td><td>Not supported</td><td>WKT string workaround</td></tr>
+                <tr><td><code>hierarchyid</code></td><td>Not supported</td><td>Flatten to string</td></tr>
+                <tr><td><code>sql_variant</code></td><td>Not supported</td><td>Typed decomposition</td></tr>
+                <tr><td><code>xml</code></td><td><code>varchar(max)</code></td><td>String storage</td></tr>
+                <tr><td><code>uniqueidentifier</code></td><td><code>varchar(36)</code></td><td>String representation</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============ APPENDIX B ============ -->
+<div class="section-card" id="appendix-b">
+    <h2>Appendix B: Copilot Prompt Templates</h2>
+
+    <div class="prompt-block">
+        <h4><span class="prompt-number">1</span> Fix Distribution Hint</h4>
+        <pre><code><span class="cmt">-- Copilot Prompt: Fix Distribution Hint</span>
+<span class="cmt">-- Context: Fabric Data Warehouse does not support DISTRIBUTION = HASH or REPLICATE</span>
+
+<span class="kw">The following CREATE TABLE statement uses a Synapse-specific</span>
+<span class="kw">distribution hint that is not supported in Fabric Data Warehouse.</span>
+<span class="kw">Please remove the WITH (DISTRIBUTION = ...) clause and rewrite</span>
+<span class="kw">the DDL for Fabric compatibility.</span>
+
+<span class="str">-- Paste the original CREATE TABLE here</span></code></pre>
+    </div>
+
+    <div class="prompt-block">
+        <h4><span class="prompt-number">2</span> Fix Clustered Columnstore Index</h4>
+        <pre><code><span class="cmt">-- Copilot Prompt: Fix Clustered Columnstore Index</span>
+<span class="cmt">-- Context: Fabric auto-applies CCI; explicit INDEX clauses are invalid</span>
+
+<span class="kw">The following CREATE TABLE includes an explicit</span>
+<span class="kw">CLUSTERED COLUMNSTORE INDEX definition. Fabric Data Warehouse</span>
+<span class="kw">applies CCI automatically. Remove the index clause and rewrite</span>
+<span class="kw">the DDL for Fabric.</span>
+
+<span class="str">-- Paste the original CREATE TABLE here</span></code></pre>
+    </div>
+
+    <div class="prompt-block">
+        <h4><span class="prompt-number">3</span> Fix IDENTITY Column</h4>
+        <pre><code><span class="cmt">-- Copilot Prompt: Fix IDENTITY Column</span>
+<span class="cmt">-- Context: Fabric does not support IDENTITY(seed, increment)</span>
+
+<span class="kw">The following CREATE TABLE uses an IDENTITY column.</span>
+<span class="kw">Fabric Data Warehouse does not support IDENTITY.</span>
+<span class="kw">Replace it with a surrogate key pattern using</span>
+<span class="kw">ROW_NUMBER() or a pre-computed key column.</span>
+
+<span class="str">-- Paste the original CREATE TABLE here</span></code></pre>
+    </div>
+
+    <div class="prompt-block">
+        <h4><span class="prompt-number">4</span> Fix Materialized View</h4>
+        <pre><code><span class="cmt">-- Copilot Prompt: Fix Materialized View</span>
+<span class="cmt">-- Context: Fabric does not support CREATE MATERIALIZED VIEW</span>
+
+<span class="kw">The following statement creates a materialized view.</span>
+<span class="kw">Fabric Data Warehouse does not support materialized views.</span>
+<span class="kw">Convert this to a standard CREATE VIEW or suggest a</span>
+<span class="kw">table-based pre-aggregation pattern as a workaround.</span>
+
+<span class="str">-- Paste the original CREATE MATERIALIZED VIEW here</span></code></pre>
+    </div>
+
+    <div class="prompt-block">
+        <h4><span class="prompt-number">5</span> Fix External Table</h4>
+        <pre><code><span class="cmt">-- Copilot Prompt: Fix External Table</span>
+<span class="cmt">-- Context: Fabric uses Shortcuts instead of external tables</span>
+
+<span class="kw">The following statement creates an external table pointing</span>
+<span class="kw">to an external data source. Fabric Data Warehouse uses</span>
+<span class="kw">Shortcuts (OneLake) instead of external tables.</span>
+<span class="kw">Provide the equivalent Shortcut configuration and any</span>
+<span class="kw">DDL changes needed.</span>
+
+<span class="str">-- Paste the original CREATE EXTERNAL TABLE here</span></code></pre>
+    </div>
+</div>
+
+<!-- ============ APPENDIX C ============ -->
+<div class="section-card" id="appendix-c">
+    <h2>Appendix C: Per-Table Validation Checklist</h2>
+    <p>Each table must pass all 8 validation checks before the batch is signed off:</p>
+    <ul class="checklist">
+        <li><strong>Schema match</strong> &mdash; Column names, data types, and nullability match source definition</li>
+        <li><strong>Row count</strong> &mdash; Exact row count match between source and target</li>
+        <li><strong>Checksum</strong> &mdash; Hash comparison on key columns matches between source and target</li>
+        <li><strong>Null patterns</strong> &mdash; Null distribution per column matches source patterns</li>
+        <li><strong>Min/Max values</strong> &mdash; Boundary values for numeric and date columns match source</li>
+        <li><strong>Sample records</strong> &mdash; 0.1% random sample record-level comparison passes</li>
+        <li><strong>Constraints</strong> &mdash; Primary keys, foreign keys, and check constraints verified</li>
+        <li><strong>Indexes</strong> &mdash; Index definitions and statistics confirmed (where applicable)</li>
+    </ul>
+</div>
+
+<!-- ============ APPENDIX D ============ -->
+<div class="section-card" id="appendix-d">
+    <h2>Appendix D: Escalation Procedures</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Issue</th><th>First Response</th><th>Escalation Path</th><th>SLA</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>DACPAC extraction failure</td><td>Try SqlPackage CLI</td><td>Microsoft Support</td><td>4 hrs</td></tr>
+                <tr><td>Migration Assistant timeout</td><td>Retry; reduce batch size</td><td>Microsoft Support</td><td>4 hrs</td></tr>
+                <tr><td>Copilot unavailable</td><td>Use manual fix patterns</td><td>Microsoft account team</td><td>8 hrs</td></tr>
+                <tr><td>Data copy failure (capacity)</td><td>Reduce parallelism; retry</td><td>Architect &rarr; capacity resize</td><td>2 hrs</td></tr>
+                <tr><td>Row count mismatch</td><td>Re-run copy</td><td>Sr DE investigation</td><td>4 hrs</td></tr>
+                <tr><td>Checksum mismatch</td><td>Sample record comparison</td><td>DBA deep-dive</td><td>8 hrs</td></tr>
+                <tr><td>Security gap discovered</td><td>Immediate manual fix</td><td>DBA + Architect</td><td>2 hrs</td></tr>
+                <tr><td>Connection rerouting failure</td><td>Manual update</td><td>DBA &rarr; Microsoft Support</td><td>2 hrs</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</main>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div class="footer-links">
+                <a href="index.html">One-Pager</a>
+                <a href="roadmap.html">Roadmap</a>
+                <a href="backlog.html">Backlog</a>
+                <a href="orchestrator.html">Orchestrator</a>
+                <a href="../../index.html">Accelerators Dashboard</a>
+            </div>
+            <div class="footer-meta">
+                <p><strong style="color: var(--gray-400);">Author:</strong> Keven Markham, VP Enterprise Transformation</p>
+                <p><strong style="color: var(--gray-400);">Date:</strong> February 6, 2026 &nbsp;|&nbsp; <strong style="color: var(--gray-400);">Version:</strong> 1.0</p>
+            </div>
+        </div>
+        <hr>
+        <p class="copyright">DMTSP Fabric Migration Accelerators &mdash; Internal Use Only</p>
+    </div>
+</footer>
+
+<script>
+(function() {
+    /* === Sprint card toggle === */
+    window.toggleSprint = function(header) {
+        var card = header.closest('.sprint-card');
+        card.classList.toggle('open');
+    };
+
+    /* === Table of Contents active tracking === */
+    var tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+    var sections = [];
+
+    tocLinks.forEach(function(link) {
+        var id = link.getAttribute('href').substring(1);
+        var el = document.getElementById(id);
+        if (el) sections.push({ id: id, el: el, link: link });
+    });
+
+    function updateActiveToc() {
+        var scrollY = window.scrollY + 100;
+        var current = null;
+
+        for (var i = sections.length - 1; i >= 0; i--) {
+            if (sections[i].el.offsetTop <= scrollY) {
+                current = sections[i];
+                break;
+            }
+        }
+
+        tocLinks.forEach(function(link) { link.classList.remove('active'); });
+        if (current) current.link.classList.add('active');
+    }
+
+    window.addEventListener('scroll', updateActiveToc, { passive: true });
+    updateActiveToc();
+
+    /* === Animate progress bars on scroll === */
+    var progressBars = document.querySelectorAll('.progress-fill');
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                var bar = entry.target;
+                var width = bar.style.width;
+                bar.style.width = '0%';
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        bar.style.width = width;
+                    });
+                });
+                observer.unobserve(bar);
+            }
+        });
+    }, { threshold: 0.2 });
+
+    progressBars.forEach(function(bar) {
+        observer.observe(bar);
+    });
+})();
+</script>
+
+</body>
+</html>
