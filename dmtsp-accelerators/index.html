@@ -107,7 +107,7 @@
                 <div class="accelerator-header" onclick="toggleAccelerator(1)">
                     <div class="accelerator-number">01</div>
                     <div class="accelerator-title">
-                        <h3>Fabric Migration Assistant for Data Warehouse</h3>
+                        <h3>Fabric Migration Assistant for Data Warehouse <span class="status-badge new">New</span></h3>
                         <span class="accelerator-target">Synapse DW Schema/Tables</span>
                     </div>
                     <div class="accelerator-impact">
@@ -155,6 +155,12 @@
                                 <li>Known T-SQL incompatibility patterns with pre-built fix scripts</li>
                                 <li>Copilot prompt library optimized for migration fix scenarios</li>
                             </ul>
+                            <div class="accelerator-design-links">
+                                <a href="fabric-migration-assistant/design/index.html" class="design-link"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> One-Pager</a>
+                                <a href="fabric-migration-assistant/design/roadmap.html" class="design-link"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M9 17V7l8 5-8 5z"/></svg> Roadmap</a>
+                                <a href="fabric-migration-assistant/design/backlog.html" class="design-link"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg> Backlog</a>
+                                <a href="fabric-migration-assistant/design/orchestrator.html" class="design-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> Orchestrator</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -165,7 +171,7 @@
                 <div class="accelerator-header" onclick="toggleAccelerator(2)">
                     <div class="accelerator-number">02</div>
                     <div class="accelerator-title">
-                        <h3>ADF-to-Fabric PowerShell Pipeline Upgrade Module</h3>
+                        <h3>ADF-to-Fabric PowerShell Pipeline Upgrade Module <span class="status-badge planning">Planning</span></h3>
                         <span class="accelerator-target">ADF Pipelines/Datasets</span>
                     </div>
                     <div class="accelerator-impact">
@@ -224,7 +230,7 @@
                 <div class="accelerator-header" onclick="toggleAccelerator(3)">
                     <div class="accelerator-number">03</div>
                     <div class="accelerator-title">
-                        <h3>T-SQL to Spark/PySpark Code Conversion Framework</h3>
+                        <h3>T-SQL to Spark/PySpark Code Conversion Framework <span class="status-badge coming-soon">Coming Soon</span></h3>
                         <span class="accelerator-target">Stored Procedure Conversion</span>
                     </div>
                     <div class="accelerator-impact">
@@ -290,7 +296,7 @@
                 <div class="accelerator-header" onclick="toggleAccelerator(4)">
                     <div class="accelerator-number">04</div>
                     <div class="accelerator-title">
-                        <h3>CI/CD and Environment Deployment Automation</h3>
+                        <h3>CI/CD and Environment Deployment Automation <span class="status-badge coming-soon">Coming Soon</span></h3>
                         <span class="accelerator-target">SIT/UAT/Prod Environments</span>
                     </div>
                     <div class="accelerator-impact">
@@ -348,7 +354,7 @@
                 <div class="accelerator-header" onclick="toggleAccelerator(5)">
                     <div class="accelerator-number">05</div>
                     <div class="accelerator-title">
-                        <h3>Automated Data Validation and Testing Framework</h3>
+                        <h3>Automated Data Validation and Testing Framework <span class="status-badge coming-soon">Coming Soon</span></h3>
                         <span class="accelerator-target">Cross-Cutting Quality</span>
                     </div>
                     <div class="accelerator-impact">
@@ -420,7 +426,7 @@
                 <div class="accelerator-header" onclick="toggleAccelerator(6)">
                     <div class="accelerator-number">06</div>
                     <div class="accelerator-title">
-                        <h3>Fabric Copilot Integration for Migration Workflows</h3>
+                        <h3>Fabric Copilot Integration for Migration Workflows <span class="status-badge planning">Planning</span></h3>
                         <span class="accelerator-target">All Workstreams</span>
                     </div>
                     <div class="accelerator-impact">
@@ -478,7 +484,7 @@
                 <div class="accelerator-header" onclick="toggleAccelerator(7)">
                     <div class="accelerator-number">07</div>
                     <div class="accelerator-title">
-                        <h3>Logic App and ADLS Migration Automation</h3>
+                        <h3>Logic App and ADLS Migration Automation <span class="status-badge coming-soon">Coming Soon</span></h3>
                         <span class="accelerator-target">Logic Apps + Storage</span>
                     </div>
                     <div class="accelerator-impact">
@@ -757,50 +763,58 @@
                             <th>Workstream</th>
                             <th>Productivity Gain</th>
                             <th>Build Effort</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1. Migration Assistant + Copilot</td>
+                            <td><a href="fabric-migration-assistant/design/index.html" style="color:var(--dark);font-weight:500;">1. Migration Assistant + Copilot</a></td>
                             <td>Synapse DW schema/tables</td>
                             <td><span class="badge high">40-55%</span></td>
                             <td><span class="effort low">Low</span></td>
+                            <td><span class="status-badge new">New</span></td>
                         </tr>
                         <tr>
                             <td>2. ADF PowerShell Module</td>
                             <td>ADF pipelines/datasets</td>
                             <td><span class="badge high">30-45%</span></td>
                             <td><span class="effort medium">Low-Medium</span></td>
+                            <td><span class="status-badge planning">Planning</span></td>
                         </tr>
                         <tr>
                             <td>3. T-SQL to Spark Framework</td>
                             <td>Stored procedure conversion</td>
                             <td><span class="badge medium">20-30%</span></td>
                             <td><span class="effort high">High</span></td>
+                            <td><span class="status-badge coming-soon">Coming Soon</span></td>
                         </tr>
                         <tr>
                             <td>4. CI/CD Automation</td>
                             <td>SIT/UAT/Prod environments</td>
                             <td><span class="badge medium">15-25%</span></td>
                             <td><span class="effort medium">Medium</span></td>
+                            <td><span class="status-badge coming-soon">Coming Soon</span></td>
                         </tr>
                         <tr>
                             <td>5. Data Validation Framework</td>
                             <td>Cross-cutting quality</td>
                             <td><span class="badge quality">Quality</span></td>
                             <td><span class="effort medium">Medium</span></td>
+                            <td><span class="status-badge coming-soon">Coming Soon</span></td>
                         </tr>
                         <tr>
                             <td>6. Copilot Prompt Library</td>
                             <td>All workstreams</td>
                             <td><span class="badge compound">5-10% compound</span></td>
                             <td><span class="effort low">Low</span></td>
+                            <td><span class="status-badge planning">Planning</span></td>
                         </tr>
                         <tr>
                             <td>7. Logic App/ADLS Automation</td>
                             <td>Logic Apps + Storage</td>
                             <td><span class="badge medium">15-30%</span></td>
                             <td><span class="effort low">Low</span></td>
+                            <td><span class="status-badge coming-soon">Coming Soon</span></td>
                         </tr>
                     </tbody>
                 </table>

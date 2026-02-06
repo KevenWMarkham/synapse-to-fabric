@@ -1161,6 +1161,112 @@ a:hover {
     color: var(--danger);
 }
 
+/* Status Badges */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.status-badge.new {
+    background: rgba(134, 188, 37, 0.2);
+    color: var(--primary-dark);
+    border: 1px solid rgba(134, 188, 37, 0.3);
+}
+
+.status-badge.planning {
+    background: rgba(255, 193, 7, 0.2);
+    color: #946800;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-badge.coming-soon {
+    background: rgba(108, 117, 125, 0.15);
+    color: var(--gray-600);
+    border: 1px solid var(--gray-300);
+}
+
+.status-badge.in-progress {
+    background: rgba(23, 162, 184, 0.2);
+    color: var(--secondary-dark);
+    border: 1px solid rgba(13, 131, 144, 0.3);
+}
+
+.status-badge.complete {
+    background: rgba(40, 167, 69, 0.2);
+    color: var(--success);
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+/* Status dot animation for "New" */
+.status-badge.new::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--primary);
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* Accelerator design links */
+.accelerator-design-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--gray-200);
+}
+
+.design-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-md);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--white);
+    background: var(--secondary);
+    transition: background var(--transition-fast), transform 100ms ease;
+    text-decoration: none;
+}
+
+.design-link:hover {
+    background: var(--secondary-dark);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+.design-link svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.design-link.coming-soon-link {
+    background: var(--gray-300);
+    color: var(--gray-600);
+    cursor: default;
+    pointer-events: none;
+}
+
 /* ========================================
    Sprint Plan Section
    ======================================== */
