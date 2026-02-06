@@ -883,40 +883,41 @@
 <!-- ============ SPRINT TIMELINE ============ -->
 <div class="section-card" id="sprint-timeline">
     <h2>Sprint Timeline</h2>
+    <p style="font-size:0.875rem;color:var(--gray-600);margin-bottom:1rem;">Reusable execution template &mdash; batch sizes and object counts are scaled per client engagement. The structure below represents a reference implementation.</p>
     <pre><code>Sprint 0 ──── Sprint 1 ──── Sprint 2 ──── Sprint 3 ──── Sprint 4 ──── Sprint 5 ──── ... ──── Sprint 15
 Discovery     Foundation    Batch 1       Batch 2       Batch 3       Batch 4               Reroute
-&amp; Setup       &amp; Schema      380 tbl       380 tbl       380 tbl       398 tbl               Connections
-              60 objects    180 views     182 views     + ADF Start   + ADF Continue
-                                          VIEWS done                  TABLES done            REROUTE done</code></pre>
+&amp; Setup       &amp; Schema      Tables+Views  Tables+Views  Tables+ADF    Tables (final)        Connections
+              Foundation    + Validation  + Validation  + ADF Start   + ADF Continue
+              Objects       VIEWS done                  TABLES done                          CUTOVER done</code></pre>
     <div class="timeline-visual">
         <div class="timeline-track">
             <div class="timeline-node">
                 <div class="timeline-node-dot" style="background:var(--sprint0);">S0</div>
-                <div class="timeline-node-label"><strong>Discovery</strong>DACPAC + Assessment</div>
+                <div class="timeline-node-label"><strong>Discovery</strong>DACPAC + Assessment + Batch Planning</div>
             </div>
             <div class="timeline-node">
                 <div class="timeline-node-dot" style="background:var(--sprint1);">S1</div>
-                <div class="timeline-node-label"><strong>Foundation</strong>60 objects</div>
+                <div class="timeline-node-label"><strong>Foundation</strong>Schema + Security + Functions</div>
             </div>
             <div class="timeline-node">
                 <div class="timeline-node-dot" style="background:var(--sprint2);">S2</div>
-                <div class="timeline-node-label"><strong>Batch 1</strong>380 tbl + 180 views</div>
+                <div class="timeline-node-label"><strong>Batch 1</strong>Tables + Views</div>
             </div>
             <div class="timeline-node">
                 <div class="timeline-node-dot" style="background:var(--sprint3);">S3</div>
-                <div class="timeline-node-label"><strong>Batch 2</strong>380 tbl + 182 views</div>
+                <div class="timeline-node-label"><strong>Batch 2</strong>Tables + Views</div>
             </div>
             <div class="timeline-node">
                 <div class="timeline-node-dot" style="background:var(--sprint4);">S4</div>
-                <div class="timeline-node-label"><strong>Batch 3</strong>380 tbl + ADF</div>
+                <div class="timeline-node-label"><strong>Batch 3</strong>Tables + ADF Start</div>
             </div>
             <div class="timeline-node">
                 <div class="timeline-node-dot" style="background:var(--sprint5);">S5</div>
-                <div class="timeline-node-label"><strong>Batch 4</strong>398 tbl (final)</div>
+                <div class="timeline-node-label"><strong>Batch 4</strong>Final tables + ADF</div>
             </div>
             <div class="timeline-node">
                 <div class="timeline-node-dot" style="background:var(--sprint15);">15</div>
-                <div class="timeline-node-label"><strong>Cutover</strong>Connection reroute</div>
+                <div class="timeline-node-label"><strong>Cutover</strong>Reroute + Sign-off</div>
             </div>
         </div>
     </div>

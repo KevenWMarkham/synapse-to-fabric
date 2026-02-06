@@ -33,12 +33,14 @@
 
 ## Sprint Timeline
 
+> **Reusable execution template** — batch sizes and object counts are scaled per client engagement. The structure below represents a reference implementation.
+
 ```
 Sprint 0 ──── Sprint 1 ──── Sprint 2 ──── Sprint 3 ──── Sprint 4 ──── Sprint 5 ──── ... ──── Sprint 15
 Discovery     Foundation    Batch 1       Batch 2       Batch 3       Batch 4               Reroute
-& Setup       & Schema      380 tbl       380 tbl       380 tbl       398 tbl               Connections
-              60 objects    180 views     182 views     + ADF Start   + ADF Continue
-                                          VIEWS ✓                     TABLES ✓              REROUTE ✓
+& Setup       & Schema      Tables+Views  Tables+Views  Tables+ADF    Tables (final)        Connections
+              Foundation    + Validation  + Validation  + ADF Start   + ADF Continue
+              Objects       VIEWS done                  TABLES done                          CUTOVER done
 
 Week 1-2      Week 3-4      Week 5-6      Week 7-8      Week 9-10     Week 11-12            Week 31-32
 700 hrs       671 hrs       700 hrs       700 hrs       700 hrs       700 hrs               303 hrs
