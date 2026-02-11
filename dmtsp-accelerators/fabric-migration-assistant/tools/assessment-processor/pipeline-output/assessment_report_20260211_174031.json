@@ -1,0 +1,894 @@
+{
+  "metadata": {
+    "generated_at": "2026-02-11T17:40:31Z",
+    "source_file": "assessment-processor/examples/sample_assessment.csv",
+    "tool": "Fabric Migration Assessment Processor",
+    "version": "1.0.0",
+    "total_objects": 20,
+    "passed_count": 11,
+    "failed_count": 9,
+    "warning_count": 0,
+    "pass_rate": 55.0
+  },
+  "objects": [
+    {
+      "name": "DimCustomer",
+      "qualified_name": "dbo.DimCustomer",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": ""
+    },
+    {
+      "name": "DimProduct",
+      "qualified_name": "dbo.DimProduct",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": ""
+    },
+    {
+      "name": "FactSales",
+      "qualified_name": "dbo.FactSales",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [
+        "DimCustomer",
+        "DimProduct",
+        "DimDate"
+      ],
+      "impact_score": 0,
+      "failure_category": ""
+    },
+    {
+      "name": "DimDate",
+      "qualified_name": "dbo.DimDate",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "FAILED",
+      "failure_reason": "DISTRIBUTION type REPLICATE not supported in Fabric Warehouse",
+      "dependencies": [],
+      "impact_score": 2,
+      "failure_category": "auto_fixable"
+    },
+    {
+      "name": "DimGeography",
+      "qualified_name": "dbo.DimGeography",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "FAILED",
+      "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric",
+      "dependencies": [
+        "DimCustomer"
+      ],
+      "impact_score": 0,
+      "failure_category": "significant_refactor"
+    },
+    {
+      "name": "vw_SalesSummary",
+      "qualified_name": "reporting.vw_SalesSummary",
+      "object_type": "VIEW",
+      "schema_name": "reporting",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [
+        "FactSales",
+        "DimCustomer",
+        "DimProduct"
+      ],
+      "impact_score": 0,
+      "failure_category": ""
+    },
+    {
+      "name": "vw_CustomerOrders",
+      "qualified_name": "reporting.vw_CustomerOrders",
+      "object_type": "VIEW",
+      "schema_name": "reporting",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [
+        "FactSales",
+        "DimCustomer"
+      ],
+      "impact_score": 0,
+      "failure_category": ""
+    },
+    {
+      "name": "vw_ProductPerformance",
+      "qualified_name": "reporting.vw_ProductPerformance",
+      "object_type": "VIEW",
+      "schema_name": "reporting",
+      "status": "FAILED",
+      "failure_reason": "MATERIALIZED VIEW not supported in Fabric Warehouse",
+      "dependencies": [
+        "FactSales",
+        "DimProduct"
+      ],
+      "impact_score": 0,
+      "failure_category": "minor_manual"
+    },
+    {
+      "name": "usp_LoadFactSales",
+      "qualified_name": "etl.usp_LoadFactSales",
+      "object_type": "STORED_PROCEDURE",
+      "schema_name": "etl",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [
+        "FactSales",
+        "DimCustomer",
+        "DimProduct",
+        "DimDate"
+      ],
+      "impact_score": 0,
+      "failure_category": ""
+    },
+    {
+      "name": "usp_RefreshDimCustomer",
+      "qualified_name": "etl.usp_RefreshDimCustomer",
+      "object_type": "STORED_PROCEDURE",
+      "schema_name": "etl",
+      "status": "FAILED",
+      "failure_reason": "cross database reference to staging database not supported",
+      "dependencies": [
+        "DimCustomer"
+      ],
+      "impact_score": 0,
+      "failure_category": "significant_refactor"
+    },
+    {
+      "name": "usp_CalculateMetrics",
+      "qualified_name": "etl.usp_CalculateMetrics",
+      "object_type": "STORED_PROCEDURE",
+      "schema_name": "etl",
+      "status": "FAILED",
+      "failure_reason": "stored procedure contains incompatible cursor-based logic requiring refactor",
+      "dependencies": [
+        "FactSales",
+        "DimDate"
+      ],
+      "impact_score": 0,
+      "failure_category": "significant_refactor"
+    },
+    {
+      "name": "fn_GetFiscalYear",
+      "qualified_name": "dbo.fn_GetFiscalYear",
+      "object_type": "FUNCTION",
+      "schema_name": "dbo",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": ""
+    },
+    {
+      "name": "fn_FormatCurrency",
+      "qualified_name": "dbo.fn_FormatCurrency",
+      "object_type": "FUNCTION",
+      "schema_name": "dbo",
+      "status": "FAILED",
+      "failure_reason": "deprecated money data type conversion not supported",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": "minor_manual"
+    },
+    {
+      "name": "ext_CustomerFeed",
+      "qualified_name": "staging.ext_CustomerFeed",
+      "object_type": "EXTERNAL_TABLE",
+      "schema_name": "staging",
+      "status": "FAILED",
+      "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE blob storage configuration",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": "significant_refactor"
+    },
+    {
+      "name": "ext_ProductCatalog",
+      "qualified_name": "staging.ext_ProductCatalog",
+      "object_type": "EXTERNAL_TABLE",
+      "schema_name": "staging",
+      "status": "FAILED",
+      "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE ADLS Gen2 configuration",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": "significant_refactor"
+    },
+    {
+      "name": "stat_FactSales_Date",
+      "qualified_name": "dbo.stat_FactSales_Date",
+      "object_type": "STATISTICS",
+      "schema_name": "dbo",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [
+        "FactSales"
+      ],
+      "impact_score": 0,
+      "failure_category": ""
+    },
+    {
+      "name": "stat_DimCustomer_Region",
+      "qualified_name": "dbo.stat_DimCustomer_Region",
+      "object_type": "STATISTICS",
+      "schema_name": "dbo",
+      "status": "FAILED",
+      "failure_reason": "STATISTICS auto-create syntax incompatible with Fabric",
+      "dependencies": [
+        "DimCustomer"
+      ],
+      "impact_score": 0,
+      "failure_category": "auto_fixable"
+    },
+    {
+      "name": "SalesSchema",
+      "qualified_name": "dbo.SalesSchema",
+      "object_type": "SCHEMA",
+      "schema_name": "dbo",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": ""
+    },
+    {
+      "name": "db_datareader_sales",
+      "qualified_name": "dbo.db_datareader_sales",
+      "object_type": "SECURITY",
+      "schema_name": "dbo",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": ""
+    },
+    {
+      "name": "db_datawriter_etl",
+      "qualified_name": "dbo.db_datawriter_etl",
+      "object_type": "SECURITY",
+      "schema_name": "dbo",
+      "status": "PASSED",
+      "failure_reason": "",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": ""
+    }
+  ],
+  "object_inventory": {
+    "TABLE": [
+      {
+        "name": "DimCustomer",
+        "qualified_name": "dbo.DimCustomer",
+        "object_type": "TABLE",
+        "schema_name": "dbo",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [],
+        "impact_score": 0,
+        "failure_category": ""
+      },
+      {
+        "name": "DimDate",
+        "qualified_name": "dbo.DimDate",
+        "object_type": "TABLE",
+        "schema_name": "dbo",
+        "status": "FAILED",
+        "failure_reason": "DISTRIBUTION type REPLICATE not supported in Fabric Warehouse",
+        "dependencies": [],
+        "impact_score": 2,
+        "failure_category": "auto_fixable"
+      },
+      {
+        "name": "DimGeography",
+        "qualified_name": "dbo.DimGeography",
+        "object_type": "TABLE",
+        "schema_name": "dbo",
+        "status": "FAILED",
+        "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric",
+        "dependencies": [
+          "DimCustomer"
+        ],
+        "impact_score": 0,
+        "failure_category": "significant_refactor"
+      },
+      {
+        "name": "DimProduct",
+        "qualified_name": "dbo.DimProduct",
+        "object_type": "TABLE",
+        "schema_name": "dbo",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [],
+        "impact_score": 0,
+        "failure_category": ""
+      },
+      {
+        "name": "FactSales",
+        "qualified_name": "dbo.FactSales",
+        "object_type": "TABLE",
+        "schema_name": "dbo",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [
+          "DimCustomer",
+          "DimProduct",
+          "DimDate"
+        ],
+        "impact_score": 0,
+        "failure_category": ""
+      }
+    ],
+    "VIEW": [
+      {
+        "name": "vw_CustomerOrders",
+        "qualified_name": "reporting.vw_CustomerOrders",
+        "object_type": "VIEW",
+        "schema_name": "reporting",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [
+          "FactSales",
+          "DimCustomer"
+        ],
+        "impact_score": 0,
+        "failure_category": ""
+      },
+      {
+        "name": "vw_ProductPerformance",
+        "qualified_name": "reporting.vw_ProductPerformance",
+        "object_type": "VIEW",
+        "schema_name": "reporting",
+        "status": "FAILED",
+        "failure_reason": "MATERIALIZED VIEW not supported in Fabric Warehouse",
+        "dependencies": [
+          "FactSales",
+          "DimProduct"
+        ],
+        "impact_score": 0,
+        "failure_category": "minor_manual"
+      },
+      {
+        "name": "vw_SalesSummary",
+        "qualified_name": "reporting.vw_SalesSummary",
+        "object_type": "VIEW",
+        "schema_name": "reporting",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [
+          "FactSales",
+          "DimCustomer",
+          "DimProduct"
+        ],
+        "impact_score": 0,
+        "failure_category": ""
+      }
+    ],
+    "STORED_PROCEDURE": [
+      {
+        "name": "usp_CalculateMetrics",
+        "qualified_name": "etl.usp_CalculateMetrics",
+        "object_type": "STORED_PROCEDURE",
+        "schema_name": "etl",
+        "status": "FAILED",
+        "failure_reason": "stored procedure contains incompatible cursor-based logic requiring refactor",
+        "dependencies": [
+          "FactSales",
+          "DimDate"
+        ],
+        "impact_score": 0,
+        "failure_category": "significant_refactor"
+      },
+      {
+        "name": "usp_LoadFactSales",
+        "qualified_name": "etl.usp_LoadFactSales",
+        "object_type": "STORED_PROCEDURE",
+        "schema_name": "etl",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [
+          "FactSales",
+          "DimCustomer",
+          "DimProduct",
+          "DimDate"
+        ],
+        "impact_score": 0,
+        "failure_category": ""
+      },
+      {
+        "name": "usp_RefreshDimCustomer",
+        "qualified_name": "etl.usp_RefreshDimCustomer",
+        "object_type": "STORED_PROCEDURE",
+        "schema_name": "etl",
+        "status": "FAILED",
+        "failure_reason": "cross database reference to staging database not supported",
+        "dependencies": [
+          "DimCustomer"
+        ],
+        "impact_score": 0,
+        "failure_category": "significant_refactor"
+      }
+    ],
+    "FUNCTION": [
+      {
+        "name": "fn_FormatCurrency",
+        "qualified_name": "dbo.fn_FormatCurrency",
+        "object_type": "FUNCTION",
+        "schema_name": "dbo",
+        "status": "FAILED",
+        "failure_reason": "deprecated money data type conversion not supported",
+        "dependencies": [],
+        "impact_score": 0,
+        "failure_category": "minor_manual"
+      },
+      {
+        "name": "fn_GetFiscalYear",
+        "qualified_name": "dbo.fn_GetFiscalYear",
+        "object_type": "FUNCTION",
+        "schema_name": "dbo",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [],
+        "impact_score": 0,
+        "failure_category": ""
+      }
+    ],
+    "EXTERNAL_TABLE": [
+      {
+        "name": "ext_CustomerFeed",
+        "qualified_name": "staging.ext_CustomerFeed",
+        "object_type": "EXTERNAL_TABLE",
+        "schema_name": "staging",
+        "status": "FAILED",
+        "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE blob storage configuration",
+        "dependencies": [],
+        "impact_score": 0,
+        "failure_category": "significant_refactor"
+      },
+      {
+        "name": "ext_ProductCatalog",
+        "qualified_name": "staging.ext_ProductCatalog",
+        "object_type": "EXTERNAL_TABLE",
+        "schema_name": "staging",
+        "status": "FAILED",
+        "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE ADLS Gen2 configuration",
+        "dependencies": [],
+        "impact_score": 0,
+        "failure_category": "significant_refactor"
+      }
+    ],
+    "STATISTICS": [
+      {
+        "name": "stat_DimCustomer_Region",
+        "qualified_name": "dbo.stat_DimCustomer_Region",
+        "object_type": "STATISTICS",
+        "schema_name": "dbo",
+        "status": "FAILED",
+        "failure_reason": "STATISTICS auto-create syntax incompatible with Fabric",
+        "dependencies": [
+          "DimCustomer"
+        ],
+        "impact_score": 0,
+        "failure_category": "auto_fixable"
+      },
+      {
+        "name": "stat_FactSales_Date",
+        "qualified_name": "dbo.stat_FactSales_Date",
+        "object_type": "STATISTICS",
+        "schema_name": "dbo",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [
+          "FactSales"
+        ],
+        "impact_score": 0,
+        "failure_category": ""
+      }
+    ],
+    "SCHEMA": [
+      {
+        "name": "SalesSchema",
+        "qualified_name": "dbo.SalesSchema",
+        "object_type": "SCHEMA",
+        "schema_name": "dbo",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [],
+        "impact_score": 0,
+        "failure_category": ""
+      }
+    ],
+    "SECURITY": [
+      {
+        "name": "db_datareader_sales",
+        "qualified_name": "dbo.db_datareader_sales",
+        "object_type": "SECURITY",
+        "schema_name": "dbo",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [],
+        "impact_score": 0,
+        "failure_category": ""
+      },
+      {
+        "name": "db_datawriter_etl",
+        "qualified_name": "dbo.db_datawriter_etl",
+        "object_type": "SECURITY",
+        "schema_name": "dbo",
+        "status": "PASSED",
+        "failure_reason": "",
+        "dependencies": [],
+        "impact_score": 0,
+        "failure_category": ""
+      }
+    ]
+  },
+  "dependency_analysis": {
+    "total_nodes": 20,
+    "total_edges": 6,
+    "primary_failures_count": 9,
+    "dependent_failures_count": 0,
+    "max_chain_depth": 2,
+    "most_impactful_failures": [
+      {
+        "qualified_name": "dbo.DimDate",
+        "impact_score": 2,
+        "failure_reason": "DISTRIBUTION type REPLICATE not supported in Fabric Warehouse"
+      },
+      {
+        "qualified_name": "dbo.DimGeography",
+        "impact_score": 0,
+        "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric"
+      },
+      {
+        "qualified_name": "reporting.vw_ProductPerformance",
+        "impact_score": 0,
+        "failure_reason": "MATERIALIZED VIEW not supported in Fabric Warehouse"
+      },
+      {
+        "qualified_name": "etl.usp_RefreshDimCustomer",
+        "impact_score": 0,
+        "failure_reason": "cross database reference to staging database not supported"
+      },
+      {
+        "qualified_name": "etl.usp_CalculateMetrics",
+        "impact_score": 0,
+        "failure_reason": "stored procedure contains incompatible cursor-based logic requiring refactor"
+      }
+    ]
+  },
+  "triage_summary": {
+    "counts": {
+      "auto_fixable": 2,
+      "minor_manual": 2,
+      "significant_refactor": 5,
+      "uncategorized": 0
+    },
+    "percentages": {
+      "auto_fixable": 22.2,
+      "minor_manual": 22.2,
+      "significant_refactor": 55.6,
+      "uncategorized": 0.0
+    },
+    "descriptions": {
+      "auto_fixable": "Can be automatically fixed by Copilot prompts or scripts",
+      "minor_manual": "Requires minor manual intervention (< 1 hour per object)",
+      "significant_refactor": "Requires significant refactoring (> 1 hour per object)",
+      "uncategorized": "Does not match any known failure pattern"
+    },
+    "uncategorized_reasons": [],
+    "total_failures": 9
+  },
+  "primary_failures": [
+    {
+      "name": "DimDate",
+      "qualified_name": "dbo.DimDate",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "FAILED",
+      "failure_reason": "DISTRIBUTION type REPLICATE not supported in Fabric Warehouse",
+      "dependencies": [],
+      "impact_score": 2,
+      "failure_category": "auto_fixable"
+    },
+    {
+      "name": "DimGeography",
+      "qualified_name": "dbo.DimGeography",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "FAILED",
+      "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric",
+      "dependencies": [
+        "DimCustomer"
+      ],
+      "impact_score": 0,
+      "failure_category": "significant_refactor"
+    },
+    {
+      "name": "vw_ProductPerformance",
+      "qualified_name": "reporting.vw_ProductPerformance",
+      "object_type": "VIEW",
+      "schema_name": "reporting",
+      "status": "FAILED",
+      "failure_reason": "MATERIALIZED VIEW not supported in Fabric Warehouse",
+      "dependencies": [
+        "FactSales",
+        "DimProduct"
+      ],
+      "impact_score": 0,
+      "failure_category": "minor_manual"
+    },
+    {
+      "name": "usp_RefreshDimCustomer",
+      "qualified_name": "etl.usp_RefreshDimCustomer",
+      "object_type": "STORED_PROCEDURE",
+      "schema_name": "etl",
+      "status": "FAILED",
+      "failure_reason": "cross database reference to staging database not supported",
+      "dependencies": [
+        "DimCustomer"
+      ],
+      "impact_score": 0,
+      "failure_category": "significant_refactor"
+    },
+    {
+      "name": "usp_CalculateMetrics",
+      "qualified_name": "etl.usp_CalculateMetrics",
+      "object_type": "STORED_PROCEDURE",
+      "schema_name": "etl",
+      "status": "FAILED",
+      "failure_reason": "stored procedure contains incompatible cursor-based logic requiring refactor",
+      "dependencies": [
+        "FactSales",
+        "DimDate"
+      ],
+      "impact_score": 0,
+      "failure_category": "significant_refactor"
+    },
+    {
+      "name": "fn_FormatCurrency",
+      "qualified_name": "dbo.fn_FormatCurrency",
+      "object_type": "FUNCTION",
+      "schema_name": "dbo",
+      "status": "FAILED",
+      "failure_reason": "deprecated money data type conversion not supported",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": "minor_manual"
+    },
+    {
+      "name": "ext_CustomerFeed",
+      "qualified_name": "staging.ext_CustomerFeed",
+      "object_type": "EXTERNAL_TABLE",
+      "schema_name": "staging",
+      "status": "FAILED",
+      "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE blob storage configuration",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": "significant_refactor"
+    },
+    {
+      "name": "ext_ProductCatalog",
+      "qualified_name": "staging.ext_ProductCatalog",
+      "object_type": "EXTERNAL_TABLE",
+      "schema_name": "staging",
+      "status": "FAILED",
+      "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE ADLS Gen2 configuration",
+      "dependencies": [],
+      "impact_score": 0,
+      "failure_category": "significant_refactor"
+    },
+    {
+      "name": "stat_DimCustomer_Region",
+      "qualified_name": "dbo.stat_DimCustomer_Region",
+      "object_type": "STATISTICS",
+      "schema_name": "dbo",
+      "status": "FAILED",
+      "failure_reason": "STATISTICS auto-create syntax incompatible with Fabric",
+      "dependencies": [
+        "DimCustomer"
+      ],
+      "impact_score": 0,
+      "failure_category": "auto_fixable"
+    }
+  ],
+  "dependent_failures": [],
+  "migration_order": [
+    [
+      "dbo.db_datareader_sales",
+      "dbo.db_datawriter_etl",
+      "dbo.DimCustomer",
+      "dbo.DimDate",
+      "dbo.DimProduct",
+      "dbo.fn_FormatCurrency",
+      "dbo.fn_GetFiscalYear",
+      "dbo.SalesSchema",
+      "etl.usp_CalculateMetrics",
+      "etl.usp_LoadFactSales",
+      "etl.usp_RefreshDimCustomer",
+      "reporting.vw_CustomerOrders",
+      "reporting.vw_ProductPerformance",
+      "reporting.vw_SalesSummary",
+      "staging.ext_CustomerFeed",
+      "staging.ext_ProductCatalog"
+    ],
+    [
+      "dbo.DimGeography",
+      "dbo.FactSales",
+      "dbo.stat_DimCustomer_Region"
+    ],
+    [
+      "dbo.stat_FactSales_Date"
+    ]
+  ],
+  "copilot_suggestions": {
+    "dbo.DimDate": [
+      "DIST-001",
+      "DIST-002",
+      "DIST-003"
+    ],
+    "dbo.DimGeography": [
+      "EXT-001",
+      "EXT-002",
+      "EXT-003"
+    ],
+    "reporting.vw_ProductPerformance": [
+      "MVIEW-001",
+      "MVIEW-002"
+    ],
+    "etl.usp_RefreshDimCustomer": [
+      "XREF-001",
+      "XREF-002"
+    ],
+    "etl.usp_CalculateMetrics": [
+      "PROC-001",
+      "PROC-002"
+    ],
+    "dbo.fn_FormatCurrency": [
+      "DTYPE-001",
+      "DTYPE-002"
+    ],
+    "staging.ext_CustomerFeed": [
+      "EXT-001",
+      "EXT-002",
+      "EXT-003"
+    ],
+    "staging.ext_ProductCatalog": [
+      "EXT-001",
+      "EXT-002",
+      "EXT-003"
+    ],
+    "dbo.stat_DimCustomer_Region": [
+      "STAT-001"
+    ]
+  },
+  "recommended_actions": [
+    {
+      "priority": 1,
+      "qualified_name": "dbo.DimDate",
+      "object_type": "TABLE",
+      "failure_reason": "DISTRIBUTION type REPLICATE not supported in Fabric Warehouse",
+      "failure_category": "auto_fixable",
+      "impact_score": 2,
+      "is_primary_failure": true,
+      "suggested_prompts": [
+        "DIST-001",
+        "DIST-002",
+        "DIST-003"
+      ]
+    },
+    {
+      "priority": 2,
+      "qualified_name": "dbo.stat_DimCustomer_Region",
+      "object_type": "STATISTICS",
+      "failure_reason": "STATISTICS auto-create syntax incompatible with Fabric",
+      "failure_category": "auto_fixable",
+      "impact_score": 0,
+      "is_primary_failure": true,
+      "suggested_prompts": [
+        "STAT-001"
+      ]
+    },
+    {
+      "priority": 3,
+      "qualified_name": "reporting.vw_ProductPerformance",
+      "object_type": "VIEW",
+      "failure_reason": "MATERIALIZED VIEW not supported in Fabric Warehouse",
+      "failure_category": "minor_manual",
+      "impact_score": 0,
+      "is_primary_failure": true,
+      "suggested_prompts": [
+        "MVIEW-001",
+        "MVIEW-002"
+      ]
+    },
+    {
+      "priority": 4,
+      "qualified_name": "dbo.fn_FormatCurrency",
+      "object_type": "FUNCTION",
+      "failure_reason": "deprecated money data type conversion not supported",
+      "failure_category": "minor_manual",
+      "impact_score": 0,
+      "is_primary_failure": true,
+      "suggested_prompts": [
+        "DTYPE-001",
+        "DTYPE-002"
+      ]
+    },
+    {
+      "priority": 5,
+      "qualified_name": "dbo.DimGeography",
+      "object_type": "TABLE",
+      "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric",
+      "failure_category": "significant_refactor",
+      "impact_score": 0,
+      "is_primary_failure": true,
+      "suggested_prompts": [
+        "EXT-001",
+        "EXT-002",
+        "EXT-003"
+      ]
+    },
+    {
+      "priority": 6,
+      "qualified_name": "etl.usp_RefreshDimCustomer",
+      "object_type": "STORED_PROCEDURE",
+      "failure_reason": "cross database reference to staging database not supported",
+      "failure_category": "significant_refactor",
+      "impact_score": 0,
+      "is_primary_failure": true,
+      "suggested_prompts": [
+        "XREF-001",
+        "XREF-002"
+      ]
+    },
+    {
+      "priority": 7,
+      "qualified_name": "etl.usp_CalculateMetrics",
+      "object_type": "STORED_PROCEDURE",
+      "failure_reason": "stored procedure contains incompatible cursor-based logic requiring refactor",
+      "failure_category": "significant_refactor",
+      "impact_score": 0,
+      "is_primary_failure": true,
+      "suggested_prompts": [
+        "PROC-001",
+        "PROC-002"
+      ]
+    },
+    {
+      "priority": 8,
+      "qualified_name": "staging.ext_CustomerFeed",
+      "object_type": "EXTERNAL_TABLE",
+      "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE blob storage configuration",
+      "failure_category": "significant_refactor",
+      "impact_score": 0,
+      "is_primary_failure": true,
+      "suggested_prompts": [
+        "EXT-001",
+        "EXT-002",
+        "EXT-003"
+      ]
+    },
+    {
+      "priority": 9,
+      "qualified_name": "staging.ext_ProductCatalog",
+      "object_type": "EXTERNAL_TABLE",
+      "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE ADLS Gen2 configuration",
+      "failure_category": "significant_refactor",
+      "impact_score": 0,
+      "is_primary_failure": true,
+      "suggested_prompts": [
+        "EXT-001",
+        "EXT-002",
+        "EXT-003"
+      ]
+    }
+  ]
+}

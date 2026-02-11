@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric Migration Assessment Report</title>
+    <style>
+        :root {
+            --primary: #86BC25;
+            --primary-dark: #6a9a1c;
+            --secondary: #0D8390;
+            --secondary-dark: #096b75;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --neutral: #6c757d;
+            --bg: #f8f9fa;
+            --bg-card: #ffffff;
+            --text: #212529;
+            --text-muted: #6c757d;
+            --border: #dee2e6;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                         'Helvetica Neue', Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .report-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 32px;
+        }
+
+        .report-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .report-header .meta {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .report-header .meta span {
+            margin-right: 24px;
+        }
+
+        /* Section */
+        .section {
+            background: var(--bg-card);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 16px 24px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .section-body {
+            padding: 24px;
+        }
+
+        /* Executive Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .summary-card {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .summary-card.passed { border-left-color: var(--success); }
+        .summary-card.failed { border-left-color: var(--danger); }
+        .summary-card.warning { border-left-color: var(--warning); }
+        .summary-card.rate { border-left-color: var(--secondary); }
+
+        .summary-card .value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .summary-card .label {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead th {
+            background: var(--bg);
+            color: var(--text);
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f1f8e9;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-passed { background: #d4edda; color: #155724; }
+        .badge-failed { background: #f8d7da; color: #721c24; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+
+        /* Category badges */
+        .badge-auto { background: #e8f5e9; color: #2e7d32; }
+        .badge-minor { background: #fff8e1; color: #f57f17; }
+        .badge-significant { background: #fce4ec; color: #c62828; }
+        .badge-uncategorized { background: #eceff1; color: #546e6f; }
+
+        /* Triage bars */
+        .triage-bars {
+            margin: 16px 0;
+        }
+
+        .triage-bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .triage-bar-label {
+            width: 180px;
+            font-size: 14px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .triage-bar-track {
+            flex: 1;
+            height: 28px;
+            background: var(--bg);
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 0 12px;
+        }
+
+        .triage-bar-fill {
+            height: 100%;
+            border-radius: 14px;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            min-width: fit-content;
+        }
+
+        .triage-bar-fill.auto { background: var(--primary); }
+        .triage-bar-fill.minor { background: var(--warning); color: #212529; }
+        .triage-bar-fill.significant { background: var(--danger); }
+        .triage-bar-fill.uncategorized { background: var(--neutral); }
+
+        .triage-bar-count {
+            width: 80px;
+            text-align: right;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Dependency chains */
+        .chain {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            background: var(--bg);
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--secondary);
+            overflow-x: auto;
+        }
+
+        .chain-item {
+            padding: 2px 0;
+        }
+
+        .chain-arrow {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        /* Actions list */
+        .action-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--border);
+        }
+
+        .action-item.primary-failure {
+            border-left-color: var(--danger);
+        }
+
+        .action-priority {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .action-details {
+            flex: 1;
+        }
+
+        .action-details h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .action-details p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .action-prompts {
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        .action-prompts code {
+            background: #e0f2f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 4px;
+        }
+
+        /* Impact score */
+        .impact-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .impact-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .impact-high { background: var(--danger); }
+        .impact-med { background: var(--warning); }
+        .impact-low { background: var(--success); }
+
+        /* Migration order layers */
+        .layer {
+            margin-bottom: 16px;
+        }
+
+        .layer-header {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .layer-objects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .layer-object {
+            background: var(--bg);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            border: 1px solid var(--border);
+        }
+
+        /* Footer */
+        .report-footer {
+            text-align: center;
+            padding: 32px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+        }
+
+        .report-footer a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        /* Object type groups */
+        .type-group {
+            margin-bottom: 20px;
+        }
+
+        .type-group-header {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--secondary-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .type-count {
+            background: var(--bg);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .triage-bar-label {
+                width: 120px;
+                font-size: 12px;
+            }
+
+            .action-item {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            thead th, tbody td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="report-header">
+        <div class="container">
+            <h1>Fabric Migration Assessment Report</h1>
+            <div class="meta">
+                <span>Generated: 2026-02-11T17:35:51Z</span>
+                <span>Source: examples/sample_assessment.csv</span>
+                <span>Fabric Migration Assessment Processor v1.0.0</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Executive Summary -->
+        <div class="section">
+            <div class="section-header">Executive Summary</div>
+            <div class="section-body">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="value">20</div>
+                        <div class="label">Total Objects</div>
+                    </div>
+                    <div class="summary-card passed">
+                        <div class="value">11</div>
+                        <div class="label">Passed</div>
+                    </div>
+                    <div class="summary-card failed">
+                        <div class="value">9</div>
+                        <div class="label">Failed</div>
+                    </div>
+                    <div class="summary-card warning">
+                        <div class="value">0</div>
+                        <div class="label">Warnings</div>
+                    </div>
+                    <div class="summary-card rate">
+                        <div class="value">55.0%</div>
+                        <div class="label">Pass Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Object Inventory -->
+        <div class="section">
+            <div class="section-header">Object Inventory</div>
+            <div class="section-body">
+                
+                <div class="type-group">
+                    <div class="type-group-header">
+                        EXTERNAL_TABLE
+                        <span class="type-count">2 objects</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Object Name</th>
+                                <th>Schema</th>
+                                <th>Status</th>
+                                <th>Failure Reason</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td><strong>ext_CustomerFeed</strong></td>
+                                <td>staging</td>
+                                <td>
+                                    
+                                    <span class="badge badge-failed">Failed</span>
+                                    
+                                </td>
+                                <td>EXTERNAL TABLE requires DATA_SOURCE blob storage configuration</td>
+                                <td>
+                                    
+                                    <span class="impact-score"><span class="impact-dot impact-low"></span> 0</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>ext_ProductCatalog</strong></td>
+                                <td>staging</td>
+                                <td>
+                                    
+                                    <span class="badge badge-failed">Failed</span>
+                                    
+                                </td>
+                                <td>EXTERNAL TABLE requires DATA_SOURCE ADLS Gen2 configuration</td>
+                                <td>
+                                    
+                                    <span class="impact-score"><span class="impact-dot impact-low"></span> 0</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="type-group">
+                    <div class="type-group-header">
+                        FUNCTION
+                        <span class="type-count">2 objects</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Object Name</th>
+                                <th>Schema</th>
+                                <th>Status</th>
+                                <th>Failure Reason</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td><strong>fn_FormatCurrency</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-failed">Failed</span>
+                                    
+                                </td>
+                                <td>deprecated money data type conversion not supported</td>
+                                <td>
+                                    
+                                    <span class="impact-score"><span class="impact-dot impact-low"></span> 0</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>fn_GetFiscalYear</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="type-group">
+                    <div class="type-group-header">
+                        SCHEMA
+                        <span class="type-count">1 objects</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Object Name</th>
+                                <th>Schema</th>
+                                <th>Status</th>
+                                <th>Failure Reason</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td><strong>SalesSchema</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="type-group">
+                    <div class="type-group-header">
+                        SECURITY
+                        <span class="type-count">2 objects</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Object Name</th>
+                                <th>Schema</th>
+                                <th>Status</th>
+                                <th>Failure Reason</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td><strong>db_datareader_sales</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>db_datawriter_etl</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="type-group">
+                    <div class="type-group-header">
+                        STATISTICS
+                        <span class="type-count">2 objects</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Object Name</th>
+                                <th>Schema</th>
+                                <th>Status</th>
+                                <th>Failure Reason</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td><strong>stat_DimCustomer_Region</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-failed">Failed</span>
+                                    
+                                </td>
+                                <td>STATISTICS auto-create syntax incompatible with Fabric</td>
+                                <td>
+                                    
+                                    <span class="impact-score"><span class="impact-dot impact-low"></span> 0</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>stat_FactSales_Date</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="type-group">
+                    <div class="type-group-header">
+                        STORED_PROCEDURE
+                        <span class="type-count">3 objects</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Object Name</th>
+                                <th>Schema</th>
+                                <th>Status</th>
+                                <th>Failure Reason</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td><strong>usp_CalculateMetrics</strong></td>
+                                <td>etl</td>
+                                <td>
+                                    
+                                    <span class="badge badge-failed">Failed</span>
+                                    
+                                </td>
+                                <td>stored procedure contains incompatible cursor-based logic requiring refactor</td>
+                                <td>
+                                    
+                                    <span class="impact-score"><span class="impact-dot impact-low"></span> 0</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>usp_LoadFactSales</strong></td>
+                                <td>etl</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>usp_RefreshDimCustomer</strong></td>
+                                <td>etl</td>
+                                <td>
+                                    
+                                    <span class="badge badge-failed">Failed</span>
+                                    
+                                </td>
+                                <td>cross database reference to staging database not supported</td>
+                                <td>
+                                    
+                                    <span class="impact-score"><span class="impact-dot impact-low"></span> 0</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="type-group">
+                    <div class="type-group-header">
+                        TABLE
+                        <span class="type-count">5 objects</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Object Name</th>
+                                <th>Schema</th>
+                                <th>Status</th>
+                                <th>Failure Reason</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td><strong>DimCustomer</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>DimDate</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-failed">Failed</span>
+                                    
+                                </td>
+                                <td>DISTRIBUTION type REPLICATE not supported in Fabric Warehouse</td>
+                                <td>
+                                    
+                                    <span class="impact-score"><span class="impact-dot impact-med"></span> 2</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>DimGeography</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-failed">Failed</span>
+                                    
+                                </td>
+                                <td>EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric</td>
+                                <td>
+                                    
+                                    <span class="impact-score"><span class="impact-dot impact-low"></span> 0</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>DimProduct</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>FactSales</strong></td>
+                                <td>dbo</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="type-group">
+                    <div class="type-group-header">
+                        VIEW
+                        <span class="type-count">3 objects</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Object Name</th>
+                                <th>Schema</th>
+                                <th>Status</th>
+                                <th>Failure Reason</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td><strong>vw_CustomerOrders</strong></td>
+                                <td>reporting</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>vw_ProductPerformance</strong></td>
+                                <td>reporting</td>
+                                <td>
+                                    
+                                    <span class="badge badge-failed">Failed</span>
+                                    
+                                </td>
+                                <td>MATERIALIZED VIEW not supported in Fabric Warehouse</td>
+                                <td>
+                                    
+                                    <span class="impact-score"><span class="impact-dot impact-low"></span> 0</span>
+                                    
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>vw_SalesSummary</strong></td>
+                                <td>reporting</td>
+                                <td>
+                                    
+                                    <span class="badge badge-passed">Passed</span>
+                                    
+                                </td>
+                                <td>&amp;mdash;</td>
+                                <td>
+                                    
+                                    &mdash;
+                                    
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Failure Analysis -->
+        <div class="section">
+            <div class="section-header">Failure Analysis</div>
+            <div class="section-body">
+                <h3 style="margin-bottom: 12px; color: #333;">Primary Failures (Root Causes): 9</h3>
+
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Object</th>
+                            <th>Type</th>
+                            <th>Failure Reason</th>
+                            <th>Category</th>
+                            <th>Impact Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td><strong>dbo.DimDate</strong></td>
+                            <td>TABLE</td>
+                            <td>DISTRIBUTION type REPLICATE not supported in Fabric Warehouse</td>
+                            <td>
+                                
+                                <span class="badge badge-auto">Auto-Fixable</span>
+                                
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-med"></span>
+                                    
+                                    2
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>dbo.DimGeography</strong></td>
+                            <td>TABLE</td>
+                            <td>EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric</td>
+                            <td>
+                                
+                                <span class="badge badge-significant">Significant Refactor</span>
+                                
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>reporting.vw_ProductPerformance</strong></td>
+                            <td>VIEW</td>
+                            <td>MATERIALIZED VIEW not supported in Fabric Warehouse</td>
+                            <td>
+                                
+                                <span class="badge badge-minor">Minor Manual</span>
+                                
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>etl.usp_RefreshDimCustomer</strong></td>
+                            <td>STORED_PROCEDURE</td>
+                            <td>cross database reference to staging database not supported</td>
+                            <td>
+                                
+                                <span class="badge badge-significant">Significant Refactor</span>
+                                
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>etl.usp_CalculateMetrics</strong></td>
+                            <td>STORED_PROCEDURE</td>
+                            <td>stored procedure contains incompatible cursor-based logic requiring refactor</td>
+                            <td>
+                                
+                                <span class="badge badge-significant">Significant Refactor</span>
+                                
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>dbo.fn_FormatCurrency</strong></td>
+                            <td>FUNCTION</td>
+                            <td>deprecated money data type conversion not supported</td>
+                            <td>
+                                
+                                <span class="badge badge-minor">Minor Manual</span>
+                                
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>staging.ext_CustomerFeed</strong></td>
+                            <td>EXTERNAL_TABLE</td>
+                            <td>EXTERNAL TABLE requires DATA_SOURCE blob storage configuration</td>
+                            <td>
+                                
+                                <span class="badge badge-significant">Significant Refactor</span>
+                                
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>staging.ext_ProductCatalog</strong></td>
+                            <td>EXTERNAL_TABLE</td>
+                            <td>EXTERNAL TABLE requires DATA_SOURCE ADLS Gen2 configuration</td>
+                            <td>
+                                
+                                <span class="badge badge-significant">Significant Refactor</span>
+                                
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>dbo.stat_DimCustomer_Region</strong></td>
+                            <td>STATISTICS</td>
+                            <td>STATISTICS auto-create syntax incompatible with Fabric</td>
+                            <td>
+                                
+                                <span class="badge badge-auto">Auto-Fixable</span>
+                                
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+                
+
+                <h3 style="margin: 24px 0 12px; color: #333;">Dependent Failures (Cascading): 0</h3>
+
+                
+                <p style="color: var(--text-muted);">No dependent failures identified.</p>
+                
+
+                <!-- Dependency Graph Summary -->
+                <h3 style="margin: 24px 0 12px; color: #333;">Dependency Graph Summary</h3>
+                <div class="summary-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+                    <div class="summary-card">
+                        <div class="value" style="font-size: 24px;">20</div>
+                        <div class="label">Nodes</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="value" style="font-size: 24px;">6</div>
+                        <div class="label">Edges</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="value" style="font-size: 24px;">2</div>
+                        <div class="label">Max Depth</div>
+                    </div>
+                </div>
+
+                
+                <h3 style="margin: 24px 0 12px; color: #333;">Most Impactful Failures</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Object</th>
+                            <th>Impact Score</th>
+                            <th>Failure Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td><strong>1</strong></td>
+                            <td><strong>dbo.DimDate</strong></td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-med"></span>
+                                    
+                                    2
+                                </span>
+                            </td>
+                            <td>DISTRIBUTION type REPLICATE not supported in Fabric Warehouse</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td><strong>dbo.DimGeography</strong></td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                            <td>EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td><strong>reporting.vw_ProductPerformance</strong></td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                            <td>MATERIALIZED VIEW not supported in Fabric Warehouse</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td><strong>etl.usp_RefreshDimCustomer</strong></td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                            <td>cross database reference to staging database not supported</td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td><strong>etl.usp_CalculateMetrics</strong></td>
+                            <td>
+                                <span class="impact-score">
+                                    
+                                    <span class="impact-dot impact-low"></span>
+                                    
+                                    0
+                                </span>
+                            </td>
+                            <td>stored procedure contains incompatible cursor-based logic requiring refactor</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+
+        <!-- Triage Breakdown -->
+        <div class="section">
+            <div class="section-header">Triage Breakdown</div>
+            <div class="section-body">
+                <p style="margin-bottom: 16px; font-size: 15px;">
+                    <strong>9</strong> total failure(s) categorized by fix effort:
+                </p>
+
+                <div class="triage-bars">
+                    
+                    
+
+                    <div class="triage-bar-row">
+                        <div class="triage-bar-label">Auto-Fixable</div>
+                        <div class="triage-bar-track">
+                            <div class="triage-bar-fill auto"
+                                 style="width: 40%;">
+                                22.2%
+                            </div>
+                        </div>
+                        <div class="triage-bar-count">2</div>
+                    </div>
+
+                    <div class="triage-bar-row">
+                        <div class="triage-bar-label">Minor Manual</div>
+                        <div class="triage-bar-track">
+                            <div class="triage-bar-fill minor"
+                                 style="width: 40%;">
+                                22.2%
+                            </div>
+                        </div>
+                        <div class="triage-bar-count">2</div>
+                    </div>
+
+                    <div class="triage-bar-row">
+                        <div class="triage-bar-label">Significant Refactor</div>
+                        <div class="triage-bar-track">
+                            <div class="triage-bar-fill significant"
+                                 style="width: 100%;">
+                                55.6%
+                            </div>
+                        </div>
+                        <div class="triage-bar-count">5</div>
+                    </div>
+
+                    <div class="triage-bar-row">
+                        <div class="triage-bar-label">Uncategorized</div>
+                        <div class="triage-bar-track">
+                            <div class="triage-bar-fill uncategorized"
+                                 style="width: 0%;">
+                                0.0%
+                            </div>
+                        </div>
+                        <div class="triage-bar-count">0</div>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+
+        <!-- Recommended Actions -->
+        <div class="section">
+            <div class="section-header">Recommended Actions</div>
+            <div class="section-body">
+                <p style="margin-bottom: 16px; font-size: 14px; color: var(--text-muted);">
+                    Ordered by fix category (easiest first) and impact score (highest first).
+                    Root cause failures are highlighted.
+                </p>
+
+                
+                <div class="action-item primary-failure">
+                    <div class="action-priority">#1</div>
+                    <div class="action-details">
+                        <h4>
+                            dbo.DimDate
+                            <span style="font-weight: 400; color: var(--text-muted); font-size: 13px;">
+                                (TABLE)
+                            </span>
+                            
+                            <span class="badge badge-failed" style="font-size: 10px; margin-left: 8px;">ROOT CAUSE</span>
+                            
+                        </h4>
+                        <p>DISTRIBUTION type REPLICATE not supported in Fabric Warehouse</p>
+                        <p>
+                            
+                            <span class="badge badge-auto">Auto-Fixable</span>
+                            
+
+                            <span class="impact-score" style="margin-left: 12px;">
+                                Impact:
+                                
+                                <span class="impact-dot impact-med"></span>
+                                
+                                2
+                            </span>
+                        </p>
+                        
+                        <div class="action-prompts">
+                            Copilot prompts:
+                            
+                            <code>DIST-001</code>
+                            
+                            <code>DIST-002</code>
+                            
+                            <code>DIST-003</code>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="action-item primary-failure">
+                    <div class="action-priority">#2</div>
+                    <div class="action-details">
+                        <h4>
+                            dbo.stat_DimCustomer_Region
+                            <span style="font-weight: 400; color: var(--text-muted); font-size: 13px;">
+                                (STATISTICS)
+                            </span>
+                            
+                            <span class="badge badge-failed" style="font-size: 10px; margin-left: 8px;">ROOT CAUSE</span>
+                            
+                        </h4>
+                        <p>STATISTICS auto-create syntax incompatible with Fabric</p>
+                        <p>
+                            
+                            <span class="badge badge-auto">Auto-Fixable</span>
+                            
+
+                            <span class="impact-score" style="margin-left: 12px;">
+                                Impact:
+                                
+                                <span class="impact-dot impact-low"></span>
+                                
+                                0
+                            </span>
+                        </p>
+                        
+                        <div class="action-prompts">
+                            Copilot prompts:
+                            
+                            <code>STAT-001</code>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="action-item primary-failure">
+                    <div class="action-priority">#3</div>
+                    <div class="action-details">
+                        <h4>
+                            reporting.vw_ProductPerformance
+                            <span style="font-weight: 400; color: var(--text-muted); font-size: 13px;">
+                                (VIEW)
+                            </span>
+                            
+                            <span class="badge badge-failed" style="font-size: 10px; margin-left: 8px;">ROOT CAUSE</span>
+                            
+                        </h4>
+                        <p>MATERIALIZED VIEW not supported in Fabric Warehouse</p>
+                        <p>
+                            
+                            <span class="badge badge-minor">Minor Manual</span>
+                            
+
+                            <span class="impact-score" style="margin-left: 12px;">
+                                Impact:
+                                
+                                <span class="impact-dot impact-low"></span>
+                                
+                                0
+                            </span>
+                        </p>
+                        
+                        <div class="action-prompts">
+                            Copilot prompts:
+                            
+                            <code>MVIEW-001</code>
+                            
+                            <code>MVIEW-002</code>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="action-item primary-failure">
+                    <div class="action-priority">#4</div>
+                    <div class="action-details">
+                        <h4>
+                            dbo.fn_FormatCurrency
+                            <span style="font-weight: 400; color: var(--text-muted); font-size: 13px;">
+                                (FUNCTION)
+                            </span>
+                            
+                            <span class="badge badge-failed" style="font-size: 10px; margin-left: 8px;">ROOT CAUSE</span>
+                            
+                        </h4>
+                        <p>deprecated money data type conversion not supported</p>
+                        <p>
+                            
+                            <span class="badge badge-minor">Minor Manual</span>
+                            
+
+                            <span class="impact-score" style="margin-left: 12px;">
+                                Impact:
+                                
+                                <span class="impact-dot impact-low"></span>
+                                
+                                0
+                            </span>
+                        </p>
+                        
+                        <div class="action-prompts">
+                            Copilot prompts:
+                            
+                            <code>DTYPE-001</code>
+                            
+                            <code>DTYPE-002</code>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="action-item primary-failure">
+                    <div class="action-priority">#5</div>
+                    <div class="action-details">
+                        <h4>
+                            dbo.DimGeography
+                            <span style="font-weight: 400; color: var(--text-muted); font-size: 13px;">
+                                (TABLE)
+                            </span>
+                            
+                            <span class="badge badge-failed" style="font-size: 10px; margin-left: 8px;">ROOT CAUSE</span>
+                            
+                        </h4>
+                        <p>EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric</p>
+                        <p>
+                            
+                            <span class="badge badge-significant">Significant Refactor</span>
+                            
+
+                            <span class="impact-score" style="margin-left: 12px;">
+                                Impact:
+                                
+                                <span class="impact-dot impact-low"></span>
+                                
+                                0
+                            </span>
+                        </p>
+                        
+                        <div class="action-prompts">
+                            Copilot prompts:
+                            
+                            <code>EXT-001</code>
+                            
+                            <code>EXT-002</code>
+                            
+                            <code>EXT-003</code>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="action-item primary-failure">
+                    <div class="action-priority">#6</div>
+                    <div class="action-details">
+                        <h4>
+                            etl.usp_RefreshDimCustomer
+                            <span style="font-weight: 400; color: var(--text-muted); font-size: 13px;">
+                                (STORED_PROCEDURE)
+                            </span>
+                            
+                            <span class="badge badge-failed" style="font-size: 10px; margin-left: 8px;">ROOT CAUSE</span>
+                            
+                        </h4>
+                        <p>cross database reference to staging database not supported</p>
+                        <p>
+                            
+                            <span class="badge badge-significant">Significant Refactor</span>
+                            
+
+                            <span class="impact-score" style="margin-left: 12px;">
+                                Impact:
+                                
+                                <span class="impact-dot impact-low"></span>
+                                
+                                0
+                            </span>
+                        </p>
+                        
+                        <div class="action-prompts">
+                            Copilot prompts:
+                            
+                            <code>XREF-001</code>
+                            
+                            <code>XREF-002</code>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="action-item primary-failure">
+                    <div class="action-priority">#7</div>
+                    <div class="action-details">
+                        <h4>
+                            etl.usp_CalculateMetrics
+                            <span style="font-weight: 400; color: var(--text-muted); font-size: 13px;">
+                                (STORED_PROCEDURE)
+                            </span>
+                            
+                            <span class="badge badge-failed" style="font-size: 10px; margin-left: 8px;">ROOT CAUSE</span>
+                            
+                        </h4>
+                        <p>stored procedure contains incompatible cursor-based logic requiring refactor</p>
+                        <p>
+                            
+                            <span class="badge badge-significant">Significant Refactor</span>
+                            
+
+                            <span class="impact-score" style="margin-left: 12px;">
+                                Impact:
+                                
+                                <span class="impact-dot impact-low"></span>
+                                
+                                0
+                            </span>
+                        </p>
+                        
+                        <div class="action-prompts">
+                            Copilot prompts:
+                            
+                            <code>PROC-001</code>
+                            
+                            <code>PROC-002</code>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="action-item primary-failure">
+                    <div class="action-priority">#8</div>
+                    <div class="action-details">
+                        <h4>
+                            staging.ext_CustomerFeed
+                            <span style="font-weight: 400; color: var(--text-muted); font-size: 13px;">
+                                (EXTERNAL_TABLE)
+                            </span>
+                            
+                            <span class="badge badge-failed" style="font-size: 10px; margin-left: 8px;">ROOT CAUSE</span>
+                            
+                        </h4>
+                        <p>EXTERNAL TABLE requires DATA_SOURCE blob storage configuration</p>
+                        <p>
+                            
+                            <span class="badge badge-significant">Significant Refactor</span>
+                            
+
+                            <span class="impact-score" style="margin-left: 12px;">
+                                Impact:
+                                
+                                <span class="impact-dot impact-low"></span>
+                                
+                                0
+                            </span>
+                        </p>
+                        
+                        <div class="action-prompts">
+                            Copilot prompts:
+                            
+                            <code>EXT-001</code>
+                            
+                            <code>EXT-002</code>
+                            
+                            <code>EXT-003</code>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <div class="action-item primary-failure">
+                    <div class="action-priority">#9</div>
+                    <div class="action-details">
+                        <h4>
+                            staging.ext_ProductCatalog
+                            <span style="font-weight: 400; color: var(--text-muted); font-size: 13px;">
+                                (EXTERNAL_TABLE)
+                            </span>
+                            
+                            <span class="badge badge-failed" style="font-size: 10px; margin-left: 8px;">ROOT CAUSE</span>
+                            
+                        </h4>
+                        <p>EXTERNAL TABLE requires DATA_SOURCE ADLS Gen2 configuration</p>
+                        <p>
+                            
+                            <span class="badge badge-significant">Significant Refactor</span>
+                            
+
+                            <span class="impact-score" style="margin-left: 12px;">
+                                Impact:
+                                
+                                <span class="impact-dot impact-low"></span>
+                                
+                                0
+                            </span>
+                        </p>
+                        
+                        <div class="action-prompts">
+                            Copilot prompts:
+                            
+                            <code>EXT-001</code>
+                            
+                            <code>EXT-002</code>
+                            
+                            <code>EXT-003</code>
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                
+
+                
+            </div>
+        </div>
+
+        <!-- Migration Order -->
+        <div class="section">
+            <div class="section-header">Migration Order</div>
+            <div class="section-body">
+                <p style="margin-bottom: 16px; font-size: 14px; color: var(--text-muted);">
+                    Objects grouped into layers for safe migration ordering.
+                    All objects within a layer can be migrated in parallel.
+                </p>
+
+                
+                <div class="layer">
+                    <div class="layer-header">Layer 1 (16 objects)</div>
+                    <div class="layer-objects">
+                        
+                        <span class="layer-object">dbo.db_datareader_sales</span>
+                        
+                        <span class="layer-object">dbo.db_datawriter_etl</span>
+                        
+                        <span class="layer-object">dbo.DimCustomer</span>
+                        
+                        <span class="layer-object">dbo.DimDate</span>
+                        
+                        <span class="layer-object">dbo.DimProduct</span>
+                        
+                        <span class="layer-object">dbo.fn_FormatCurrency</span>
+                        
+                        <span class="layer-object">dbo.fn_GetFiscalYear</span>
+                        
+                        <span class="layer-object">dbo.SalesSchema</span>
+                        
+                        <span class="layer-object">etl.usp_CalculateMetrics</span>
+                        
+                        <span class="layer-object">etl.usp_LoadFactSales</span>
+                        
+                        <span class="layer-object">etl.usp_RefreshDimCustomer</span>
+                        
+                        <span class="layer-object">reporting.vw_CustomerOrders</span>
+                        
+                        <span class="layer-object">reporting.vw_ProductPerformance</span>
+                        
+                        <span class="layer-object">reporting.vw_SalesSummary</span>
+                        
+                        <span class="layer-object">staging.ext_CustomerFeed</span>
+                        
+                        <span class="layer-object">staging.ext_ProductCatalog</span>
+                        
+                    </div>
+                </div>
+                
+                <div class="layer">
+                    <div class="layer-header">Layer 2 (3 objects)</div>
+                    <div class="layer-objects">
+                        
+                        <span class="layer-object">dbo.DimGeography</span>
+                        
+                        <span class="layer-object">dbo.FactSales</span>
+                        
+                        <span class="layer-object">dbo.stat_DimCustomer_Region</span>
+                        
+                    </div>
+                </div>
+                
+                <div class="layer">
+                    <div class="layer-header">Layer 3 (1 object)</div>
+                    <div class="layer-objects">
+                        
+                        <span class="layer-object">dbo.stat_FactSales_Date</span>
+                        
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Copilot Prompt Suggestions -->
+        
+        <div class="section">
+            <div class="section-header">Copilot Prompt Suggestions</div>
+            <div class="section-body">
+                <p style="margin-bottom: 16px; font-size: 14px; color: var(--text-muted);">
+                    Suggested Copilot prompts from the E0-S3 prompt library for each failed object.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Object</th>
+                            <th>Suggested Prompts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td><strong>dbo.DimDate</strong></td>
+                            <td>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">DIST-001</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">DIST-002</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">DIST-003</code>
+                                
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>dbo.DimGeography</strong></td>
+                            <td>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">EXT-001</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">EXT-002</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">EXT-003</code>
+                                
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>dbo.fn_FormatCurrency</strong></td>
+                            <td>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">DTYPE-001</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">DTYPE-002</code>
+                                
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>dbo.stat_DimCustomer_Region</strong></td>
+                            <td>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">STAT-001</code>
+                                
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>etl.usp_CalculateMetrics</strong></td>
+                            <td>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">PROC-001</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">PROC-002</code>
+                                
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>etl.usp_RefreshDimCustomer</strong></td>
+                            <td>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">XREF-001</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">XREF-002</code>
+                                
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>reporting.vw_ProductPerformance</strong></td>
+                            <td>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">MVIEW-001</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">MVIEW-002</code>
+                                
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>staging.ext_CustomerFeed</strong></td>
+                            <td>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">EXT-001</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">EXT-002</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">EXT-003</code>
+                                
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td><strong>staging.ext_ProductCatalog</strong></td>
+                            <td>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">EXT-001</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">EXT-002</code>
+                                
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">EXT-003</code>
+                                
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="report-footer">
+        <div class="container">
+            <p>
+                Generated by <strong>Fabric Migration Assessment Processor</strong> v1.0.0
+                on 2026-02-11T17:35:51Z
+            </p>
+            <p style="margin-top: 4px;">
+                Part of the <a href="#">DMTSP Fabric Migration Accelerator Suite</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

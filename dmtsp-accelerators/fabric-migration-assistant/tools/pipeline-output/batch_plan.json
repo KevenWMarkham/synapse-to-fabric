@@ -1,0 +1,349 @@
+{
+  "metadata": {
+    "engagement_name": "",
+    "created_at": "2026-02-11T17:40:47.216625+00:00",
+    "total_objects": 20,
+    "total_batches": 5,
+    "total_sprints": 5,
+    "passed_objects": 11,
+    "failed_objects": 9,
+    "pass_rate_percent": 55.0
+  },
+  "batches": [
+    {
+      "batch_id": 1,
+      "batch_name": "Foundation",
+      "sprint_number": 1,
+      "object_type_group": "foundation",
+      "total_objects": 5,
+      "passed_count": 4,
+      "failed_count": 1,
+      "dependencies": [],
+      "objects": [
+        {
+          "name": "SalesSchema",
+          "object_type": "SCHEMA",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.SalesSchema",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [],
+          "failure_category": "",
+          "impact_score": 0
+        },
+        {
+          "name": "db_datareader_sales",
+          "object_type": "SECURITY",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.db_datareader_sales",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [],
+          "failure_category": "",
+          "impact_score": 0
+        },
+        {
+          "name": "db_datawriter_etl",
+          "object_type": "SECURITY",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.db_datawriter_etl",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [],
+          "failure_category": "",
+          "impact_score": 0
+        },
+        {
+          "name": "fn_FormatCurrency",
+          "object_type": "FUNCTION",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.fn_FormatCurrency",
+          "status": "FAILED",
+          "failure_reason": "deprecated money data type conversion not supported",
+          "dependencies": [],
+          "failure_category": "minor_manual",
+          "impact_score": 0
+        },
+        {
+          "name": "fn_GetFiscalYear",
+          "object_type": "FUNCTION",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.fn_GetFiscalYear",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [],
+          "failure_category": "",
+          "impact_score": 0
+        }
+      ]
+    },
+    {
+      "batch_id": 2,
+      "batch_name": "Table Batch 1",
+      "sprint_number": 2,
+      "object_type_group": "table",
+      "total_objects": 5,
+      "passed_count": 3,
+      "failed_count": 2,
+      "dependencies": [
+        1
+      ],
+      "objects": [
+        {
+          "name": "DimCustomer",
+          "object_type": "TABLE",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.DimCustomer",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [],
+          "failure_category": "",
+          "impact_score": 0
+        },
+        {
+          "name": "DimProduct",
+          "object_type": "TABLE",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.DimProduct",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [],
+          "failure_category": "",
+          "impact_score": 0
+        },
+        {
+          "name": "FactSales",
+          "object_type": "TABLE",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.FactSales",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [
+            "DimCustomer",
+            "DimProduct",
+            "DimDate"
+          ],
+          "failure_category": "",
+          "impact_score": 0
+        },
+        {
+          "name": "DimDate",
+          "object_type": "TABLE",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.DimDate",
+          "status": "FAILED",
+          "failure_reason": "DISTRIBUTION type REPLICATE not supported in Fabric Warehouse",
+          "dependencies": [],
+          "failure_category": "auto_fixable",
+          "impact_score": 2
+        },
+        {
+          "name": "DimGeography",
+          "object_type": "TABLE",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.DimGeography",
+          "status": "FAILED",
+          "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric",
+          "dependencies": [
+            "DimCustomer"
+          ],
+          "failure_category": "significant_refactor",
+          "impact_score": 0
+        }
+      ]
+    },
+    {
+      "batch_id": 3,
+      "batch_name": "View Batch 1",
+      "sprint_number": 6,
+      "object_type_group": "view",
+      "total_objects": 3,
+      "passed_count": 2,
+      "failed_count": 1,
+      "dependencies": [
+        2,
+        1
+      ],
+      "objects": [
+        {
+          "name": "vw_SalesSummary",
+          "object_type": "VIEW",
+          "schema_name": "reporting",
+          "qualified_name": "reporting.vw_SalesSummary",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [
+            "FactSales",
+            "DimCustomer",
+            "DimProduct"
+          ],
+          "failure_category": "",
+          "impact_score": 0
+        },
+        {
+          "name": "vw_CustomerOrders",
+          "object_type": "VIEW",
+          "schema_name": "reporting",
+          "qualified_name": "reporting.vw_CustomerOrders",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [
+            "FactSales",
+            "DimCustomer"
+          ],
+          "failure_category": "",
+          "impact_score": 0
+        },
+        {
+          "name": "vw_ProductPerformance",
+          "object_type": "VIEW",
+          "schema_name": "reporting",
+          "qualified_name": "reporting.vw_ProductPerformance",
+          "status": "FAILED",
+          "failure_reason": "MATERIALIZED VIEW not supported in Fabric Warehouse",
+          "dependencies": [
+            "FactSales",
+            "DimProduct"
+          ],
+          "failure_category": "minor_manual",
+          "impact_score": 0
+        }
+      ]
+    },
+    {
+      "batch_id": 4,
+      "batch_name": "Stored Procedures",
+      "sprint_number": 8,
+      "object_type_group": "procedure",
+      "total_objects": 3,
+      "passed_count": 1,
+      "failed_count": 2,
+      "dependencies": [
+        2,
+        3,
+        1
+      ],
+      "objects": [
+        {
+          "name": "usp_CalculateMetrics",
+          "object_type": "STORED_PROCEDURE",
+          "schema_name": "etl",
+          "qualified_name": "etl.usp_CalculateMetrics",
+          "status": "FAILED",
+          "failure_reason": "stored procedure contains incompatible cursor-based logic requiring refactor",
+          "dependencies": [
+            "FactSales",
+            "DimDate"
+          ],
+          "failure_category": "significant_refactor",
+          "impact_score": 0
+        },
+        {
+          "name": "usp_LoadFactSales",
+          "object_type": "STORED_PROCEDURE",
+          "schema_name": "etl",
+          "qualified_name": "etl.usp_LoadFactSales",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [
+            "FactSales",
+            "DimCustomer",
+            "DimProduct",
+            "DimDate"
+          ],
+          "failure_category": "",
+          "impact_score": 0
+        },
+        {
+          "name": "usp_RefreshDimCustomer",
+          "object_type": "STORED_PROCEDURE",
+          "schema_name": "etl",
+          "qualified_name": "etl.usp_RefreshDimCustomer",
+          "status": "FAILED",
+          "failure_reason": "cross database reference to staging database not supported",
+          "dependencies": [
+            "DimCustomer"
+          ],
+          "failure_category": "significant_refactor",
+          "impact_score": 0
+        }
+      ]
+    },
+    {
+      "batch_id": 5,
+      "batch_name": "Cleanup & External",
+      "sprint_number": 9,
+      "object_type_group": "cleanup",
+      "total_objects": 4,
+      "passed_count": 1,
+      "failed_count": 3,
+      "dependencies": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "objects": [
+        {
+          "name": "stat_DimCustomer_Region",
+          "object_type": "STATISTICS",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.stat_DimCustomer_Region",
+          "status": "FAILED",
+          "failure_reason": "STATISTICS auto-create syntax incompatible with Fabric",
+          "dependencies": [
+            "DimCustomer"
+          ],
+          "failure_category": "auto_fixable",
+          "impact_score": 0
+        },
+        {
+          "name": "stat_FactSales_Date",
+          "object_type": "STATISTICS",
+          "schema_name": "dbo",
+          "qualified_name": "dbo.stat_FactSales_Date",
+          "status": "PASSED",
+          "failure_reason": "",
+          "dependencies": [
+            "FactSales"
+          ],
+          "failure_category": "",
+          "impact_score": 0
+        },
+        {
+          "name": "ext_CustomerFeed",
+          "object_type": "EXTERNAL_TABLE",
+          "schema_name": "staging",
+          "qualified_name": "staging.ext_CustomerFeed",
+          "status": "FAILED",
+          "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE blob storage configuration",
+          "dependencies": [],
+          "failure_category": "significant_refactor",
+          "impact_score": 0
+        },
+        {
+          "name": "ext_ProductCatalog",
+          "object_type": "EXTERNAL_TABLE",
+          "schema_name": "staging",
+          "qualified_name": "staging.ext_ProductCatalog",
+          "status": "FAILED",
+          "failure_reason": "EXTERNAL TABLE requires DATA_SOURCE ADLS Gen2 configuration",
+          "dependencies": [],
+          "failure_category": "significant_refactor",
+          "impact_score": 0
+        }
+      ]
+    }
+  ],
+  "dependency_summary": {
+    "total_nodes": 24,
+    "total_edges": 22,
+    "num_layers": 2,
+    "cycle_count": 0,
+    "cycles": [],
+    "max_chain_depth": 1,
+    "root_nodes": 12,
+    "leaf_nodes": 19
+  },
+  "warnings": []
+}
