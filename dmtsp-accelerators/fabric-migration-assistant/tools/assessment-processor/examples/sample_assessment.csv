@@ -1,0 +1,21 @@
+ObjectName,ObjectType,SchemaName,MigrationStatus,FailureReason,Dependencies
+DimCustomer,TABLE,dbo,Passed,,
+DimProduct,TABLE,dbo,Passed,,
+FactSales,TABLE,dbo,Passed,,DimCustomer;DimProduct;DimDate
+DimDate,TABLE,dbo,Failed,DISTRIBUTION type REPLICATE not supported in Fabric Warehouse,
+DimGeography,TABLE,dbo,Failed,EXTERNAL TABLE requires DATA_SOURCE configuration not available in Fabric,DimCustomer
+vw_SalesSummary,VIEW,reporting,Passed,,FactSales;DimCustomer;DimProduct
+vw_CustomerOrders,VIEW,reporting,Passed,,FactSales;DimCustomer
+vw_ProductPerformance,VIEW,reporting,Failed,MATERIALIZED VIEW not supported in Fabric Warehouse,FactSales;DimProduct
+usp_LoadFactSales,STORED_PROCEDURE,etl,Passed,,FactSales;DimCustomer;DimProduct;DimDate
+usp_RefreshDimCustomer,STORED_PROCEDURE,etl,Failed,cross database reference to staging database not supported,DimCustomer
+usp_CalculateMetrics,STORED_PROCEDURE,etl,Failed,stored procedure contains incompatible cursor-based logic requiring refactor,FactSales;DimDate
+fn_GetFiscalYear,FUNCTION,dbo,Passed,,
+fn_FormatCurrency,FUNCTION,dbo,Failed,deprecated money data type conversion not supported,
+ext_CustomerFeed,EXTERNAL_TABLE,staging,Failed,EXTERNAL TABLE requires DATA_SOURCE blob storage configuration,
+ext_ProductCatalog,EXTERNAL_TABLE,staging,Failed,EXTERNAL TABLE requires DATA_SOURCE ADLS Gen2 configuration,
+stat_FactSales_Date,STATISTICS,dbo,Passed,,FactSales
+stat_DimCustomer_Region,STATISTICS,dbo,Failed,STATISTICS auto-create syntax incompatible with Fabric,DimCustomer
+SalesSchema,SCHEMA,dbo,Passed,,
+db_datareader_sales,SECURITY,dbo,Passed,,
+db_datawriter_etl,SECURITY,dbo,Passed,,

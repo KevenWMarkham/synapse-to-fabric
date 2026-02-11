@@ -1,0 +1,361 @@
+{
+  "metadata": {
+    "source_file": "synapse_assessment_export.csv",
+    "processed_at": "2025-01-15T10:30:00Z",
+    "total_objects": 20,
+    "passed": 12,
+    "failed": 8
+  },
+  "objects": [
+    {
+      "name": "dbo",
+      "object_type": "SCHEMA",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [],
+      "failure_category": "",
+      "impact_score": 15
+    },
+    {
+      "name": "db_datareader",
+      "object_type": "SECURITY",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [],
+      "failure_category": "",
+      "impact_score": 8
+    },
+    {
+      "name": "fn_GetFiscalYear",
+      "object_type": "FUNCTION",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [],
+      "failure_category": "",
+      "impact_score": 5
+    },
+    {
+      "name": "fn_CalculateDiscount",
+      "object_type": "FUNCTION",
+      "schema_name": "dbo",
+      "status": "Failed",
+      "failure_reason": "IDENTITY column not supported in Fabric; uses sql_variant parameter type",
+      "dependencies": [],
+      "failure_category": "minor_manual",
+      "impact_score": 3
+    },
+    {
+      "name": "Customers",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [
+        "dbo.dbo"
+      ],
+      "failure_category": "",
+      "impact_score": 12
+    },
+    {
+      "name": "Products",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [
+        "dbo.dbo"
+      ],
+      "failure_category": "",
+      "impact_score": 10
+    },
+    {
+      "name": "Orders",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [
+        "dbo.dbo",
+        "dbo.Customers"
+      ],
+      "failure_category": "",
+      "impact_score": 11
+    },
+    {
+      "name": "OrderDetails",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "Failed",
+      "failure_reason": "DISTRIBUTION = HASH(OrderID) not supported in Fabric Data Warehouse",
+      "dependencies": [
+        "dbo.dbo",
+        "dbo.Orders",
+        "dbo.Products"
+      ],
+      "failure_category": "auto_fixable",
+      "impact_score": 6
+    },
+    {
+      "name": "Inventory",
+      "object_type": "TABLE",
+      "schema_name": "dbo",
+      "status": "Failed",
+      "failure_reason": "CLUSTERED COLUMNSTORE INDEX with non-default ORDER clause; DISTRIBUTION = REPLICATE not supported",
+      "dependencies": [
+        "dbo.dbo",
+        "dbo.Products"
+      ],
+      "failure_category": "auto_fixable",
+      "impact_score": 4
+    },
+    {
+      "name": "vw_CustomerSummary",
+      "object_type": "VIEW",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [
+        "dbo.Customers",
+        "dbo.Orders"
+      ],
+      "failure_category": "",
+      "impact_score": 7
+    },
+    {
+      "name": "vw_OrderReport",
+      "object_type": "VIEW",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [
+        "dbo.Orders",
+        "dbo.OrderDetails",
+        "dbo.Products"
+      ],
+      "failure_category": "",
+      "impact_score": 5
+    },
+    {
+      "name": "vw_InventoryStatus",
+      "object_type": "VIEW",
+      "schema_name": "dbo",
+      "status": "Failed",
+      "failure_reason": "MATERIALIZED VIEW not supported in Fabric; convert to standard view with caching",
+      "dependencies": [
+        "dbo.Inventory",
+        "dbo.Products"
+      ],
+      "failure_category": "minor_manual",
+      "impact_score": 3
+    },
+    {
+      "name": "usp_ProcessDailyOrders",
+      "object_type": "STORED_PROCEDURE",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [
+        "dbo.Orders",
+        "dbo.OrderDetails",
+        "dbo.fn_GetFiscalYear"
+      ],
+      "failure_category": "",
+      "impact_score": 4
+    },
+    {
+      "name": "usp_RefreshInventory",
+      "object_type": "STORED_PROCEDURE",
+      "schema_name": "dbo",
+      "status": "Failed",
+      "failure_reason": "Cross-database reference to [StagingDB].[dbo].[RawInventory]; EXEC with dynamic SQL using sp_executesql with OUTPUT",
+      "dependencies": [
+        "dbo.Inventory",
+        "dbo.Products",
+        "dbo.fn_CalculateDiscount"
+      ],
+      "failure_category": "significant_refactor",
+      "impact_score": 2
+    },
+    {
+      "name": "usp_GenerateReport",
+      "object_type": "STORED_PROCEDURE",
+      "schema_name": "dbo",
+      "status": "Failed",
+      "failure_reason": "Uses RESULT SETS clause and workload classifier reference not supported in Fabric",
+      "dependencies": [
+        "dbo.vw_CustomerSummary",
+        "dbo.vw_OrderReport"
+      ],
+      "failure_category": "auto_fixable",
+      "impact_score": 1
+    },
+    {
+      "name": "ext_MarketData",
+      "object_type": "EXTERNAL_TABLE",
+      "schema_name": "dbo",
+      "status": "Failed",
+      "failure_reason": "EXTERNAL TABLE with DATA_SOURCE pointing to Azure Blob Storage; must convert to OneLake shortcut or Fabric Lakehouse table",
+      "dependencies": [
+        "dbo.ext_AzureBlobSource",
+        "dbo.ext_CsvFormat"
+      ],
+      "failure_category": "auto_fixable",
+      "impact_score": 1
+    },
+    {
+      "name": "ext_ExchangeRates",
+      "object_type": "EXTERNAL_TABLE",
+      "schema_name": "dbo",
+      "status": "Failed",
+      "failure_reason": "EXTERNAL TABLE with DATA_SOURCE pointing to ADLS Gen2; must convert to OneLake shortcut",
+      "dependencies": [
+        "dbo.ext_AzureBlobSource",
+        "dbo.ext_CsvFormat"
+      ],
+      "failure_category": "auto_fixable",
+      "impact_score": 0
+    },
+    {
+      "name": "ext_AzureBlobSource",
+      "object_type": "EXTERNAL_DATA_SOURCE",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [],
+      "failure_category": "",
+      "impact_score": 2
+    },
+    {
+      "name": "ext_CsvFormat",
+      "object_type": "EXTERNAL_FILE_FORMAT",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [],
+      "failure_category": "",
+      "impact_score": 2
+    },
+    {
+      "name": "stat_Orders_OrderDate",
+      "object_type": "STATISTICS",
+      "schema_name": "dbo",
+      "status": "Passed",
+      "failure_reason": "",
+      "dependencies": [
+        "dbo.Orders"
+      ],
+      "failure_category": "",
+      "impact_score": 0
+    }
+  ],
+  "dependency_analysis": {
+    "primary_failures": [
+      {
+        "object": "dbo.OrderDetails",
+        "reason": "DISTRIBUTION = HASH(OrderID) not supported",
+        "downstream_count": 2,
+        "downstream_objects": [
+          "dbo.vw_OrderReport",
+          "dbo.usp_ProcessDailyOrders"
+        ]
+      },
+      {
+        "object": "dbo.Inventory",
+        "reason": "CLUSTERED COLUMNSTORE INDEX with non-default ORDER; DISTRIBUTION = REPLICATE",
+        "downstream_count": 2,
+        "downstream_objects": [
+          "dbo.vw_InventoryStatus",
+          "dbo.usp_RefreshInventory"
+        ]
+      },
+      {
+        "object": "dbo.fn_CalculateDiscount",
+        "reason": "sql_variant parameter type",
+        "downstream_count": 1,
+        "downstream_objects": [
+          "dbo.usp_RefreshInventory"
+        ]
+      }
+    ],
+    "dependent_failures": [
+      {
+        "object": "dbo.vw_InventoryStatus",
+        "primary_cause": "dbo.Inventory",
+        "own_issue": "MATERIALIZED VIEW"
+      },
+      {
+        "object": "dbo.usp_RefreshInventory",
+        "primary_cause": "dbo.Inventory",
+        "own_issue": "Cross-database reference"
+      },
+      {
+        "object": "dbo.usp_GenerateReport",
+        "primary_cause": null,
+        "own_issue": "RESULT SETS clause"
+      },
+      {
+        "object": "dbo.ext_MarketData",
+        "primary_cause": null,
+        "own_issue": "EXTERNAL TABLE DATA_SOURCE"
+      },
+      {
+        "object": "dbo.ext_ExchangeRates",
+        "primary_cause": null,
+        "own_issue": "EXTERNAL TABLE DATA_SOURCE"
+      }
+    ],
+    "impact_scores": {
+      "dbo.dbo": 15,
+      "dbo.db_datareader": 8,
+      "dbo.fn_GetFiscalYear": 5,
+      "dbo.fn_CalculateDiscount": 3,
+      "dbo.Customers": 12,
+      "dbo.Products": 10,
+      "dbo.Orders": 11,
+      "dbo.OrderDetails": 6,
+      "dbo.Inventory": 4,
+      "dbo.vw_CustomerSummary": 7,
+      "dbo.vw_OrderReport": 5,
+      "dbo.vw_InventoryStatus": 3,
+      "dbo.usp_ProcessDailyOrders": 4,
+      "dbo.usp_RefreshInventory": 2,
+      "dbo.usp_GenerateReport": 1,
+      "dbo.ext_MarketData": 1,
+      "dbo.ext_ExchangeRates": 0,
+      "dbo.ext_AzureBlobSource": 2,
+      "dbo.ext_CsvFormat": 2,
+      "dbo.stat_Orders_OrderDate": 0
+    }
+  },
+  "triage_summary": {
+    "auto_fixable": {
+      "count": 5,
+      "percentage": 62.5,
+      "objects": [
+        "dbo.OrderDetails",
+        "dbo.Inventory",
+        "dbo.usp_GenerateReport",
+        "dbo.ext_MarketData",
+        "dbo.ext_ExchangeRates"
+      ]
+    },
+    "minor_manual": {
+      "count": 2,
+      "percentage": 25.0,
+      "objects": [
+        "dbo.fn_CalculateDiscount",
+        "dbo.vw_InventoryStatus"
+      ]
+    },
+    "significant_refactor": {
+      "count": 1,
+      "percentage": 12.5,
+      "objects": [
+        "dbo.usp_RefreshInventory"
+      ]
+    }
+  }
+}

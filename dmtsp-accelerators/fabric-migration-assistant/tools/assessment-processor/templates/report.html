@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabric Migration Assessment Report</title>
+    <style>
+        :root {
+            --primary: #86BC25;
+            --primary-dark: #6a9a1c;
+            --secondary: #0D8390;
+            --secondary-dark: #096b75;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --neutral: #6c757d;
+            --bg: #f8f9fa;
+            --bg-card: #ffffff;
+            --text: #212529;
+            --text-muted: #6c757d;
+            --border: #dee2e6;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                         'Helvetica Neue', Arial, sans-serif;
+            color: var(--text);
+            background: var(--bg);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .report-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 32px;
+        }
+
+        .report-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .report-header .meta {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .report-header .meta span {
+            margin-right: 24px;
+        }
+
+        /* Section */
+        .section {
+            background: var(--bg-card);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 16px 24px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .section-body {
+            padding: 24px;
+        }
+
+        /* Executive Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .summary-card {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid var(--primary);
+        }
+
+        .summary-card.passed { border-left-color: var(--success); }
+        .summary-card.failed { border-left-color: var(--danger); }
+        .summary-card.warning { border-left-color: var(--warning); }
+        .summary-card.rate { border-left-color: var(--secondary); }
+
+        .summary-card .value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .summary-card .label {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead th {
+            background: var(--bg);
+            color: var(--text);
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        tbody td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        tbody tr:hover {
+            background: #f1f8e9;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-passed { background: #d4edda; color: #155724; }
+        .badge-failed { background: #f8d7da; color: #721c24; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+
+        /* Category badges */
+        .badge-auto { background: #e8f5e9; color: #2e7d32; }
+        .badge-minor { background: #fff8e1; color: #f57f17; }
+        .badge-significant { background: #fce4ec; color: #c62828; }
+        .badge-uncategorized { background: #eceff1; color: #546e6f; }
+
+        /* Triage bars */
+        .triage-bars {
+            margin: 16px 0;
+        }
+
+        .triage-bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .triage-bar-label {
+            width: 180px;
+            font-size: 14px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .triage-bar-track {
+            flex: 1;
+            height: 28px;
+            background: var(--bg);
+            border-radius: 14px;
+            overflow: hidden;
+            margin: 0 12px;
+        }
+
+        .triage-bar-fill {
+            height: 100%;
+            border-radius: 14px;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding-left: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            min-width: fit-content;
+        }
+
+        .triage-bar-fill.auto { background: var(--primary); }
+        .triage-bar-fill.minor { background: var(--warning); color: #212529; }
+        .triage-bar-fill.significant { background: var(--danger); }
+        .triage-bar-fill.uncategorized { background: var(--neutral); }
+
+        .triage-bar-count {
+            width: 80px;
+            text-align: right;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Dependency chains */
+        .chain {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            background: var(--bg);
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-left: 3px solid var(--secondary);
+            overflow-x: auto;
+        }
+
+        .chain-item {
+            padding: 2px 0;
+        }
+
+        .chain-arrow {
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        /* Actions list */
+        .action-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--border);
+        }
+
+        .action-item.primary-failure {
+            border-left-color: var(--danger);
+        }
+
+        .action-priority {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .action-details {
+            flex: 1;
+        }
+
+        .action-details h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .action-details p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .action-prompts {
+            font-size: 12px;
+            color: var(--secondary);
+        }
+
+        .action-prompts code {
+            background: #e0f2f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 4px;
+        }
+
+        /* Impact score */
+        .impact-score {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .impact-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .impact-high { background: var(--danger); }
+        .impact-med { background: var(--warning); }
+        .impact-low { background: var(--success); }
+
+        /* Migration order layers */
+        .layer {
+            margin-bottom: 16px;
+        }
+
+        .layer-header {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .layer-objects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .layer-object {
+            background: var(--bg);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            border: 1px solid var(--border);
+        }
+
+        /* Footer */
+        .report-footer {
+            text-align: center;
+            padding: 32px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid var(--border);
+            margin-top: 16px;
+        }
+
+        .report-footer a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        /* Object type groups */
+        .type-group {
+            margin-bottom: 20px;
+        }
+
+        .type-group-header {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--secondary-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .type-count {
+            background: var(--bg);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .triage-bar-label {
+                width: 120px;
+                font-size: 12px;
+            }
+
+            .action-item {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            thead th, tbody td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="report-header">
+        <div class="container">
+            <h1>Fabric Migration Assessment Report</h1>
+            <div class="meta">
+                <span>Generated: {{ metadata.generated_at }}</span>
+                <span>Source: {{ metadata.source_file }}</span>
+                <span>{{ metadata.tool }} v{{ metadata.version }}</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Executive Summary -->
+        <div class="section">
+            <div class="section-header">Executive Summary</div>
+            <div class="section-body">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="value">{{ metadata.total_objects }}</div>
+                        <div class="label">Total Objects</div>
+                    </div>
+                    <div class="summary-card passed">
+                        <div class="value">{{ metadata.passed_count }}</div>
+                        <div class="label">Passed</div>
+                    </div>
+                    <div class="summary-card failed">
+                        <div class="value">{{ metadata.failed_count }}</div>
+                        <div class="label">Failed</div>
+                    </div>
+                    <div class="summary-card warning">
+                        <div class="value">{{ metadata.warning_count }}</div>
+                        <div class="label">Warnings</div>
+                    </div>
+                    <div class="summary-card rate">
+                        <div class="value">{{ metadata.pass_rate }}%</div>
+                        <div class="label">Pass Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Object Inventory -->
+        <div class="section">
+            <div class="section-header">Object Inventory</div>
+            <div class="section-body">
+                {% for obj_type, type_objects in object_inventory.items()|sort %}
+                <div class="type-group">
+                    <div class="type-group-header">
+                        {{ obj_type }}
+                        <span class="type-count">{{ type_objects|length }} objects</span>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Object Name</th>
+                                <th>Schema</th>
+                                <th>Status</th>
+                                <th>Failure Reason</th>
+                                <th>Impact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for obj in type_objects %}
+                            <tr>
+                                <td><strong>{{ obj.name }}</strong></td>
+                                <td>{{ obj.schema_name }}</td>
+                                <td>
+                                    {% if obj.status == 'PASSED' %}
+                                    <span class="badge badge-passed">Passed</span>
+                                    {% elif obj.status == 'FAILED' %}
+                                    <span class="badge badge-failed">Failed</span>
+                                    {% elif obj.status == 'WARNING' %}
+                                    <span class="badge badge-warning">Warning</span>
+                                    {% else %}
+                                    <span class="badge">{{ obj.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ obj.failure_reason if obj.failure_reason else '&mdash;' }}</td>
+                                <td>
+                                    {% if obj.impact_score > 3 %}
+                                    <span class="impact-score"><span class="impact-dot impact-high"></span> {{ obj.impact_score }}</span>
+                                    {% elif obj.impact_score > 0 %}
+                                    <span class="impact-score"><span class="impact-dot impact-med"></span> {{ obj.impact_score }}</span>
+                                    {% elif obj.status == 'FAILED' %}
+                                    <span class="impact-score"><span class="impact-dot impact-low"></span> {{ obj.impact_score }}</span>
+                                    {% else %}
+                                    &mdash;
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Failure Analysis -->
+        <div class="section">
+            <div class="section-header">Failure Analysis</div>
+            <div class="section-body">
+                <h3 style="margin-bottom: 12px; color: #333;">Primary Failures (Root Causes): {{ dependency_analysis.primary_failures_count }}</h3>
+
+                {% if primary_failures %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Object</th>
+                            <th>Type</th>
+                            <th>Failure Reason</th>
+                            <th>Category</th>
+                            <th>Impact Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in primary_failures %}
+                        <tr>
+                            <td><strong>{{ obj.qualified_name }}</strong></td>
+                            <td>{{ obj.object_type }}</td>
+                            <td>{{ obj.failure_reason }}</td>
+                            <td>
+                                {% if obj.failure_category == 'auto_fixable' %}
+                                <span class="badge badge-auto">Auto-Fixable</span>
+                                {% elif obj.failure_category == 'minor_manual' %}
+                                <span class="badge badge-minor">Minor Manual</span>
+                                {% elif obj.failure_category == 'significant_refactor' %}
+                                <span class="badge badge-significant">Significant Refactor</span>
+                                {% else %}
+                                <span class="badge badge-uncategorized">Uncategorized</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    {% if obj.impact_score > 3 %}
+                                    <span class="impact-dot impact-high"></span>
+                                    {% elif obj.impact_score > 0 %}
+                                    <span class="impact-dot impact-med"></span>
+                                    {% else %}
+                                    <span class="impact-dot impact-low"></span>
+                                    {% endif %}
+                                    {{ obj.impact_score }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: var(--text-muted);">No primary failures identified.</p>
+                {% endif %}
+
+                <h3 style="margin: 24px 0 12px; color: #333;">Dependent Failures (Cascading): {{ dependency_analysis.dependent_failures_count }}</h3>
+
+                {% if dependent_failures %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Object</th>
+                            <th>Type</th>
+                            <th>Failure Reason</th>
+                            <th>Category</th>
+                            <th>Impact Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj in dependent_failures %}
+                        <tr>
+                            <td><strong>{{ obj.qualified_name }}</strong></td>
+                            <td>{{ obj.object_type }}</td>
+                            <td>{{ obj.failure_reason }}</td>
+                            <td>
+                                {% if obj.failure_category == 'auto_fixable' %}
+                                <span class="badge badge-auto">Auto-Fixable</span>
+                                {% elif obj.failure_category == 'minor_manual' %}
+                                <span class="badge badge-minor">Minor Manual</span>
+                                {% elif obj.failure_category == 'significant_refactor' %}
+                                <span class="badge badge-significant">Significant Refactor</span>
+                                {% else %}
+                                <span class="badge badge-uncategorized">Uncategorized</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="impact-score">
+                                    {% if obj.impact_score > 3 %}
+                                    <span class="impact-dot impact-high"></span>
+                                    {% elif obj.impact_score > 0 %}
+                                    <span class="impact-dot impact-med"></span>
+                                    {% else %}
+                                    <span class="impact-dot impact-low"></span>
+                                    {% endif %}
+                                    {{ obj.impact_score }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: var(--text-muted);">No dependent failures identified.</p>
+                {% endif %}
+
+                <!-- Dependency Graph Summary -->
+                <h3 style="margin: 24px 0 12px; color: #333;">Dependency Graph Summary</h3>
+                <div class="summary-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+                    <div class="summary-card">
+                        <div class="value" style="font-size: 24px;">{{ dependency_analysis.total_nodes }}</div>
+                        <div class="label">Nodes</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="value" style="font-size: 24px;">{{ dependency_analysis.total_edges }}</div>
+                        <div class="label">Edges</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="value" style="font-size: 24px;">{{ dependency_analysis.max_chain_depth }}</div>
+                        <div class="label">Max Depth</div>
+                    </div>
+                </div>
+
+                {% if dependency_analysis.most_impactful_failures %}
+                <h3 style="margin: 24px 0 12px; color: #333;">Most Impactful Failures</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Object</th>
+                            <th>Impact Score</th>
+                            <th>Failure Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in dependency_analysis.most_impactful_failures %}
+                        <tr>
+                            <td><strong>{{ loop.index }}</strong></td>
+                            <td><strong>{{ item.qualified_name }}</strong></td>
+                            <td>
+                                <span class="impact-score">
+                                    {% if item.impact_score > 3 %}
+                                    <span class="impact-dot impact-high"></span>
+                                    {% elif item.impact_score > 0 %}
+                                    <span class="impact-dot impact-med"></span>
+                                    {% else %}
+                                    <span class="impact-dot impact-low"></span>
+                                    {% endif %}
+                                    {{ item.impact_score }}
+                                </span>
+                            </td>
+                            <td>{{ item.failure_reason }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Triage Breakdown -->
+        <div class="section">
+            <div class="section-header">Triage Breakdown</div>
+            <div class="section-body">
+                <p style="margin-bottom: 16px; font-size: 15px;">
+                    <strong>{{ triage_summary.total_failures }}</strong> total failure(s) categorized by fix effort:
+                </p>
+
+                <div class="triage-bars">
+                    {% set max_count = triage_summary.counts.values()|max if triage_summary.counts.values()|list else 1 %}
+                    {% set bar_max = max_count if max_count > 0 else 1 %}
+
+                    <div class="triage-bar-row">
+                        <div class="triage-bar-label">Auto-Fixable</div>
+                        <div class="triage-bar-track">
+                            <div class="triage-bar-fill auto"
+                                 style="width: {{ (triage_summary.counts.auto_fixable / bar_max * 100)|round|int if bar_max > 0 else 0 }}%;">
+                                {{ triage_summary.percentages.auto_fixable }}%
+                            </div>
+                        </div>
+                        <div class="triage-bar-count">{{ triage_summary.counts.auto_fixable }}</div>
+                    </div>
+
+                    <div class="triage-bar-row">
+                        <div class="triage-bar-label">Minor Manual</div>
+                        <div class="triage-bar-track">
+                            <div class="triage-bar-fill minor"
+                                 style="width: {{ (triage_summary.counts.minor_manual / bar_max * 100)|round|int if bar_max > 0 else 0 }}%;">
+                                {{ triage_summary.percentages.minor_manual }}%
+                            </div>
+                        </div>
+                        <div class="triage-bar-count">{{ triage_summary.counts.minor_manual }}</div>
+                    </div>
+
+                    <div class="triage-bar-row">
+                        <div class="triage-bar-label">Significant Refactor</div>
+                        <div class="triage-bar-track">
+                            <div class="triage-bar-fill significant"
+                                 style="width: {{ (triage_summary.counts.significant_refactor / bar_max * 100)|round|int if bar_max > 0 else 0 }}%;">
+                                {{ triage_summary.percentages.significant_refactor }}%
+                            </div>
+                        </div>
+                        <div class="triage-bar-count">{{ triage_summary.counts.significant_refactor }}</div>
+                    </div>
+
+                    <div class="triage-bar-row">
+                        <div class="triage-bar-label">Uncategorized</div>
+                        <div class="triage-bar-track">
+                            <div class="triage-bar-fill uncategorized"
+                                 style="width: {{ (triage_summary.counts.uncategorized / bar_max * 100)|round|int if bar_max > 0 else 0 }}%;">
+                                {{ triage_summary.percentages.uncategorized }}%
+                            </div>
+                        </div>
+                        <div class="triage-bar-count">{{ triage_summary.counts.uncategorized }}</div>
+                    </div>
+                </div>
+
+                {% if triage_summary.uncategorized_reasons %}
+                <h3 style="margin: 24px 0 12px; color: #333;">Uncategorized Failure Reasons</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">
+                    These failure reasons did not match any configured pattern. Consider adding new patterns to your config.yaml.
+                </p>
+                <ul style="padding-left: 20px;">
+                    {% for reason in triage_summary.uncategorized_reasons %}
+                    <li style="font-size: 13px; margin-bottom: 4px; font-family: monospace;">{{ reason }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recommended Actions -->
+        <div class="section">
+            <div class="section-header">Recommended Actions</div>
+            <div class="section-body">
+                <p style="margin-bottom: 16px; font-size: 14px; color: var(--text-muted);">
+                    Ordered by fix category (easiest first) and impact score (highest first).
+                    Root cause failures are highlighted.
+                </p>
+
+                {% for action in recommended_actions[:20] %}
+                <div class="action-item {{ 'primary-failure' if action.is_primary_failure else '' }}">
+                    <div class="action-priority">#{{ action.priority }}</div>
+                    <div class="action-details">
+                        <h4>
+                            {{ action.qualified_name }}
+                            <span style="font-weight: 400; color: var(--text-muted); font-size: 13px;">
+                                ({{ action.object_type }})
+                            </span>
+                            {% if action.is_primary_failure %}
+                            <span class="badge badge-failed" style="font-size: 10px; margin-left: 8px;">ROOT CAUSE</span>
+                            {% endif %}
+                        </h4>
+                        <p>{{ action.failure_reason }}</p>
+                        <p>
+                            {% if action.failure_category == 'auto_fixable' %}
+                            <span class="badge badge-auto">Auto-Fixable</span>
+                            {% elif action.failure_category == 'minor_manual' %}
+                            <span class="badge badge-minor">Minor Manual</span>
+                            {% elif action.failure_category == 'significant_refactor' %}
+                            <span class="badge badge-significant">Significant Refactor</span>
+                            {% else %}
+                            <span class="badge badge-uncategorized">Uncategorized</span>
+                            {% endif %}
+
+                            <span class="impact-score" style="margin-left: 12px;">
+                                Impact:
+                                {% if action.impact_score > 3 %}
+                                <span class="impact-dot impact-high"></span>
+                                {% elif action.impact_score > 0 %}
+                                <span class="impact-dot impact-med"></span>
+                                {% else %}
+                                <span class="impact-dot impact-low"></span>
+                                {% endif %}
+                                {{ action.impact_score }}
+                            </span>
+                        </p>
+                        {% if action.suggested_prompts %}
+                        <div class="action-prompts">
+                            Copilot prompts:
+                            {% for prompt in action.suggested_prompts %}
+                            <code>{{ prompt }}</code>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+
+                {% if recommended_actions|length > 20 %}
+                <p style="text-align: center; color: var(--text-muted); margin-top: 16px;">
+                    Showing top 20 of {{ recommended_actions|length }} actions.
+                    See JSON or Markdown report for complete list.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Migration Order -->
+        <div class="section">
+            <div class="section-header">Migration Order</div>
+            <div class="section-body">
+                <p style="margin-bottom: 16px; font-size: 14px; color: var(--text-muted);">
+                    Objects grouped into layers for safe migration ordering.
+                    All objects within a layer can be migrated in parallel.
+                </p>
+
+                {% for layer in migration_order %}
+                <div class="layer">
+                    <div class="layer-header">Layer {{ loop.index }} ({{ layer|length }} object{{ 's' if layer|length != 1 else '' }})</div>
+                    <div class="layer-objects">
+                        {% for obj_name in layer %}
+                        <span class="layer-object">{{ obj_name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Copilot Prompt Suggestions -->
+        {% if copilot_suggestions %}
+        <div class="section">
+            <div class="section-header">Copilot Prompt Suggestions</div>
+            <div class="section-body">
+                <p style="margin-bottom: 16px; font-size: 14px; color: var(--text-muted);">
+                    Suggested Copilot prompts from the E0-S3 prompt library for each failed object.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Object</th>
+                            <th>Suggested Prompts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for obj_name, prompts in copilot_suggestions.items()|sort %}
+                        <tr>
+                            <td><strong>{{ obj_name }}</strong></td>
+                            <td>
+                                {% for prompt in prompts %}
+                                <code style="background: #e0f2f1; padding: 2px 6px; border-radius: 3px; margin-right: 4px;">{{ prompt }}</code>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="report-footer">
+        <div class="container">
+            <p>
+                Generated by <strong>{{ metadata.tool }}</strong> v{{ metadata.version }}
+                on {{ metadata.generated_at }}
+            </p>
+            <p style="margin-top: 4px;">
+                Part of the <a href="#">DMTSP Fabric Migration Accelerator Suite</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

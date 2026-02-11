@@ -1,0 +1,46 @@
+{
+  "connection": {
+    "serverEndpoint": "<synapse-sql-endpoint>.sql.azuresynapse.net",
+    "databaseName": "<database-name>",
+    "authMethod": "AzureADInteractive",
+    "sqlAuth": {
+      "username": "",
+      "password": ""
+    },
+    "servicePrincipal": {
+      "tenantId": "",
+      "clientId": "",
+      "clientSecret": ""
+    }
+  },
+  "extraction": {
+    "outputPath": "./output",
+    "sqlPackagePath": "auto",
+    "extractionProperties": {
+      "ExtractAllTableData": false,
+      "VerifyExtraction": true,
+      "CommandTimeout": 120
+    },
+    "retryPolicy": {
+      "maxAttempts": 3,
+      "delaySeconds": 10,
+      "backoffMultiplier": 2
+    }
+  },
+  "verification": {
+    "enabled": true,
+    "objectCountTolerance": 0,
+    "reportFormats": ["json", "csv"],
+    "objectTypes": [
+      "TABLE",
+      "VIEW",
+      "STORED_PROCEDURE",
+      "FUNCTION",
+      "SCHEMA",
+      "EXTERNAL_TABLE",
+      "EXTERNAL_DATA_SOURCE",
+      "EXTERNAL_FILE_FORMAT",
+      "STATISTICS"
+    ]
+  }
+}

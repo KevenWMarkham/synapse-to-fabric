@@ -1,0 +1,45 @@
+# Batch Grouping Configuration
+# Copy to config.yaml and customize for your engagement
+
+batching:
+  # Number of batches to split tables into
+  table_batch_count: 4
+  # Number of batches to split views into
+  view_batch_count: 2
+  # Maximum allowed size imbalance between batches (percentage)
+  balance_tolerance: 20
+  # Minimum objects per batch (avoids tiny batches)
+  min_batch_size: 3
+
+ordering:
+  # Foundation-first migration order (processed in this sequence)
+  type_priority:
+    - SCHEMA
+    - SECURITY
+    - FUNCTION
+    - TABLE
+    - VIEW
+    - STORED_PROCEDURE
+    - STATISTICS
+    - EXTERNAL_TABLE
+    - EXTERNAL_DATA_SOURCE
+    - EXTERNAL_FILE_FORMAT
+
+  # Sprint assignment: which batch maps to which sprint
+  sprint_mapping:
+    foundation: 1        # Schemas, security, functions
+    table_batches: [2, 3, 4, 5]  # One sprint per table batch
+    view_batches: [6, 7]          # One sprint per view batch
+    procedures: 8                  # All stored procedures
+    cleanup: 9                     # Statistics, external objects, validation
+
+dependency:
+  # Which dependency types to analyze
+  providers:
+    - foreign_key         # FK relationships between tables
+    - view_reference      # Views referencing tables/other views
+    - procedure_reference # Procedures referencing tables/views
+    - function_reference  # Functions referenced by other objects
+
+  # How to handle circular dependencies
+  circular_resolution: warn  # warn | break | error

@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dmtsp-accelerators.dev/copilot-prompts/prompts.schema.json",
+  "title": "Copilot Prompt Library Schema",
+  "description": "Schema for validating the Synapse-to-Fabric migration Copilot prompt library entries.",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "$ref": "#/$defs/prompt"
+  },
+  "uniqueItems": true,
+  "$defs": {
+    "prompt": {
+      "type": "object",
+      "required": [
+        "id",
+        "category",
+        "patternName",
+        "description",
+        "whenToUse",
+        "severity",
+        "frequency",
+        "promptText",
+        "exampleBefore",
+        "exampleAfter",
+        "expectedOutcome",
+        "tags",
+        "relatedPrompts"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z]{2,8}-\\d{3}$",
+          "description": "Unique identifier matching the pattern PREFIX-NNN (e.g., DIST-001)."
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Functional category grouping related migration patterns."
+        },
+        "patternName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable name of the migration pattern."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Detailed description of what this prompt addresses."
+        },
+        "whenToUse": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Practical guidance on when to apply this prompt during migration."
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "description": "Impact level if this pattern is not addressed during migration."
+        },
+        "frequency": {
+          "type": "string",
+          "enum": ["rare", "low", "medium", "high", "very-high"],
+          "description": "How commonly this pattern appears in typical Synapse codebases."
+        },
+        "promptText": {
+          "type": "string",
+          "minLength": 50,
+          "description": "The Copilot-ready prompt text. Must be at least 50 characters."
+        },
+        "exampleBefore": {
+          "type": "string",
+          "minLength": 1,
+          "description": "SQL code example showing the original Synapse syntax."
+        },
+        "exampleAfter": {
+          "type": "string",
+          "minLength": 1,
+          "description": "SQL code example showing the Fabric-compatible syntax. Must differ from exampleBefore."
+        },
+        "expectedOutcome": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Description of the expected result after applying the prompt."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Searchable tags for categorization and filtering."
+        },
+        "relatedPrompts": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z]{2,8}-\\d{3}$"
+          },
+          "uniqueItems": true,
+          "description": "Array of related prompt IDs for cross-referencing."
+        }
+      },
+      "if": {
+        "properties": {
+          "exampleBefore": { "type": "string" },
+          "exampleAfter": { "type": "string" }
+        }
+      },
+      "then": {
+        "not": {
+          "properties": {
+            "exampleAfter": {
+              "const": { "$data": "1/exampleBefore" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

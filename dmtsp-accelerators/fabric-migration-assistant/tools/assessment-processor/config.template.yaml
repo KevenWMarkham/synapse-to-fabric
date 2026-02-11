@@ -1,0 +1,55 @@
+# Assessment Processor Configuration
+# Copy to config.yaml and customize for your engagement
+
+input:
+  # Supported formats: csv, json (auto-detected from extension)
+  default_format: csv
+  # CSV column mappings (map your export columns to expected names)
+  column_mappings:
+    object_name: "ObjectName"
+    object_type: "ObjectType"
+    schema_name: "SchemaName"
+    status: "MigrationStatus"
+    failure_reason: "FailureReason"
+    dependencies: "Dependencies"
+
+analysis:
+  # Failure categorization patterns
+  categories:
+    auto_fixable:
+      description: "Can be automatically fixed by Copilot prompts or scripts"
+      patterns:
+        - "DISTRIBUTION.*not supported"
+        - "CLUSTERED COLUMNSTORE.*default"
+        - "IDENTITY.*not supported"
+        - "STATISTICS.*syntax"
+        - "CTAS.*distribution"
+    minor_manual:
+      description: "Requires minor manual intervention (< 1 hour per object)"
+      patterns:
+        - "MATERIALIZED VIEW"
+        - "WORKLOAD.*CLASSIFIER"
+        - "deprecated.*data type"
+        - "UNICODE.*collation"
+        - "PARTITION.*scheme"
+    significant_refactor:
+      description: "Requires significant refactoring (> 1 hour per object)"
+      patterns:
+        - "EXTERNAL TABLE.*DATA_SOURCE"
+        - "cross.database.*reference"
+        - "stored procedure.*incompatible"
+        - "complex.*dependency"
+
+  # Dependency analysis settings
+  dependency:
+    enable_impact_scoring: true
+    max_depth: 10  # Maximum dependency chain depth to traverse
+
+output:
+  directory: "./output"
+  report_formats:
+    - json
+    - html
+    - markdown
+  html_template: "templates/report.html"
+  include_timestamp: true
